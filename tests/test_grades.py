@@ -1,19 +1,17 @@
+import sys
+from pathlib import Path
 import unittest
-<<<<<<< Updated upstream
-
-=======
 import flet as ft
 from unittest.mock import patch
+
 sys.path.append(str(Path(__file__).resolve().parents[1]))
+
 from src.usosapi import USOSAPIConnection
 from setup import App
->>>>>>> Stashed changes
 from src.pages.grades import Grades
 
 
 class TestGrades(unittest.TestCase):
-<<<<<<< Updated upstream
-=======
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,14 +21,10 @@ class TestGrades(unittest.TestCase):
     def connect_app(self):
         self._app = None
         self._page = None
->>>>>>> Stashed changes
 
     def test_display(self):
         grades = Grades()
         displayed = grades.display()
-<<<<<<< Updated upstream
-        self.assertIsInstance()
-=======
         self.assertIsInstance(displayed, ft.View)
     
 
@@ -62,4 +56,3 @@ if __name__ == "__main__":
     #ft.app(target=main)
 
 
->>>>>>> Stashed changes

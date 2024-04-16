@@ -1,7 +1,7 @@
 class USOSAPIConnection():
     pass
     def __init__(self):
-        raise NotImplementedError
+        pass
     #-----------------------------------------------------------------------------------
     def _generate_request_token(self):
         raise NotImplementedError
