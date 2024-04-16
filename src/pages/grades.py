@@ -5,13 +5,18 @@ from ..interface import ViewInterface
 class Grades(ViewInterface):
 
     def __init__(self, app, page: ft.Page):
+<<<<<<< Updated upstream
         raise NotImplementedError
+=======
+        self.data = dict
+        pass
+>>>>>>> Stashed changes
 
     def get_data(self):
-        raise NotImplementedError
+        pass
 
     def display(self):
-        raise NotImplementedError
+        pass
 
 
 
