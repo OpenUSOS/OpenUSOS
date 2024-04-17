@@ -46,7 +46,8 @@ class TestGrades(unittest.TestCase):
                 self.assertTrue(callable(current_control.on_click))
     
     def test_display_send(self):
-        pass
+        with patch.object(USOSAPIConnection, 'get') as mock_get:
+            mock_get.return_value = {'22/23': {}, '23/24': {}}
 
 
 def run_tests(app: App, page: ft.Page):
