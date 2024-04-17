@@ -13,5 +13,10 @@ class Emails(ViewInterface):
     def display(self):
         raise NotImplementedError
 
+    def display_send(self):
+        raise NotImplementedError
+    
+    def send_email(self):
+        raise NotImplementedError
 
 
