@@ -23,17 +23,17 @@ class TestGrades(unittest.TestCase):
 
     def test_get_data(self):
         with patch.object(USOSAPIConnection, 'get') as mock_get:
-            mock_get.return_value = {'22/23': {}, '23/24': {}}
+            mock_get.return_value = ["aa", "bb", "cc"]
 
             sender = Emails(self._app, self._page)
             value = sender.get_data()
             self.assertIsInstance(value,  list) # is value a list
-            self.assertListEqual(value, {'22/23': {}, '23/24': {}}) # is value the right list
-            self.assertEqual(value, sender.data) # is value the same as grades.data (was data initialized properly)
+            self.assertListEqual(value, ["aa", "bb", "cc"]) # is value the right list
+            self.assertEqual(value, sender.data) # is value the same as sender.data (was data initialized properly)
 
     def test_display_buttons(self):
-        grades = Emails(self._app, self._page)
-        displayed = grades.display()
+        sender = Emails(self._app, self._page)
+        displayed = sender.display()
         control_list = [displayed.controls]
         while len(control_list) > 0:
             current_control = control_list.pop()
@@ -45,9 +45,25 @@ class TestGrades(unittest.TestCase):
                 self.assertFalse(current_control.on_click is None)
                 self.assertTrue(callable(current_control.on_click))
     
-    def test_display_send(self):
+    def test_display_send(self): #???????????
         with patch.object(USOSAPIConnection, 'get') as mock_get:
-            mock_get.return_value = {'22/23': {}, '23/24': {}}
+            mock_get.return_value = ["aa", "bb", "cc"] 
+
+
+    def test_send_email(self):
+        with patch.object(USOSAPIConnection, 'get') as mock_get:
+            def side_effect(*args, **kwargs):
+                if args and args[0] == 'services/mailclient/send_message': #if we are sending the message
+                    #test if message was send correctly, directory should be empty
+                    self.assertDictEqual(original_get(*args, *kwargs), {})
+                else: #else return the original get value, so that function works properly
+                    return original_get(*args, **kwargs)
+                
+            mock_get.side_effect = side_effect  #assign the side effect.
+            original_get = USOSAPIConnection.get #original get function    
+
+            sender = Emails(self._app, self._page) 
+            sender.send_email() #We are testing this
 
 
 def run_tests(app: App, page: ft.Page):
