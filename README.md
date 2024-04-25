@@ -1,16 +1,28 @@
-# open_usos
+# OpenUSOS
+Authors: Oskar Kuliński, Filip Ciebiera, Wieńczysław Włodyga   
+An open source USOS mobile app, made for Software Engineering course 2023/2024 at Jagiellonian University.
+### Current version: 0.0.0
 
-OpenUSOS
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Our goals:
+### Must have:
+-working app for Jagiellonian University,  
+-email sending and sent history,    
+-class schedule,  
+-grades,   
+-tests,   
+-notifications for upcoming classes.
+### Should have:
+-calendar,   
+-university news,   
+-notifications about registrations,   
+-surveys.
+### Could have:
+-registration for courses,  
+-class groups,   
+-information about other courses and students,   
+-support for other Universities.
+### Won't have:
+-map,  
+-reading mail,  
+-student ID card viewing,  
+-viewing personal data.   
