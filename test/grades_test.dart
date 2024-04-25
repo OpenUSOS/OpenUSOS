@@ -14,25 +14,64 @@ class MockUSOSAPIConnection extends Mock implements USOSAPIConnection {
 }
 
 class TestGrades {
-  late App app;
+  late App app = const App();
 
 
   void testDisplay() {
-    final grades = Grades(app);
-    final displayed = grades.display();
-    expect(displayed, isA<Widget>());
+    testWidgets('Grades should be displayed', (WidgetTester tester) async {
+      // Build MyWidget
+      await tester.pumpWidget(Grades(app));
+
+      // Find MyWidget by its type
+      expect(find.byType(Grades), findsOneWidget);
+    });
   }
+
+
 
   void testGetData() {
-    final mockConnection = MockUSOSAPIConnection();
-    when(mockConnection.get('')).thenAnswer((_) async => {'22/23': {}, '23/24': {}});
+    testWidgets('Data should be initialized', (WidgetTester tester) async {
+      //mocking api
+      const expected = {'22/23': 1, '23/24': 2};
+      final mockConnection = MockUSOSAPIConnection();
+      when(mockConnection.get('')).thenAnswer((_) async => expected);
 
-    final grades = Grades(app);
-    final value = grades.getData();
-    expect(value, isA<Map<String, dynamic>>());
-    expect(value, equals({'22/23': {}, '23/24': {}}));
-    expect(value, equals(grades.data));
+      // Build Grades
+      await tester.pumpWidget(Grades(app));
+
+      // Trigger the getData method
+        // Access the state of MyWidget
+      GradesState state = tester.state(find.byType(Grades));
+        // Call the getData method
+      state.getData();
+
+
+      expect(state.termList, isA<List<Map>>());
+      expect(state.termList, equals([{"23/24" : 1}, {"24/25" : 2}]));
+    });
   }
+
+
+
+  void testDisplayTerms() {
+    testWidgets('Grades widget displays correct number of terms', (
+        WidgetTester tester) async {
+      //mocking api
+      const expected = {'22/23': 1, '23/24': 2};
+      final mockConnection = MockUSOSAPIConnection();
+      when(mockConnection.get('')).thenAnswer((_) async => expected);
+
+      // Build the Grades widget
+      await tester.pumpWidget(Grades(app));
+
+      GradesState state = tester.state(find.byType(Grades));
+      // Verify that the correct number of terms is displayed
+      expect(find.byType(ListView),
+          findsNWidgets(state.termList.length + 1));
+      // list of terms and lists of grades in each term
+    });
+  }
+
 
   void testDisplayButtons() {
     /*find.byType(TextButton);
