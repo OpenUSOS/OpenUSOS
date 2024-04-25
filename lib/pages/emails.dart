@@ -19,7 +19,7 @@ class Emails implements ViewInterface {
   }
 
   @override
-  Widget display() {
+  Scaffold display() {
     throw UnimplementedError();
   }
 }

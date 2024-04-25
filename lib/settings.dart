@@ -29,5 +29,5 @@ class Settings {
     } else {
       throw Error();
     }
+  }
 }
-
