@@ -4,7 +4,7 @@ import 'package:open_usos/main.dart';
 
 
 class User extends StatefulWidget {
-  final App app;
+  final OpenUSOS app;
   const User( this.app, {super.key});
 
   @override

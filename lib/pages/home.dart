@@ -1,25 +1,32 @@
 import 'package:flutter/material.dart';
-
-import 'package:open_usos/main.dart';
-
+import 'package:open_usos/navbar.dart';
 
 class Home extends StatefulWidget {
-  final App app;
-  const Home( this.app, {super.key});
+  const Home({super.key});
 
   @override
-  State<Home> createState() => HomeState();
+  State<Home> createState() => _HomeState();
 }
 
-//we annotate it with visibleForTesting to make sure the state class isn't used anywhere else
-//we make it publics so that it can be tested
-@visibleForTesting
-class HomeState extends State<Home> {
-
-  //build method
+class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      drawer: NavBar(),
+      appBar: AppBar(
+        title: Text(
+          "OpenUSOS",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      body: Center(
+        child: Text(
+          "HOME PAGE",
+          style: TextStyle(fontSize: 40.0),
+        ),
+      ),
+    );
   }
 }
-
