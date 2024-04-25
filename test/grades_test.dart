@@ -14,19 +14,7 @@ class MockUSOSAPIConnection extends Mock implements USOSAPIConnection {
 }
 
 class TestGrades {
-  late App app = const App();
-
-
-  void testDisplay() {
-    testWidgets('Grades should be displayed', (WidgetTester tester) async {
-      // Build MyWidget
-      await tester.pumpWidget(Grades(app));
-
-      // Find MyWidget by its type
-      expect(find.byType(Grades), findsOneWidget);
-    });
-  }
-
+  late OpenUSOS app = const OpenUSOS();
 
 
   void testGetData() {
@@ -51,6 +39,16 @@ class TestGrades {
     });
   }
 
+
+  void testDisplay() {
+    testWidgets('Grades should be displayed', (WidgetTester tester) async {
+      // Build MyWidget
+      await tester.pumpWidget(Grades(app));
+
+      // Find MyWidget by its type
+      expect(find.byType(Grades), findsOneWidget);
+    });
+  }
 
 
   void testDisplayTerms() {
@@ -96,4 +94,10 @@ class TestGrades {
 }
 
 
-
+void main(){
+  final test = TestGrades();
+  test.testGetData();
+  test.testDisplay();
+  test.testDisplayTerms();
+  test.testDisplayButtons();
+}

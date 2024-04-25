@@ -14,7 +14,7 @@ class MockUSOSAPIConnection extends Mock implements USOSAPIConnection {
 }
 
 class TestSchedule {
-  late App app = const App();
+  late OpenUSOS app = const OpenUSOS();
 
 
   void testDisplay() {
@@ -97,3 +97,10 @@ class TestSchedule {
 
 
 
+void main(){
+  final test = TestSchedule();
+  test.testGetData();
+  test.testDisplay();
+  test.testDisplayTerms();
+  test.testDisplayButtons();
+}

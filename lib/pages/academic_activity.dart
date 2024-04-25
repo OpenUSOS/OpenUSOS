@@ -4,7 +4,7 @@ import 'package:open_usos/main.dart';
 
 
 class AcademicActivity extends StatefulWidget {
-  final App app;
+  final OpenUSOS app;
   const AcademicActivity( this.app, {super.key});
 
   @override
