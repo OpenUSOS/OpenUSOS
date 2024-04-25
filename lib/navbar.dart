@@ -11,12 +11,12 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   //potrzebne zmienne
-  late String imageUrl;
+  late String imageUrl = '';
   late bool hasImage = false;
-  late String name;
-  late String initials;
-  late String email;
-  late String university;
+  late String name = '';
+  late String initials = '';
+  late String email = '';
+  late String university = '';
   bool _isTapped = false;
 
 
@@ -29,7 +29,7 @@ class _NavBarState extends State<NavBar> {
     loadData();
   }
 
-  void tapCallback() => setState(() {_isTapped = true;}); 
+  void tapCallback() => setState(() {_isTapped = true;});
 
   Future<Map<String, dynamic>> getData() async {
     var url = 'http://apiAddres:5000/api/data';
@@ -66,178 +66,177 @@ class _NavBarState extends State<NavBar> {
       });
     });
   }
-  
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
         backgroundColor: Colors.blueGrey.shade900,
         child: ListView(children: <Widget>[
-      DrawerHeader( 
-          margin: EdgeInsets.all(0.0),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/c/cd/University-of-Alabama-EngineeringResearchCenter-01.jpg'),
-              fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.2),
-                BlendMode.darken,
+          DrawerHeader(
+              margin: EdgeInsets.all(0.0),
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/c/cd/University-of-Alabama-EngineeringResearchCenter-01.jpg'),
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(
+                    Colors.black.withOpacity(0.2),
+                    BlendMode.darken,
+                  ),
+                ),
               ),
-            ),
-          ),
-          child: Row(children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    hasImage
-                        ? CircleAvatar(
-                            radius: 40,
-                            backgroundImage: NetworkImage(imageUrl),
-                          )
-                        : CircleAvatar(
+              child: Row(children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        hasImage
+                            ? CircleAvatar(
+                          radius: 40,
+                          backgroundImage: NetworkImage(imageUrl),
+                        )
+                            : CircleAvatar(
                             radius: 40,
                             backgroundColor: Colors.grey[400],
                             child: Text(
-                              initials,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 40,
-                                color: Colors.black54,
+                                initials,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 40,
+                                    color: Colors.black54,
+                                    shadows: <Shadow>[
+                                      Shadow(
+                                        color: Colors.grey.shade600,
+                                        offset: Offset(2.0, 2.0),
+                                        blurRadius: 3.0,
+                                      )
+                                    ]
+                                )
+                            )
+                        )
+                      ]),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                            name,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
                                 shadows: <Shadow>[
                                   Shadow(
-                                    color: Colors.grey.shade600,
-                                    offset: Offset(2.0, 2.0),
                                     blurRadius: 3.0,
+                                    offset: Offset(2.0, 2.0),
+                                    color: Colors.black,
                                   )
                                 ]
-                              )
                             )
-                          )
-                  ]),
-            ),
-            Expanded(
-              flex: 2,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    name,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      shadows: <Shadow>[
-                        Shadow(
-                          blurRadius: 3.0,
-                          offset: Offset(2.0, 2.0),
-                          color: Colors.black,
-                        )
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                            email,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                shadows: <Shadow>[
+                                  Shadow(
+                                    blurRadius: 5.0,
+                                    offset: Offset(2.0, 2.0),
+                                    color: Colors.black,
+                                  )
+                                ],
+                                fontWeight: FontWeight.bold
+                            )
+                        ),
+                        Text(
+                            university,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              shadows: <Shadow>[
+                                Shadow(
+                                  blurRadius: 5.0,
+                                  offset: Offset(2.0, 2.0),
+                                  color: Colors.black,
+                                )
+                              ],
+                              fontWeight: FontWeight.bold,
+                            )
+                        ),
                       ]
-                    )
                   ),
-                  SizedBox(
-                    height: 20,
-                  ), 
-                  Text(
-                    email,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      shadows: <Shadow>[
-                        Shadow(
-                          blurRadius: 5.0,
-                          offset: Offset(2.0, 2.0),
-                          color: Colors.black,
-                        )
-                      ],
-                      fontWeight: FontWeight.bold
-                    )
-                  ),
-                  Text(
-                    university,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      shadows: <Shadow>[
-                        Shadow(
-                          blurRadius: 5.0,
-                          offset: Offset(2.0, 2.0),
-                          color: Colors.black,
-                        )
-                      ],
-                      fontWeight: FontWeight.bold,
-                    )
-                  ),
-                ]
-              ),
-            )
-          ])),
+                )
+              ])),
           ListTile(
-            leading: Icon(Icons.grade,
-            color: Colors.white54),
-            tileColor: _isTapped ? Colors.blueGrey[800] : Colors.transparent,
-            onTap: () {tapCallback();
+              leading: Icon(Icons.grade,
+                  color: Colors.white54),
+              tileColor: _isTapped ? Colors.blueGrey[800] : Colors.transparent,
+              onTap: () {tapCallback();
               Navigator.pop(context);
               Navigator.pushNamed(context, '/grades');
-            },
-            title: Text("Grades",
-              style: TextStyle(
-                color: Colors.white54,
-                fontWeight: FontWeight.w400,
+              },
+              title: Text("Grades",
+                  style: TextStyle(
+                    color: Colors.white54,
+                    fontWeight: FontWeight.w400,
+                  )
               )
-            )
           ),
           ListTile(
-            leading: Icon(Icons.newspaper,
-            color: Colors.white54),
-            onTap: () {tapCallback();},
-            title: Text("News",
-              style: TextStyle(
-                color: Colors.white54,
-                fontWeight: FontWeight.w400,
+              leading: Icon(Icons.newspaper,
+                  color: Colors.white54),
+              onTap: () {tapCallback();},
+              title: Text("News",
+                  style: TextStyle(
+                    color: Colors.white54,
+                    fontWeight: FontWeight.w400,
+                  )
               )
-            )
           ),
           ListTile(
-            leading: Icon(Icons.schedule,
-            color: Colors.white54),
-            title: Text("Schedule",
-              style: TextStyle(
-                color: Colors.white54,
-                fontWeight: FontWeight.w400,
+              leading: Icon(Icons.schedule,
+                  color: Colors.white54),
+              title: Text("Schedule",
+                  style: TextStyle(
+                    color: Colors.white54,
+                    fontWeight: FontWeight.w400,
+                  )
               )
-            )
           ),
           ListTile(
-            leading: Icon(Icons.group,
-            color: Colors.white54),
-            title: Text("Course groups",
-              style: TextStyle(
-                color: Colors.white54,
-                fontWeight: FontWeight.w400,
+              leading: Icon(Icons.group,
+                  color: Colors.white54),
+              title: Text("Course groups",
+                  style: TextStyle(
+                    color: Colors.white54,
+                    fontWeight: FontWeight.w400,
+                  )
               )
-            )
           ),
           ListTile(
-            leading: Icon(Icons.task,
-            color: Colors.white54),
-            title: Text("Exams",
-              style: TextStyle(
-                color: Colors.white54,
-                fontWeight: FontWeight.w400,
+              leading: Icon(Icons.task,
+                  color: Colors.white54),
+              title: Text("Exams",
+                  style: TextStyle(
+                    color: Colors.white54,
+                    fontWeight: FontWeight.w400,
+                  )
               )
-            )
           ),
           ListTile(
-            leading: Icon(Icons.calendar_month,
-            color: Colors.white54),
-            title: Text("Calendar",
-              style: TextStyle(
-                color: Colors.white54,
-                fontWeight: FontWeight.w400,
+              leading: Icon(Icons.calendar_month,
+                  color: Colors.white54),
+              title: Text("Calendar",
+                  style: TextStyle(
+                    color: Colors.white54,
+                    fontWeight: FontWeight.w400,
+                  )
               )
-            )
           ),
           Divider(
             indent: 20,
@@ -246,48 +245,48 @@ class _NavBarState extends State<NavBar> {
             color: Colors.white60,
           ),
           ListTile(
-            leading: Icon(Icons.email,
-            color: Colors.white54),
-            title: Text("USOS Mail",
-              style: TextStyle(
-                color: Colors.white54,
-                fontWeight: FontWeight.w400,
+              leading: Icon(Icons.email,
+                  color: Colors.white54),
+              title: Text("USOS Mail",
+                  style: TextStyle(
+                    color: Colors.white54,
+                    fontWeight: FontWeight.w400,
+                  )
               )
-            )
           ),
           ListTile(
-            leading: Icon(Icons.dynamic_form,
-            color: Colors.white54),
-            title: Text("Questionnaires",
-              style: TextStyle(
-                color: Colors.white54,
-                fontWeight: FontWeight.w400,
+              leading: Icon(Icons.dynamic_form,
+                  color: Colors.white54),
+              title: Text("Questionnaires",
+                  style: TextStyle(
+                    color: Colors.white54,
+                    fontWeight: FontWeight.w400,
+                  )
               )
-            )
           ),
           ListTile(
-            leading: Icon(Icons.settings,
-            color: Colors.white54),
-            title: Text("Settings",
-              style: TextStyle(
-                color: Colors.white54,
-                fontWeight: FontWeight.w400,
+              leading: Icon(Icons.settings,
+                  color: Colors.white54),
+              title: Text("Settings",
+                  style: TextStyle(
+                    color: Colors.white54,
+                    fontWeight: FontWeight.w400,
+                  )
               )
-            )
           ),
-          
+
           ListTile(
-            leading: Icon(Icons.bug_report,
-            color: Colors.white54),
-            title: Text("Report a bug",
-              style: TextStyle(
-                color: Colors.white54,
-                fontWeight: FontWeight.w400,
+              leading: Icon(Icons.bug_report,
+                  color: Colors.white54),
+              title: Text("Report a bug",
+                  style: TextStyle(
+                    color: Colors.white54,
+                    fontWeight: FontWeight.w400,
+                  )
               )
-            )
           ),
-            
-          
-    ]));
+
+
+        ]));
   }
 }

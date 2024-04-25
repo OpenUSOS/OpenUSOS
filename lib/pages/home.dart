@@ -20,6 +20,16 @@ class _HomeState extends State<Home> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: <Widget>[
+          IconButton(
+            onPressed: () {
+              if(!ModalRoute.of(context)!.isCurrent) {
+                Navigator.popUntil(context, ModalRoute.withName('/home'));
+              };
+            },
+            icon: Icon(Icons.home_filled,)
+          )
+        ]
       ),
       body: Center(
         child: Text(
