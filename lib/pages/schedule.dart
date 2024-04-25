@@ -4,7 +4,7 @@ import 'package:open_usos/main.dart';
 
 
 class Schedule extends StatefulWidget {
-  final App app;
+  final OpenUSOS app;
   const Schedule( this.app, {super.key});
 
   @override

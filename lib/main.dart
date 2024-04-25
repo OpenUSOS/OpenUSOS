@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:open_usos/src/pages/home.dart';
-import 'package:open_usos/src/pages/grades.dart';
-
+import 'package:open_usos/pages/home.dart';
+import 'package:open_usos/pages/grades.dart';
 
 void main() {
   runApp(OpenUSOS());
@@ -19,7 +18,7 @@ class OpenUSOS extends StatelessWidget {
         home: Home(),
         routes: {
           'home': (context) => Home(),
-          '/grades': (context) => Grades(),
+          '/grades': (context) => Grades(this),
           //'/schedule': (context) => Schedule()
         }
     );

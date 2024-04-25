@@ -4,7 +4,7 @@ import 'package:open_usos/main.dart';
 
 
 class Emails extends StatefulWidget {
-  final App app;
+  final OpenUSOS app;
   const Emails( this.app, {super.key});
 
   @override
