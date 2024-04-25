@@ -97,3 +97,10 @@ class TestEmails {
 
 
 
+void main(){
+  final test = TestEmails();
+  test.testGetData();
+  test.testDisplay();
+  test.testDisplayTerms();
+  test.testDisplayButtons();
+}

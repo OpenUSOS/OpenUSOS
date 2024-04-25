@@ -97,3 +97,10 @@ class TestSchedule {
 
 
 
+void main(){
+  final test = TestSchedule();
+  test.testGetData();
+  test.testDisplay();
+  test.testDisplayTerms();
+  test.testDisplayButtons();
+}

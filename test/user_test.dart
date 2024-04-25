@@ -97,3 +97,10 @@ class TestUser {
 
 
 
+void main(){
+  final test = TestUser();
+  test.testGetData();
+  test.testDisplay();
+  test.testDisplayTerms();
+  test.testDisplayButtons();
+}

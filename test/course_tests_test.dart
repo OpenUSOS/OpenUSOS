@@ -6,6 +6,8 @@ import 'package:open_usos/usosapi.dart';
 import 'package:open_usos/main.dart';
 import 'package:open_usos/pages/course_tests.dart';
 
+import 'academic_activity_test.dart';
+
 class MockUSOSAPIConnection extends Mock implements USOSAPIConnection {
   @override
   Future<Map<String, dynamic>> get(String endpoint) async {
@@ -96,4 +98,10 @@ class TestCourseTests {
 }
 
 
-
+void main(){
+  final test = TestCourseTests();
+  test.testGetData();
+  test.testDisplay();
+  test.testDisplayTerms();
+  test.testDisplayButtons();
+}

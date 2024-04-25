@@ -96,4 +96,10 @@ class TestAcademicActivity {
 }
 
 
-
+void main(){
+  final test = TestAcademicActivity();
+  test.testGetData();
+  test.testDisplay();
+  test.testDisplayTerms();
+  test.testDisplayButtons();
+}

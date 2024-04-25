@@ -17,18 +17,6 @@ class TestGrades {
   late OpenUSOS app = const OpenUSOS();
 
 
-  void testDisplay() {
-    testWidgets('Grades should be displayed', (WidgetTester tester) async {
-      // Build MyWidget
-      await tester.pumpWidget(Grades(app));
-
-      // Find MyWidget by its type
-      expect(find.byType(Grades), findsOneWidget);
-    });
-  }
-
-
-
   void testGetData() {
     testWidgets('Data should be initialized', (WidgetTester tester) async {
       //mocking api
@@ -51,6 +39,16 @@ class TestGrades {
     });
   }
 
+
+  void testDisplay() {
+    testWidgets('Grades should be displayed', (WidgetTester tester) async {
+      // Build MyWidget
+      await tester.pumpWidget(Grades(app));
+
+      // Find MyWidget by its type
+      expect(find.byType(Grades), findsOneWidget);
+    });
+  }
 
 
   void testDisplayTerms() {
@@ -96,4 +94,10 @@ class TestGrades {
 }
 
 
-
+void main(){
+  final test = TestGrades();
+  test.testGetData();
+  test.testDisplay();
+  test.testDisplayTerms();
+  test.testDisplayButtons();
+}
