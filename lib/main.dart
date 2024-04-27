@@ -19,7 +19,6 @@ class OpenUSOS extends StatelessWidget {
         routes: {
           '/home': (context) => Home(),
           '/grades': (context) => Grades(),
-          //'/schedule': (context) => Schedule()
         }
     );
   }

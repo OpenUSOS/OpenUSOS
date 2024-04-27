@@ -57,7 +57,7 @@ class GradesState extends State<Grades> {
           return ListView.builder( // a list of grades in each term
             itemCount: termList[index].length,
             itemBuilder: (context2, index2) {
-              return ListTile( // a grade from a singe class
+d              return ListTile( // a grade from a singe class
                   title: Text('List ${index + 1}'),
                   subtitle: Row(
                       children: [
@@ -65,7 +65,7 @@ class GradesState extends State<Grades> {
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8.0),
-                            child: Text('$item'),
+                            child: Text('AAA'),
                           ),
                       ]
                   )
