@@ -17,7 +17,7 @@ class Settings extends StatefulWidget{
 
 class _SettingsState extends State<Settings> {
   //default settings here, if user has other settings set this will be overwritten
-  //in _initState setPreferances
+  //in _initState setPreferences
   String currentLanguage = 'Polish';
   ThemeData currentTheme = darkTheme;
   bool notificationsOn = false;
@@ -43,7 +43,7 @@ class _SettingsState extends State<Settings> {
 
     String? language = prefs.getString('language');
     if(language != null){
-      setLanguage(language)
+      setLanguage(language);
     }
 
     String? theme = prefs.getString('theme');
@@ -81,7 +81,23 @@ class _SettingsState extends State<Settings> {
           style: TextStyle(
             fontWeight: FontWeight.bold,
           )
-        )
+        ),
+        actions: <Widget>[
+          IconButton(
+              onPressed: () {
+                if(ModalRoute.of(context)!.isCurrent) {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/home');
+                };
+              },
+              icon: Icon(Icons.home_filled,)
+          )
+        ]
+      ),
+      body: Column(
+        children: [Switch(value: value, onChanged: onChanged);
+
+        ],
       ),
     );
   }
