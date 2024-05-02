@@ -5,9 +5,9 @@ import 'package:open_usos/themes.dart';
 
 class Settings extends StatefulWidget{
   //set of available languages
-  final List<String> availableLanguages = ['Polski', 'Polish'];
+  final List<String> availableLanguages = ['Polski', 'Polish'];// duplicated values for testing
   //map of available themes, they can be accessed by name
-  final Map<String, ThemeData> availableThemes = {"dark": darkTheme};
+  final Map<String, ThemeData> availableThemes = {"Ciemny": AppTheme.darkTheme, 'Jasny': AppTheme.lightTheme};
 
   @override
   State<Settings> createState() => _SettingsState();
@@ -17,7 +17,7 @@ class _SettingsState extends State<Settings> {
   //default settings here, if user has other settings set this will be overwritten
   //in _initState setPreferences
   String currentLanguage = 'Polish';
-  ThemeData currentTheme = darkTheme;
+  ThemeData currentTheme = AppTheme.darkTheme;
   bool notificationsOn = false;
 
   @override
@@ -123,17 +123,17 @@ class _SettingsState extends State<Settings> {
           ListTile(
               title: Text('Motyw'),
               trailing: DropdownButton<String>(
-                value: currentLanguage,
+                value: widget.availableThemes.entries.firstWhere((item) => item.value == currentTheme).key,
                 onChanged: (String? value) {
                   setState(() {
-                    currentLanguage = value!;
+                    setTheme(value!);
                   });
                 },
-                items: widget.availableLanguages
-                    .map<DropdownMenuItem<String>>((String language) {
+                items: widget.availableThemes.keys
+                    .map<DropdownMenuItem<String>>((String theme) {
                   return DropdownMenuItem<String>(
-                    value: language,
-                    child: Text(language),
+                    value: theme,
+                    child: Text(theme),
                   );
                 }).toList(),
               )
