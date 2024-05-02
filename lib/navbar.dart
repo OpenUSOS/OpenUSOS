@@ -279,17 +279,6 @@ class _NavBarState extends State<NavBar> {
               }
           ),
 
-          ListTile(
-              leading: Icon(Icons.bug_report,
-                  color: Colors.white54),
-              title: Text("Report a bug",
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontWeight: FontWeight.w400,
-                  )
-              )
-          ),
-
 
         ]));
   }
