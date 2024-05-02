@@ -8,6 +8,9 @@ class UserSession {
   static const host = 'srv27.mikr.us:20117';
   static const logPath = '/login';
   static const basePath = '/api';
+  static String? loginURL;
+  static String? accessToken;
+  static String? accessTokenSecret;
 
   static Future createSession() async {
     final url = Uri.http(host, logPath);
@@ -21,33 +24,98 @@ class UserSession {
   }
 
 
-  static void login() async {
+  static Future startLogin() async {
     await createSession();
     final urlURL = Uri.http(host, basePath, {'id': sessionId, 'query1': 'url'});
     var response = await get(urlURL);
-    String loginUrl;
+    //String loginUrl;
     if (response.statusCode == 200) {
-      loginUrl = response.body;
+      loginURL = response.body;
     }
     else {
       throw Exception('Getting Login URL failed');
     }
-    _launchURL(loginUrl); // opens web browser with the correct link
-
-    throw Exception(post(Uri.parse(loginUrl)));
   }
+
+  static Future endLogin(String url) async {
+    final receivedUrl = Uri.parse(url);
+    final urlLogin = Uri.http(host, basePath,
+        {'id': sessionId, 'query1': 'log_in', 'query2': receivedUrl.queryParameters['oauth_verifier']});
+
+  }
+
 
   static void logout() {
     throw UnimplementedError();
   }
 
+}
 
-  static _launchURL(String loginUrl) async {
-    final url = Uri.parse(loginUrl);
-    if (!await launchUrl(url)) {
-      throw Exception('Could not launch $url');
-    }
+class StartingPage extends StatelessWidget{
+  @override
+  Widget build(BuildContext buildContext){
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Logowanie'),
+      ),
+      body: ElevatedButton(
+        child: Text(
+          'Zaloguj się'
+        ),
+        onPressed: () {
+          Navigator.pop(buildContext);
+          Navigator.pushNamed(buildContext, '/login');
+        },
+      ),
+    );
   }
 }
 
 
+class LoginPage extends StatelessWidget {
+  final controller = WebViewController()
+    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+    ..setBackgroundColor(const Color(0x00000000))
+    ..setNavigationDelegate(
+    NavigationDelegate(
+      onProgress: (int progress) {
+      // Update loading bar.
+      },
+      onPageStarted: (String url) {UserSession.endLogin(url);},
+      onPageFinished: (String url) {},
+      onWebResourceError: (WebResourceError error) {},
+      onNavigationRequest: (NavigationRequest request) {
+        return NavigationDecision.navigate;
+        },
+    ),
+  )
+  ..loadRequest(Uri.parse(UserSession.loginURL!));
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          title: Text(
+              "Logowanie do systemu USOS",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              )
+          ),
+          actions: <Widget>[
+            IconButton(
+                onPressed: () {
+                  if(ModalRoute.of(context)!.isCurrent) {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/home');
+                  };
+                },
+                icon: Icon(Icons.home_filled,)
+            )
+          ]
+      ),
+      body: WebViewWidget(
+        controller: controller,
+      ),
+    );
+  }
+}

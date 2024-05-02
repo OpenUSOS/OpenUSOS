@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,6 +6,8 @@ import 'package:open_usos/pages/grades.dart';
 import 'package:open_usos/settings.dart';
 import 'package:open_usos/user_session.dart';
 
+
+
 void main() {
   runApp(OpenUSOS());
 }
@@ -15,24 +15,30 @@ void main() {
 
 class OpenUSOS extends StatelessWidget {
 
-  OpenUSOS({super.key}){
-      //UserSession.createSession();
-      //sleep(Duration(seconds: 5));
-      UserSession.login();
-  }
+  OpenUSOS({super.key}){}
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'OpenUSOS',
-        home: Home(),
+        home: StartingPage(),
         routes: {
           '/home': (context) => Home(),
           '/grades': (context) => Grades(),
-
           '/settings': (context) => Settings(),
           //'/schedule': (context) => Schedule()
-
+          '/login': (context) => FutureBuilder(future: UserSession.startLogin(),
+              builder: (context, snapshot){
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Scaffold(
+                    body: Center(
+                    child: CircularProgressIndicator(),
+                    ),
+                  );
+                } else {
+                  return LoginPage();
+                }
+          }),
         }
     );
   }
