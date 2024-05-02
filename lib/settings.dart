@@ -1,5 +1,3 @@
-import 'dart:js_util';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -7,7 +5,7 @@ import 'package:open_usos/themes.dart';
 
 class Settings extends StatefulWidget{
   //set of available languages
-  final Set<String> availableLanguages = {'Polish'};
+  final List<String> availableLanguages = ['Polski', 'Polish'];
   //map of available themes, they can be accessed by name
   final Map<String, ThemeData> availableThemes = {"dark": darkTheme};
 
@@ -23,7 +21,7 @@ class _SettingsState extends State<Settings> {
   bool notificationsOn = false;
 
   @override
-  void initState() async {
+  void initState() {
     super.initState();
     _initPreferences();//we initialize preferences
   }
@@ -31,27 +29,24 @@ class _SettingsState extends State<Settings> {
   void _initPreferences() async{
     // we get preferences and set them using SharedPreferences library
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    setPreferences(prefs);
+    setState(() {//if settings are saved defaults are overwritten, if not nothing happens
+      bool? notifications = prefs.getBool('notifications');
+      if(notifications != null){
+        notificationsOn = notifications;
+      }
+
+      String? language = prefs.getString('language');
+      if(language != null){
+        setLanguage(language);
+      }
+
+      String? theme = prefs.getString('theme');
+      if(theme != null){
+        setTheme(theme);
+      }
+    });
   }
 
-  //if settings are saved defaults are overwritten, if not nothing happens
-  void setPreferences(SharedPreferences prefs){
-    bool? notifications = prefs.getBool('notifications');
-    if(notifications != null){
-      notificationsOn = notifications;
-    }
-
-    String? language = prefs.getString('language');
-    if(language != null){
-      setLanguage(language);
-    }
-
-    String? theme = prefs.getString('theme');
-    if(theme != null){
-      setTheme(theme);
-    }
-
-  }
 
   // language setter with check if language is available
   void setLanguage(String language) {
@@ -95,8 +90,54 @@ class _SettingsState extends State<Settings> {
         ]
       ),
       body: Column(
-        children: [Switch(value: value, onChanged: onChanged);
-
+        children: [
+          ListTile(
+            title: Text('Powiadomienia'),
+            trailing: Switch(
+              value: notificationsOn,
+              onChanged: (value) {
+                setState(() {
+                  notificationsOn = value;
+                });
+              },
+            ),
+          ),
+          ListTile(
+            title: Text('Język'),
+              trailing: DropdownButton<String>(
+                value: currentLanguage,
+                onChanged: (String? value) {
+                  setState(() {
+                    setLanguage(value!);
+                  });
+                },
+                items: widget.availableLanguages
+                    .map<DropdownMenuItem<String>>((String language) {
+                return DropdownMenuItem<String>(
+                value: language,
+                child: Text(language),
+                );
+              }).toList(),
+            )
+          ),
+          ListTile(
+              title: Text('Motyw'),
+              trailing: DropdownButton<String>(
+                value: currentLanguage,
+                onChanged: (String? value) {
+                  setState(() {
+                    currentLanguage = value!;
+                  });
+                },
+                items: widget.availableLanguages
+                    .map<DropdownMenuItem<String>>((String language) {
+                  return DropdownMenuItem<String>(
+                    value: language,
+                    child: Text(language),
+                  );
+                }).toList(),
+              )
+          )
         ],
       ),
     );

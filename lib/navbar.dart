@@ -272,7 +272,11 @@ class _NavBarState extends State<NavBar> {
                     color: Colors.white54,
                     fontWeight: FontWeight.w400,
                   )
-              )
+              ),
+              onTap: () {tapCallback();
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/settings');
+              }
           ),
 
           ListTile(
