@@ -5,6 +5,7 @@ import 'package:open_usos/pages/home.dart';
 import 'package:open_usos/pages/grades.dart';
 import 'package:open_usos/settings.dart';
 import 'package:open_usos/user_session.dart';
+import 'package:open_usos/pages/start_page.dart';
 
 
 
@@ -21,7 +22,7 @@ class OpenUSOS extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'OpenUSOS',
-        home: StartingPage(),
+        home: StartPage(),
         routes: {
           '/home': (context) => Home(),
           '/grades': (context) => Grades(),
