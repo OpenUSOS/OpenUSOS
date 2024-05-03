@@ -8,7 +8,7 @@ class Settings extends StatefulWidget{
   //set of available languages
   final List<String> availableLanguages = ['Polski', 'Polish'];// duplicated values for testing
   //map of available themes, they can be accessed by name
-  final Map<String, ThemeData> availableThemes = {"Ciemny": AppTheme.darkTheme, 'Jasny': AppTheme.lightTheme};
+  final Map<String, ThemeData> availableThemes = {"Ciemny": OpenUSOSThemes.darkTheme, 'Jasny': OpenUSOSThemes.lightTheme};
 
   @override
   State<Settings> createState() => _SettingsState();
@@ -18,7 +18,7 @@ class _SettingsState extends State<Settings> {
   //default settings here, if user has other settings set this will be overwritten
   //in _initState setPreferences
   String currentLanguage = 'Polish';
-  ThemeData currentTheme = AppTheme.darkTheme;
+  ThemeData currentTheme = OpenUSOSThemes.darkTheme;
   bool notificationsOn = false;
 
   @override

@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
 
-class AppTheme {
+class OpenUSOSThemes {
   static ThemeData lightTheme = ThemeData(
-    primaryColor: Colors.grey,
-    colorScheme: ColorScheme.dark()
+      colorScheme: ColorScheme.dark().copyWith(
+          primary: Colors.blueGrey.shade800,
+          primaryContainer: Colors.blueGrey.shade900,
+          secondary: Colors.blue.shade800,
+          secondaryContainer: Colors.blue.shade900,
+          tertiary: Colors.blue.shade500,
+          tertiaryContainer: Colors.blue.shade600,
+          surface: Colors.grey.shade500, //background colors for different widgets
+          background: Colors.grey.shade700
+      )
   );
 
   static ThemeData darkTheme = ThemeData(
-    primaryColor: Colors.white,
-    colorScheme: ColorScheme.light()
+    colorScheme: ColorScheme.light().copyWith(
+      primary: Colors.blueGrey.shade800,
+      primaryContainer: Colors.blueGrey.shade900,
+      secondary: Colors.blue.shade800,
+      secondaryContainer: Colors.blue.shade900,
+      tertiary: Colors.blue.shade500,
+      tertiaryContainer: Colors.blue.shade600,
+      surface: Colors.grey.shade50, //background colors for different widgets
+      background: Colors.grey.shade100
+  )
   );
 }

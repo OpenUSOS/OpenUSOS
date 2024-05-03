@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:open_usos/themes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:open_usos/pages/home.dart';
@@ -23,6 +24,9 @@ class OpenUSOS extends StatelessWidget {
     return MaterialApp(
         title: 'OpenUSOS',
         home: StartPage(),
+        themeMode: ThemeMode.system,
+        theme: OpenUSOSThemes.lightTheme,
+        darkTheme: OpenUSOSThemes.darkTheme,
         routes: {
           '/home': (context) => Home(),
           '/grades': (context) => Grades(),
