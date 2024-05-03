@@ -62,23 +62,59 @@ class StartingPage extends StatelessWidget{
   Widget build(BuildContext buildContext){
     return Scaffold(
       appBar: AppBar(
-        title: Text('Logowanie'),
+        title: Text('OpenUSOS'),
       ),
-      body: ElevatedButton(
-        child: Text(
-          'Zaloguj się'
-        ),
-        onPressed: () {
-          Navigator.pop(buildContext);
-          Navigator.pushNamed(buildContext, '/login');
-        },
-      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Welcome to the OpenUSOS app for managing your university account.',
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height : 10.0,
+            ),
+            Text(
+              'In order to use the app, please log in using your university account credentials.',
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.w400,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(buildContext);
+                Navigator.pushNamed(buildContext, '/login');
+              },
+              child: Text(
+                'Go to login'
+              )
+            )
+          ]
+        )
+      ), 
     );
   }
 }
 
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController pinController = TextEditingController();
   final controller = WebViewController()
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
     ..setBackgroundColor(const Color(0x00000000))
@@ -87,8 +123,12 @@ class LoginPage extends StatelessWidget {
       onProgress: (int progress) {
       // Update loading bar.
       },
-      onPageStarted: (String url) {UserSession.endLogin(url);},
-      onPageFinished: (String url) {},
+      onPageStarted: (String url) {
+
+        UserSession.endLogin(url);
+        },
+      onPageFinished: (String url) async {
+      },
       onWebResourceError: (WebResourceError error) {},
       onNavigationRequest: (NavigationRequest request) {
         return NavigationDecision.navigate;
@@ -97,31 +137,25 @@ class LoginPage extends StatelessWidget {
   )
   ..loadRequest(Uri.parse(UserSession.loginURL!));
 
+  void verifyPin() {
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
           title: Text(
-              "Logowanie do systemu USOS",
+              "Please log in using your university account credentials.",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
+                fontSize: 14.0,
               )
           ),
-          actions: <Widget>[
-            IconButton(
-                onPressed: () {
-                  if(ModalRoute.of(context)!.isCurrent) {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/home');
-                  };
-                },
-                icon: Icon(Icons.home_filled,)
-            )
-          ]
       ),
       body: WebViewWidget(
         controller: controller,
-      ),
+      ) 
     );
   }
 }

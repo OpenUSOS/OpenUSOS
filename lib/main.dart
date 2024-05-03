@@ -26,7 +26,6 @@ class OpenUSOS extends StatelessWidget {
           '/home': (context) => Home(),
           '/grades': (context) => Grades(),
           '/settings': (context) => Settings(),
-          //'/schedule': (context) => Schedule()
           '/login': (context) => FutureBuilder(future: UserSession.startLogin(),
               builder: (context, snapshot){
                 if (snapshot.connectionState == ConnectionState.waiting) {
