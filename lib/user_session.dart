@@ -63,29 +63,28 @@ class UserSession {
 
 }
 
-
 class LoginPage extends StatelessWidget {
   final controller = WebViewController()
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
     ..setBackgroundColor(const Color(0x00000000))
     ..setNavigationDelegate(
-    NavigationDelegate(
-      onProgress: (int progress) {
-      // Update loading bar.
-      },
-      onPageStarted: (String url) {
-        if(url.contains('oauth_verifier')) {
-          UserSession.endLogin(url);
-        }
+      NavigationDelegate(
+        onProgress: (int progress) {
+          // Update loading bar.
         },
-      onPageFinished: (String url) {},
-      onWebResourceError: (WebResourceError error) {},
-      onNavigationRequest: (NavigationRequest request) {
-        return NavigationDecision.navigate;
+        onPageStarted: (String url) {
+          if(url.contains('oauth_verifier')) {
+            UserSession.endLogin(url);
+          }
         },
-    ),
-  )
-  ..loadRequest(Uri.parse(UserSession.loginURL!));
+        onPageFinished: (String url) {},
+        onWebResourceError: (WebResourceError error) {},
+        onNavigationRequest: (NavigationRequest request) {
+          return NavigationDecision.navigate;
+        },
+      ),
+    )
+    ..loadRequest(Uri.parse(UserSession.loginURL!));
 
   @override
   Widget build(BuildContext context) {
