@@ -45,8 +45,14 @@ class UserSession {
   }
 
 
-  static void logout() {
-    throw UnimplementedError();
+  static Future logout() async{
+    final logoutURL = Uri.http(host, basePath, {'id': sessionId, 'query1': 'log_out'});
+    var response = await get(logoutURL);
+    if(response.statusCode == 200){
+      accessToken = null;
+      accessTokenSecret = null;
+      // we need to forget tokens
+    }
   }
 
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:open_usos/user_session.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:open_usos/themes.dart';
@@ -137,7 +138,23 @@ class _SettingsState extends State<Settings> {
                   );
                 }).toList(),
               )
-          )
+          ),
+          Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    child: Text(
+                      'Wyloguj'
+                    ),
+                    onPressed: (){
+                      UserSession.logout();
+                      Navigator.popUntil(context, (route) => false);
+                      Navigator.pushNamed(context, Navigator.defaultRouteName);
+                      },
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
     );
