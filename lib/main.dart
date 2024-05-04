@@ -24,7 +24,7 @@ class OpenUSOS extends StatelessWidget {
     return MaterialApp(
         title: 'OpenUSOS',
         home: StartPage(),
-        themeMode: ThemeMode.system,
+        themeMode: Settings.currentThemeMode,
         theme: OpenUSOSThemes.lightTheme,
         darkTheme: OpenUSOSThemes.darkTheme,
         routes: {

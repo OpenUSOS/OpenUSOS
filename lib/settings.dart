@@ -8,7 +8,9 @@ class Settings extends StatefulWidget{
   //set of available languages
   final List<String> availableLanguages = ['Polski', 'Polish'];// duplicated values for testing
   //map of available themes, they can be accessed by name
-  final Map<String, ThemeData> availableThemes = {"Ciemny": OpenUSOSThemes.darkTheme, 'Jasny': OpenUSOSThemes.lightTheme};
+  final Map<String, ThemeMode> availableThemes =
+  {'Systemowy': ThemeMode.system, 'Ciemny': ThemeMode.dark, 'Jasny': ThemeMode.light};
+  static ThemeMode currentThemeMode = ThemeMode.system;
 
   @override
   State<Settings> createState() => _SettingsState();
@@ -18,8 +20,8 @@ class _SettingsState extends State<Settings> {
   //default settings here, if user has other settings set this will be overwritten
   //in _initState setPreferences
   String currentLanguage = 'Polish';
-  ThemeData currentTheme = OpenUSOSThemes.darkTheme;
   bool notificationsOn = false;
+
 
   @override
   void initState() {
@@ -62,7 +64,7 @@ class _SettingsState extends State<Settings> {
   void setTheme(String themeName) {
     if (widget.availableThemes.containsKey(themeName)) {
       // we check if theme is available and set it
-      currentTheme = widget.availableThemes[themeName]!;
+      Settings.currentThemeMode = widget.availableThemes[themeName]!;
     } else {
       throw Exception('Theme not available');
     }
@@ -124,7 +126,8 @@ class _SettingsState extends State<Settings> {
           ListTile(
               title: Text('Motyw'),
               trailing: DropdownButton<String>(
-                value: widget.availableThemes.entries.firstWhere((item) => item.value == currentTheme).key,
+                value: widget.availableThemes.entries.firstWhere((item) =>
+                item.value == Settings.currentThemeMode).key,
                 onChanged: (String? value) {
                   setState(() {
                     setTheme(value!);

@@ -35,6 +35,7 @@ class UserSession {
     else {
       throw Exception('Getting Login URL failed');
     }
+    return;
   }
 
   static Future endLogin(String url) async {
@@ -47,6 +48,7 @@ class UserSession {
       accessToken = body['AT'];
       accessTokenSecret = body['ATS'];
     }
+    return;
   }
 
 
@@ -64,6 +66,7 @@ class UserSession {
 }
 
 class LoginPage extends StatelessWidget {
+  static BuildContext? _context = null;
   final controller = WebViewController()
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
     ..setBackgroundColor(const Color(0x00000000))
@@ -75,6 +78,7 @@ class LoginPage extends StatelessWidget {
         onPageStarted: (String url) {
           if(url.contains('oauth_verifier')) {
             UserSession.endLogin(url);
+            endWebView();
           }
         },
         onPageFinished: (String url) {},
@@ -85,6 +89,11 @@ class LoginPage extends StatelessWidget {
       ),
     )
     ..loadRequest(Uri.parse(UserSession.loginURL!));
+
+  static void endWebView(){
+    Navigator.popUntil(_context!, (route) => route=='/');
+    Navigator.pushNamed(_context!, '/home');
+  }
 
   @override
   Widget build(BuildContext context) {
