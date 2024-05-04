@@ -1,17 +1,56 @@
 import 'package:flutter/material.dart';
-import 'package:open_usos/user_session.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:open_usos/themes.dart';
+import 'package:open_usos/main.dart';
+import 'package:open_usos/user_session.dart';
 
-class Settings extends StatefulWidget{
+class SettingsProvider with ChangeNotifier{
+  String currentLanguage = 'Polish';
+  bool notificationsOn = false;
   //set of available languages
   final List<String> availableLanguages = ['Polski', 'Polish'];// duplicated values for testing
   //map of available themes, they can be accessed by name
   final Map<String, ThemeMode> availableThemes =
   {'Systemowy': ThemeMode.system, 'Ciemny': ThemeMode.dark, 'Jasny': ThemeMode.light};
-  static ThemeMode currentThemeMode = ThemeMode.system;
+  ThemeMode currentThemeMode = ThemeMode.system;
 
+
+  ThemeMode get themeMode => currentThemeMode;
+
+  void set theme(String themeName) {
+    if (availableThemes.containsKey(themeName)) {
+      // we check if theme is available and set it
+      currentThemeMode = availableThemes[themeName]!;
+    } else {
+      throw Exception('Theme not available');
+    }
+    notifyListeners();
+  }
+
+  String get language => currentLanguage;
+
+  // language setter with check if language is available
+  void set language(String language) {
+    if (availableLanguages.contains(language)) {
+      currentLanguage = language;
+      notifyListeners();
+    } else {
+      throw Exception('Language not available');
+    }
+  }
+
+  bool get notificationStatus => notificationsOn;
+
+  // language setter with check if language is available
+  void set notificationStatus(bool notifications) {
+    notificationsOn = notifications;
+    notifyListeners();
+  }
+
+}
+
+class Settings extends StatefulWidget{
   @override
   State<Settings> createState() => _SettingsState();
 }
@@ -19,9 +58,6 @@ class Settings extends StatefulWidget{
 class _SettingsState extends State<Settings> {
   //default settings here, if user has other settings set this will be overwritten
   //in _initState setPreferences
-  String currentLanguage = 'Polish';
-  bool notificationsOn = false;
-
 
   @override
   void initState() {
@@ -35,7 +71,7 @@ class _SettingsState extends State<Settings> {
     setState(() {//if settings are saved defaults are overwritten, if not nothing happens
       bool? notifications = prefs.getBool('notifications');
       if(notifications != null){
-        notificationsOn = notifications;
+        SettingsProvider.notificationStatus = ;
       }
 
       String? language = prefs.getString('language');
@@ -51,24 +87,9 @@ class _SettingsState extends State<Settings> {
   }
 
 
-  // language setter with check if language is available
-  void setLanguage(String language) {
-    if (widget.availableLanguages.contains(language)) {
-      currentLanguage = language;
-    } else {
-      throw Exception('Language not available');
-    }
-  }
 
-  //theme setter with check if theme is available
-  void setTheme(String themeName) {
-    if (widget.availableThemes.containsKey(themeName)) {
-      // we check if theme is available and set it
-      Settings.currentThemeMode = widget.availableThemes[themeName]!;
-    } else {
-      throw Exception('Theme not available');
-    }
-  }
+
+
 
   @override
   Widget build(BuildContext context) {
