@@ -42,10 +42,10 @@ example:
             }
         ]
     }
-
-    
-
-
-
+---------
+grades:
+---------
+7. id, query1 = get_grades ---- returns a list, containing dicts with details of grades: "date", "author",
+"value", "name" (the name of a course, like 'Metody numeryczne'), "term".
 
 """
