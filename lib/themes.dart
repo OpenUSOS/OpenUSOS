@@ -20,90 +20,86 @@ class OpenUSOSThemes {
   );
 
   static final ThemeData lightTheme = ThemeData(
+    brightness: Brightness.light,
     colorScheme: ColorScheme.light(
       primary: Color.fromARGB(255, 112, 195, 255),
       secondary: Color.fromARGB(255, 69, 162, 255),
       background: Color.fromARGB(255, 255, 255, 255),
     ),
     scaffoldBackgroundColor: Colors.white,
-    drawerTheme: const DrawerThemeData(
-      backgroundColor: Colors.white,
+    drawerTheme: DrawerThemeData(
+      backgroundColor: Colors.blue.shade900,
+    ),
+    dividerTheme: DividerThemeData(
+      color: Colors.white54,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color.fromARGB(255, 231, 189, 255),
-        padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
+        backgroundColor: Colors.blue.shade900,
+        padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
+        foregroundColor: Colors.white,
         textStyle: buttonTextStyle.copyWith(
-          color: Colors.black87,
-          shadows: <Shadow>[
-            Shadow(
-              offset: Offset(2.0, 3.0),
-              color: Colors.white60,
-              blurRadius: 5.0,
-            )
-          ]
-        )
+          color: Colors.white,
+        ),
       ),
     ),
     listTileTheme: ListTileThemeData(
-      textColor: Colors.black87,
-      iconColor: Colors.black87,
-      titleTextStyle: listTileTextStyle.copyWith(color: Colors.blueGrey[800]),
+      textColor: Colors.white,
+      iconColor: Colors.white,
+      titleTextStyle: listTileTextStyle.copyWith(color: Colors.white),
     ),
-    textTheme: const TextTheme(
+    textTheme: TextTheme(
       titleLarge: TextStyle(color: Colors.black87, fontSize: 22.0),
       titleSmall: TextStyle(color: Colors.black87, fontSize: 22.0),
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: const Color.fromARGB(255, 69, 162, 255),
-      titleTextStyle: appBarTextStyle.copyWith(color: Colors.black87),
+      backgroundColor: Colors.blue.shade900,
+      titleTextStyle: appBarTextStyle.copyWith(color: Colors.white),
+      iconTheme: IconThemeData(
+        color: Colors.white
+      ),
       actionsIconTheme: IconThemeData(
-        color: Colors.black87,
+        color: Colors.white,
       )
     ),
   );
 
   static final ThemeData darkTheme = ThemeData(
+    brightness: Brightness.dark,
     colorScheme: ColorScheme.dark(
       brightness: Brightness.dark,
-      primary: const Color.fromARGB(255, 181, 181, 181),
-      secondary: const Color.fromARGB(255, 73, 73, 73),
-      background: const Color.fromARGB(255, 50, 50, 50),
+      primary: Colors.grey.shade300,
+      secondary: Colors.grey.shade800,
+      background: Colors.grey.shade900,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color.fromARGB(255, 60, 190, 255),
-        padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
+        backgroundColor: Colors.indigo.shade400,
+        padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
+        foregroundColor: Colors.white,
         textStyle: buttonTextStyle.copyWith(
           color: Colors.white,
-          shadows: <Shadow>[
-            Shadow(
-              offset: Offset(2.0, 3.0),
-              color: Colors.black38,
-              blurRadius: 5.0,
-            )
-          ]
         ),
       ),
     ),
-    scaffoldBackgroundColor: const Color.fromARGB(255, 50, 50, 50),
-    drawerTheme: const DrawerThemeData(
-      backgroundColor: Color.fromARGB(255, 25, 25, 25),
+    scaffoldBackgroundColor: Colors.grey.shade800,
+    drawerTheme: DrawerThemeData(
+      backgroundColor: Colors.indigo.shade400,
     ),
     listTileTheme: ListTileThemeData(
       textColor: Colors.white,
       iconColor: Colors.white,
       titleTextStyle: listTileTextStyle,
     ),
-    textTheme: const TextTheme(
+    textTheme: TextTheme(
       titleLarge: TextStyle(color: Colors.white, fontSize: 22.0),
       titleSmall: TextStyle(color: Colors.white, fontSize: 18.0),
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: const Color.fromARGB(255, 73, 73, 73),
+      backgroundColor: Colors.indigo.shade400,
       titleTextStyle: appBarTextStyle.copyWith(color: Colors.white),
       actionsIconTheme: IconThemeData(
-        color: Colors.white70,
+        color: Colors.white,
       )
     ),
   );

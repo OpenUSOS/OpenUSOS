@@ -83,6 +83,13 @@ class _NavBarState extends State<NavBar> {
                     BlendMode.darken,
                   ),
                 ),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: Colors.grey.shade800,
+                    offset: Offset(0.0, 4.0),
+                    blurRadius: 4.0,
+                  )
+                ], 
               ),
               child: Row(children: <Widget>[
                 Expanded(

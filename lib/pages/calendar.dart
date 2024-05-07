@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:table_calendar/table_calendar.dart';
-
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
@@ -10,14 +9,12 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _selectedDay = DateTime.now();
-  DateTime _focusedDay = DateTime.now();
-  Map<DateTime, List<String>> _events = {};
+  Map<DateTime, List<Appointment>> _events = {};
   TextEditingController _eventController = TextEditingController();
 
-  List<String> _getEventsForDay(DateTime day) {
-    return _events[day] ?? [];
+  List<Appointment> _getEventsForDay(DateTime day) {
+    return _events[DateTime(day.year, day.month, day.day)] ?? [];
   }
 
   @override
@@ -52,12 +49,20 @@ class _CalendarState extends State<Calendar> {
           TextButton(
             child: Text("Dodaj"),
             onPressed: () {
-              if(_eventController.text.isNotEmpty) {
+              if (_eventController.text.isNotEmpty) {
+                final appointment = Appointment(
+                  startTime: _selectedDay,
+                  endTime: _selectedDay.add(Duration(hours: 1)),
+                  subject: _eventController.text,
+                  color: Colors.blue,
+                );
+
                 setState(() {
-                  if(_events[_selectedDay] == null) {
-                    _events[_selectedDay] = [];
+                  final dayKey = DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day);
+                  if (_events[dayKey] == null) {
+                    _events[dayKey] = [];
                   }
-                  _events[_selectedDay]!.add(_eventController.text);
+                  _events[dayKey]!.add(appointment);
                   _eventController.clear();
                 });
               }
@@ -65,9 +70,7 @@ class _CalendarState extends State<Calendar> {
             }
           )
         ]
-
-      ),
-      
+      )
     );
   }
 
@@ -83,74 +86,66 @@ class _CalendarState extends State<Calendar> {
         ),
         actions: <Widget>[
           IconButton(
-              onPressed: () {
-                if(ModalRoute.of(context)!.isCurrent) {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/home');
-                };
-              },
-              icon: Icon(Icons.home_filled,)
+            onPressed: () {
+              if (ModalRoute.of(context)!.isCurrent) {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/home');
+              };
+            },
+            icon: Icon(Icons.home_filled)
           )
         ]
       ),
       body: Column(
         children: <Widget>[
-          TableCalendar(
-            firstDay: DateTime.utc(2000, 1, 1),
-            lastDay: DateTime.utc(2030,12,31),
-            availableCalendarFormats: {
-              CalendarFormat.month: "Miesiąc",
-              CalendarFormat.week: "Tydzień",
-              CalendarFormat.twoWeeks: "2 tygodnie",
-            },
-            focusedDay: _focusedDay,
-            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay;
-              });
-            },
-            calendarStyle: CalendarStyle(
-             defaultTextStyle: TextStyle(
-              fontFamily: 'Lato',
-              fontWeight: FontWeight.bold,
-             ) 
+          Expanded(
+            child: SfCalendar(
+              view: CalendarView.month,
+          headerStyle: CalendarHeaderStyle(
+          textAlign: TextAlign.center,
+          backgroundColor: 
+          Theme.of(context).brightness == Brightness.light ? Colors.blue[100] : Colors.indigo[100],
+          textStyle: TextStyle(
+              fontSize: 25,
+            fontStyle: FontStyle.normal,
+            letterSpacing: 5,
+            color: Colors.white,
+            fontWeight: FontWeight.w500
+          ),
+          ),
+              dataSource: _DataSource(_events),
+              onSelectionChanged: (CalendarSelectionDetails details) {
+                setState(() {
+                  _selectedDay = details.date ?? DateTime.now();
+                });
+              },
             ),
-            calendarFormat: _calendarFormat,
-            onFormatChanged: (format) {
-              setState(() {
-                _calendarFormat = format;
-              });
-            },    
           ),
-          SizedBox(
-            height: 10.0,
+          SizedBox(height: 10.0),
+          Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Text(
+              "Wydarzenia w wybranym dniu:",
+              style: TextStyle(fontSize: 22.0),
+            ),
           ),
-          Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.all(20.0),
-                child: Text(
-                  "Wydarzenia w wybranym dniu:",
-                  style: TextStyle(
-                    fontSize: 22.0,
-                  ), 
+          _events[_selectedDay] == null || _events[_selectedDay]!.isEmpty
+              ? Text("Brak")
+              : Expanded(
+                  child: ListView.builder(
+                    itemCount: _getEventsForDay(_selectedDay).length,
+                    itemBuilder: (context, index) {
+                      final appointment = _getEventsForDay(_selectedDay)[index];
+                      return ListTile(
+                        title: Text(appointment.subject),
+                        subtitle: Text(
+                          '${appointment.startTime.hour}:${appointment.startTime.minute} - '
+                          '${appointment.endTime.hour}:${appointment.endTime.minute}'
+                        ),
+                      );
+                    },
+                  ),
                 )
-              ),
-              _events[_selectedDay] == [] ? Text("Brak") : ListView.builder(
-                itemCount: _getEventsForDay(_selectedDay).length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                      _getEventsForDay(_selectedDay)[index]
-                    ),
-                  );
-                }
-              ),
-            ],
-          )
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -158,5 +153,11 @@ class _CalendarState extends State<Calendar> {
         child: Icon(Icons.add),
       ),
     );
+  }
+}
+
+class _DataSource extends CalendarDataSource {
+  _DataSource(Map<DateTime, List<Appointment>> source) {
+    appointments = source.values.expand((element) => element).toList();
   }
 }

@@ -45,9 +45,12 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   test: ^1.24.0
   mockito: ^5.4.4
   table_calendar: ^3.0.1
+  syncfusion_flutter_calendar: ^20.0.50
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

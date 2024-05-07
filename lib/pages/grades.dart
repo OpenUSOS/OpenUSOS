@@ -36,7 +36,7 @@ class GradesState extends State<Grades> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Your grades"),
+        title: Text('Oceny'),
         actions: <Widget>[
           IconButton(
             onPressed: () {
