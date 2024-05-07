@@ -47,5 +47,10 @@ grades:
 ---------
 7. id, query1 = get_grades ---- returns a list, containing dicts with details of grades: "date", "author",
 "value", "name" (the name of a course, like 'Metody numeryczne'), "term".
-
+---------
+schedule:
+---------
+8. id, query1 = get_schedule, query2 = [start_date], query3 = [num_of_days] ---- returns a list of dicts,
+with activities starting from [start date] (%Y-%m-%d format), including num_of_days days.
+each activity contains: {"start_time", "end_time", "name" : {"pl", "en"}, "building_name", "room_number"}
 """
