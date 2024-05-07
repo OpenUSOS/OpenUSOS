@@ -47,6 +47,7 @@ dev_dependencies:
     sdk: flutter
   test: ^1.24.0
   mockito: ^5.4.4
+  table_calendar: ^3.0.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -59,6 +60,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -95,3 +97,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+  fonts: 
+    - family: Lato
+      fonts: 
+      - asset: assets/fonts/Lato-Regular.ttf

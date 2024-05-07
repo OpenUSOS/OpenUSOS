@@ -19,14 +19,6 @@ class GradesState extends State<Grades> {
   }
   List<Map<String, dynamic>> getData() {
     return [
-      {'term': '23/24 Z', 'subject': 'Programowanie', 'grade': 4.5, 'professor': 'Rafael Coffee'},
-      {'term': '23/24 Z', 'subject': 'Grafika komputerowa', 'grade': 4.5, 'professor': 'Rafael Coffee'},
-      {'term': '23/24 Z', 'subject': 'Nienawidze programowania 2', 'grade': 4.5, 'professor': 'Rafael Coffee'},
-      {'term': '23/24 Z', 'subject': 'Wstęp do piekła', 'grade': 2.0, 'professor': 'Rafael Coffee'},
-      {'term': '22/23 Z', 'subject': 'Sranie 1', 'grade': 4.5, 'professor': 'Rafael Coffee'},
-      {'term': '22/23 Z', 'subject': 'Sranie 1', 'grade': 4.5, 'professor': 'Rafael Coffee'},
-      {'term': '21/22 Z', 'subject': 'Sranie 1', 'grade': 4.5, 'professor': 'Rafael Coffee'},
-      {'term': '21/22 Z', 'subject': 'Sranie 1', 'grade': 4.5, 'professor': 'Rafael Coffee'},
     ];
   } 
 
@@ -44,18 +36,7 @@ class GradesState extends State<Grades> {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
-        elevation: 5.0,
-        backgroundColor: Colors.blueGrey[900],
-                title: Text(
-          "Your grades",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ), 
-        ),
+        title: Text("Your grades"),
         actions: <Widget>[
           IconButton(
             onPressed: () {
@@ -64,9 +45,7 @@ class GradesState extends State<Grades> {
                 Navigator.pushNamed(context, '/home'); 
               };
             },
-            icon: Icon(Icons.home_filled,
-            color: Colors.white,
-            )
+            icon: Icon(Icons.home_filled,)
           )
         ]
       ),

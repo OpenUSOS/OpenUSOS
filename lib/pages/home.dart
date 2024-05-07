@@ -14,12 +14,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       drawer: NavBar(),
       appBar: AppBar(
-        title: Text(
-          "OpenUSOS",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: Text("OpenUSOS"),
         actions: <Widget>[
           IconButton(
             onPressed: () {

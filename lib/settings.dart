@@ -18,7 +18,7 @@ class _SettingsState extends State<Settings> {
   //default settings here, if user has other settings set this will be overwritten
   //in _initState setPreferences
   String currentLanguage = 'Polish';
-  ThemeData currentTheme = OpenUSOSThemes.darkTheme;
+  ThemeData currentTheme = OpenUSOSThemes.lightTheme;
   bool notificationsOn = false;
 
   @override

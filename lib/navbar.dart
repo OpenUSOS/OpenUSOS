@@ -66,14 +66,14 @@ class _NavBarState extends State<NavBar> {
       });
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
-        backgroundColor: Colors.blueGrey.shade900,
+      clipBehavior: Clip.none,
         child: ListView(children: <Widget>[
           DrawerHeader(
-              margin: EdgeInsets.all(0.0),
+              margin: EdgeInsets.zero,
+              padding: EdgeInsets.zero,
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/c/cd/University-of-Alabama-EngineeringResearchCenter-01.jpg'),
@@ -173,110 +173,134 @@ class _NavBarState extends State<NavBar> {
                 )
               ])),
           ListTile(
-              leading: Icon(Icons.grade,
-                  color: Colors.white54),
-              tileColor: _isTapped ? Colors.blueGrey[800] : Colors.transparent,
-              onTap: () {tapCallback();
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/grades');
-              },
-              title: Text("Grades",
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontWeight: FontWeight.w400,
-                  )
-              )
-          ),
-          ListTile(
-              leading: Icon(Icons.newspaper,
-                  color: Colors.white54),
-              onTap: () {tapCallback();},
-              title: Text("News",
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontWeight: FontWeight.w400,
-                  )
-              )
-          ),
-          ListTile(
-              leading: Icon(Icons.schedule,
-                  color: Colors.white54),
-              title: Text("Schedule",
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontWeight: FontWeight.w400,
-                  )
-              )
-          ),
-          ListTile(
-              leading: Icon(Icons.group,
-                  color: Colors.white54),
-              title: Text("Course groups",
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontWeight: FontWeight.w400,
-                  )
-              )
-          ),
-          ListTile(
-              leading: Icon(Icons.task,
-                  color: Colors.white54),
-              title: Text("Exams",
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontWeight: FontWeight.w400,
-                  )
-              )
-          ),
-          ListTile(
-              leading: Icon(Icons.calendar_month,
-                  color: Colors.white54),
-              title: Text("Calendar",
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontWeight: FontWeight.w400,
-                  )
-              )
+            title: Text("Oceny"),
+            leading: Icon(Icons.grade),
+            onTap: () {
+                tapCallback();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/grades');
+            }
           ),
           Divider(
             indent: 20,
             endIndent: 20,
+            height: 5.0,
             thickness: 2.0,
-            color: Colors.white60,
           ),
           ListTile(
-              leading: Icon(Icons.email,
-                  color: Colors.white54),
-              title: Text("USOS Mail",
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontWeight: FontWeight.w400,
-                  )
-              )
+            title: Text("Kalendarz"),
+            leading: Icon(Icons.calendar_month),
+            onTap: () {
+                tapCallback();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/calendar');
+            }
+          ),
+          Divider(
+            indent: 20,
+            endIndent: 20,
+            height: 5.0,
+            thickness: 2.0,
           ),
           ListTile(
-              leading: Icon(Icons.dynamic_form,
-                  color: Colors.white54),
-              title: Text("Questionnaires",
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontWeight: FontWeight.w400,
-                  )
-              )
+            title: Text("Plan zajęć"),
+            leading: Icon(Icons.schedule),
+            onTap: () {
+                tapCallback();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/schedule');
+            }
+          ),
+          Divider(
+            indent: 20,
+            endIndent: 20,
+            height: 5.0,
+            thickness: 2.0,
           ),
           ListTile(
-              leading: Icon(Icons.settings,
-                  color: Colors.white54),
-              title: Text("Settings",
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontWeight: FontWeight.w400,
-                  )
-              ),
-              onTap: () {tapCallback();
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/settings');
-              }
+            title: Text("Sprawdziany"),
+            leading: Icon(Icons.task),
+            onTap: () {
+                tapCallback();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/exams');
+            }
+          ),
+          Divider(
+            indent: 20,
+            endIndent: 20,
+            height: 5.0,
+            thickness: 2.0,
+          ),
+          ListTile(
+            title: Text("Ankiety"),
+            leading: Icon(Icons.dynamic_form),
+            onTap: () {
+                tapCallback();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/questionnaires');
+            }
+
+          ),
+          Divider(
+            indent: 20,
+            endIndent: 20,
+            height: 5.0,
+            thickness: 2.0,
+          ),
+          ListTile(
+            title: Text("Aktualności"),
+            leading: Icon(Icons.newspaper),
+            onTap: () {
+                tapCallback();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/news');
+            }
+          ),
+          Divider(
+            indent: 20,
+            endIndent: 20,
+            height: 5.0,
+            thickness: 2.0,
+          ),
+          ListTile(
+            title: Text("Grupy zajęciowe"),
+            leading: Icon(Icons.group),
+            onTap: () {
+                tapCallback();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/courses');
+            }
+          ),
+          Divider(
+            indent: 20,
+            endIndent: 20,
+            height: 5.0,
+            thickness: 2.0,
+          ),
+          ListTile(
+            title: Text("Ustawienia"),
+            leading: Icon(Icons.settings),
+            onTap: () {
+                tapCallback();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/settings');
+            }
+          ),
+          Divider(
+            indent: 20,
+            endIndent: 20,
+            height: 5.0,
+            thickness: 2.0,
+          ),
+          ListTile(
+            title: Text("Twoje konto"),
+            leading: Icon(Icons.person),
+            onTap: () {
+                tapCallback();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/user');
+            }
           ),
 
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:open_usos/themes.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:open_usos/pages/calendar.dart';
 import 'package:open_usos/pages/home.dart';
 import 'package:open_usos/pages/grades.dart';
 import 'package:open_usos/settings.dart';
@@ -22,11 +22,12 @@ class OpenUSOS extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'OpenUSOS',
-        home: StartPage(),
+        title: 'OpenUSOS', 
         themeMode: ThemeMode.system,
-        theme: OpenUSOSThemes.lightTheme,
+        theme: OpenUSOSThemes.darkTheme,
         darkTheme: OpenUSOSThemes.darkTheme,
+        debugShowCheckedModeBanner: false,
+        home: StartPage(),
         routes: {
           '/home': (context) => Home(),
           '/grades': (context) => Grades(),
@@ -43,6 +44,7 @@ class OpenUSOS extends StatelessWidget {
                   return LoginPage();
                 }
           }),
+          '/calendar': (context) => Calendar(),
         }
     );
   }
