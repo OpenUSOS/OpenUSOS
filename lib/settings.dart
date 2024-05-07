@@ -25,20 +25,35 @@ class SettingsProvider with ChangeNotifier{
   Future _initPreferences() async{
     // we get preferences and set them using SharedPreferences library
     SharedPreferences prefs = await SharedPreferences.getInstance();
-      bool? savedNotifications = prefs.getBool('notifications');
-      if(savedNotifications != null){
-        notificationStatus = savedNotifications;
-      }
+    bool? savedNotifications = prefs.getBool('notifications');
+    if(savedNotifications != null){
+      notificationStatus = savedNotifications;
+    }
 
-      String? savedLanguage = prefs.getString('language');
-      if(savedLanguage != null){
-        language = savedLanguage;
-      }
+    String? savedLanguage = prefs.getString('language');
+    if(savedLanguage != null){
+      language = savedLanguage;
+    }
 
-      String? savedTheme = prefs.getString('theme');
-      if(savedTheme != null){
-        theme = savedTheme;
-      }
+    String? savedTheme = prefs.getString('theme');
+    if(savedTheme != null){
+      theme = savedTheme;
+    }
+  }
+
+  void saveTheme(String theme) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('theme', theme);
+  }
+
+  void saveLanguage(String language) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('language', language);
+  }
+
+  void saveNotifications(bool notifications) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('notifications', notifications);
   }
 
   ThemeMode get themeMode => currentThemeMode;
@@ -47,10 +62,11 @@ class SettingsProvider with ChangeNotifier{
     if (themeName != null && availableThemes.containsKey(themeName)) {
       // we check if theme is available and set it
       currentThemeMode = availableThemes[themeName]!;
+      saveTheme(themeName);
+      notifyListeners();
     } else {
       throw Exception('Theme not available');
     }
-    notifyListeners();
   }
 
   String get language => currentLanguage;
@@ -59,6 +75,7 @@ class SettingsProvider with ChangeNotifier{
   void set language(String? language) {
     if (language != null && availableLanguages.contains(language)) {
       currentLanguage = language;
+      saveLanguage(language);
       notifyListeners();
     } else {
       throw Exception('Language not available');
@@ -70,6 +87,7 @@ class SettingsProvider with ChangeNotifier{
   // language setter with check if language is available
   void set notificationStatus(bool notifications) {
     notificationsOn = notifications;
+    saveNotifications(notifications);
     notifyListeners();
   }
 

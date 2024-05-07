@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class OpenUSOSThemes {
-  static ThemeData lightTheme = ThemeData(
+  static ThemeData darkTheme = ThemeData(
       colorScheme: ColorScheme.dark().copyWith(
           primary: Colors.blueGrey.shade800,
           primaryContainer: Colors.blueGrey.shade900,
@@ -14,7 +14,7 @@ class OpenUSOSThemes {
       )
   );
 
-  static ThemeData darkTheme = ThemeData(
+  static ThemeData lightTheme = ThemeData(
     colorScheme: ColorScheme.light().copyWith(
       primary: Colors.blueGrey.shade800,
       primaryContainer: Colors.blueGrey.shade900,
