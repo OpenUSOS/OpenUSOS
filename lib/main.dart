@@ -26,29 +26,36 @@ class OpenUSOS extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'OpenUSOS',
-        home: StartPage(),
-        themeMode: Settings.currentThemeMode,
-        theme: OpenUSOSThemes.lightTheme,
-        darkTheme: OpenUSOSThemes.darkTheme,
-        routes: {
-          '/home': (context) => Home(),
-          '/grades': (context) => Grades(),
-          '/settings': (context) => Settings(),
-          '/login': (context) => FutureBuilder(future: UserSession.startLogin(),
-              builder: (context, snapshot){
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Scaffold(
-                    body: Center(
-                    child: CircularProgressIndicator(),
-                    ),
-                  );
-                } else {
-                  return LoginPage();
-                }
-          }),
-        }
+    return Consumer<SettingsProvider>(
+      builder: (context, settingsProvider,child) {
+        return MaterialApp(
+            title: 'OpenUSOS',
+            home: StartPage(),
+            themeMode: settingsProvider.themeMode,
+            theme: OpenUSOSThemes.lightTheme,
+            darkTheme: OpenUSOSThemes.darkTheme,
+            routes: {
+              '/home': (context) => Home(),
+              '/grades': (context) => Grades(),
+              '/settings': (context) => Settings(),
+              '/login': (context) =>
+                  FutureBuilder(future: UserSession.startLogin(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Scaffold(
+                            body: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        } else {
+                          return LoginPage();
+                        }
+                      }
+                      ),
+            }
+        );
+      }
     );
   }
 }
