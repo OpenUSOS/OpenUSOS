@@ -93,12 +93,8 @@ class SettingsProvider with ChangeNotifier{
 
 }
 
-class Settings extends StatefulWidget{
-  @override
-  State<Settings> createState() => _SettingsState();
-}
 
-class _SettingsState extends State<Settings> {
+class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final SettingsProvider settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
@@ -130,9 +126,7 @@ class _SettingsState extends State<Settings> {
             trailing: Switch(
               value: settingsProvider.notificationStatus,
               onChanged: (value) {
-                setState(() {
                   settingsProvider.notificationStatus = value;
-                });
               },
             ),
           ),
@@ -141,9 +135,7 @@ class _SettingsState extends State<Settings> {
               trailing: DropdownButton<String>(
                 value: settingsProvider.currentLanguage,
                 onChanged: (String? value) {
-                  setState(() {
                     settingsProvider.language = value;
-                  });
                 },
                 items: settingsProvider.availableLanguages
                     .map<DropdownMenuItem<String>>((String language) {
@@ -160,9 +152,7 @@ class _SettingsState extends State<Settings> {
                 value: settingsProvider.availableThemes.entries.firstWhere((item) =>
                 item.value == settingsProvider.currentThemeMode).key,
                 onChanged: (String? value) {
-                  setState(() {
                     settingsProvider.theme = value;
-                  });
                 },
                 items: settingsProvider.availableThemes.keys
                     .map<DropdownMenuItem<String>>((String theme) {
