@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:open_usos/appbar.dart';
 import 'package:open_usos/user_session.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:open_usos/themes.dart';
 
-class Settings extends StatefulWidget{
+class Settings extends StatefulWidget {
   //set of available languages
-  final List<String> availableLanguages = ['Polski', 'Polish'];// duplicated values for testing
+  final List<String> availableLanguages = [
+    'Polski',
+    'Polish'
+  ]; // duplicated values for testing
   //map of available themes, they can be accessed by name
-  final Map<String, ThemeData> availableThemes = {"Ciemny": OpenUSOSThemes.darkTheme, 'Jasny': OpenUSOSThemes.lightTheme};
+  final Map<String, ThemeData> availableThemes = {
+    "Ciemny": OpenUSOSThemes.darkTheme,
+    'Jasny': OpenUSOSThemes.lightTheme
+  };
 
   @override
   State<Settings> createState() => _SettingsState();
@@ -24,30 +31,30 @@ class _SettingsState extends State<Settings> {
   @override
   void initState() {
     super.initState();
-    _initPreferences();//we initialize preferences
+    _initPreferences(); //we initialize preferences
   }
 
-  void _initPreferences() async{
+  void _initPreferences() async {
     // we get preferences and set them using SharedPreferences library
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {//if settings are saved defaults are overwritten, if not nothing happens
+    setState(() {
+      //if settings are saved defaults are overwritten, if not nothing happens
       bool? notifications = prefs.getBool('notifications');
-      if(notifications != null){
+      if (notifications != null) {
         notificationsOn = notifications;
       }
 
       String? language = prefs.getString('language');
-      if(language != null){
+      if (language != null) {
         setLanguage(language);
       }
 
       String? theme = prefs.getString('theme');
-      if(theme != null){
+      if (theme != null) {
         setTheme(theme);
       }
     });
   }
-
 
   // language setter with check if language is available
   void setLanguage(String language) {
@@ -71,25 +78,7 @@ class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Ustawienia",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          )
-        ),
-        actions: <Widget>[
-          IconButton(
-              onPressed: () {
-                if(ModalRoute.of(context)!.isCurrent) {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/home');
-                };
-              },
-              icon: Icon(Icons.home_filled,)
-          )
-        ]
-      ),
+      appBar: USOSBar(title: 'Ustawienia'),
       body: Column(
         children: [
           ListTile(
@@ -104,7 +93,7 @@ class _SettingsState extends State<Settings> {
             ),
           ),
           ListTile(
-            title: Text('Język'),
+              title: Text('Język'),
               trailing: DropdownButton<String>(
                 value: currentLanguage,
                 onChanged: (String? value) {
@@ -114,17 +103,18 @@ class _SettingsState extends State<Settings> {
                 },
                 items: widget.availableLanguages
                     .map<DropdownMenuItem<String>>((String language) {
-                return DropdownMenuItem<String>(
-                value: language,
-                child: Text(language),
-                );
-              }).toList(),
-            )
-          ),
+                  return DropdownMenuItem<String>(
+                    value: language,
+                    child: Text(language),
+                  );
+                }).toList(),
+              )),
           ListTile(
               title: Text('Motyw'),
               trailing: DropdownButton<String>(
-                value: widget.availableThemes.entries.firstWhere((item) => item.value == currentTheme).key,
+                value: widget.availableThemes.entries
+                    .firstWhere((item) => item.value == currentTheme)
+                    .key,
                 onChanged: (String? value) {
                   setState(() {
                     setTheme(value!);
@@ -137,27 +127,23 @@ class _SettingsState extends State<Settings> {
                     child: Text(theme),
                   );
                 }).toList(),
-              )
-          ),
+              )),
           Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    child: Text(
-                      'Wyloguj'
-                    ),
-                    onPressed: (){
-                      UserSession.logout();
-                      Navigator.popUntil(context, (route) => false);
-                      Navigator.pushNamed(context, Navigator.defaultRouteName);
-                      },
-                  ),
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  child: Text('Wyloguj'),
+                  onPressed: () {
+                    UserSession.logout();
+                    Navigator.popUntil(context, (route) => false);
+                    Navigator.pushNamed(context, Navigator.defaultRouteName);
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
-
 }

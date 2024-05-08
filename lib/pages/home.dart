@@ -13,19 +13,18 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: NavBar(),
-      appBar: AppBar(
-        title: Text("OpenUSOS"),
-        actions: <Widget>[
-          IconButton(
+      appBar: AppBar(title: Text("OpenUSOS"), actions: <Widget>[
+        IconButton(
             onPressed: () {
-              if(!ModalRoute.of(context)!.isCurrent) {
+              if (!ModalRoute.of(context)!.isCurrent) {
                 Navigator.popUntil(context, ModalRoute.withName('/home'));
-              };
+              }
+              ;
             },
-            icon: Icon(Icons.home_filled,)
-          )
-        ]
-      ),
+            icon: Icon(
+              Icons.home_filled,
+            ))
+      ]),
       body: Center(
         child: Text(
           "HOME PAGE",

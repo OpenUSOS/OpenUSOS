@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class StartPage extends StatelessWidget{
+class StartPage extends StatelessWidget {
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('OpenUSOS'),
@@ -17,7 +17,7 @@ class StartPage extends StatelessWidget{
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(
-                  height : 20.0,
+                  height: 20.0,
                 ),
                 Text(
                   'Aby korzystać z funkcji aplikacji zaloguj się kilkając w przycisk poniej.',
@@ -31,16 +31,11 @@ class StartPage extends StatelessWidget{
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/login');
                     },
-                    child: Text(
-                        'Przejdź do logowania'
-                    ),
+                    child: Text('Przejdź do logowania'),
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.all(16.0),
-                    )
-                )
-              ]
-          )
-      ),
+                    ))
+              ])),
     );
   }
 }

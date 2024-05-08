@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'dart:math';
+import 'dart:convert';
+import 'package:open_usos/appbar.dart';
+import 'package:open_usos/user_session.dart';
+import 'package:http/http.dart';
 
 class Schedule extends StatefulWidget {
   @override
@@ -22,64 +26,56 @@ class _ScheduleState extends State<Schedule> {
     Colors.deepPurple.shade700,
   ];
 
-  late List<Subject> _subjects;
-  late SubjectDataSource _subjectDataSource;
+  List<Subject>? _subjects;
+  SubjectDataSource? _subjectDataSource;
+  late Future<void> _subjectsFuture;
 
   @override
   void initState() {
     super.initState();
-    _fetchSubjects();
+    _subjectsFuture = _fetchSubjects();
   }
 
   Future<void> _fetchSubjects() async {
     var random = Random();
-    List<Subject> fetchedSubjects = [
-      Subject(
-          eventName: 'Matematyka',
-          from: DateTime.now(),
-          to: DateTime.now().add(Duration(hours: 2)),
-          background:
-              _subjectColorPalette[random.nextInt(_subjectColorPalette.length)],
-          isAllDay: false,
-          location: "Budynek1"),
-      Subject(
-          eventName: 'Matematyka',
-          from: DateTime.now(),
-          to: DateTime.now().add(Duration(days: 1, hours: 2)),
-          background:
-              _subjectColorPalette[random.nextInt(_subjectColorPalette.length)],
-          isAllDay: false,
-          location: "Budynek1"),
-      Subject(
-          eventName: 'Matematyka',
-          from: DateTime.now(),
-          to: DateTime.now().add(Duration(days: 2, hours: 2)),
-          background:
-              _subjectColorPalette[random.nextInt(_subjectColorPalette.length)],
-          isAllDay: false,
-          location: "Budynek1"),
-      Subject(
-          eventName: 'Matematyka',
-          from: DateTime.now(),
-          to: DateTime.now().add(Duration(days: 3, hours: 2)),
-          background:
-              _subjectColorPalette[random.nextInt(_subjectColorPalette.length)],
-          isAllDay: false,
-          location: "Budynek1"),
-      Subject(
-          eventName: 'Matematyka',
-          from: DateTime.now(),
-          to: DateTime.now().add(Duration(days: 4, hours: 2)),
-          background:
-              _subjectColorPalette[random.nextInt(_subjectColorPalette.length)],
-          isAllDay: false,
-          location: "Budynek1"),
-    ];
-
-    setState(() {
-      _subjects = fetchedSubjects;
-      _subjectDataSource = SubjectDataSource(_subjects);
+    if (UserSession.sessionId == null) {
+      throw Exception("sessionId is null, user not logged in.");
+    }
+    final url = Uri.http(UserSession.host, UserSession.basePath, {
+      'id': UserSession.sessionId,
+      'query1': 'get_schedule',
+      'query2': '2023-10-01',
+      'query3': '365',
     });
+
+    final response = await get(url);
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      List<Subject> fetchedSubjects = data
+          .map((item) => Subject(
+                eventName: item['name']['pl'],
+                from: DateTime.parse(item['start_time']),
+                to: DateTime.parse(item['end_time']),
+                buildingName: item['building_name']['pl'],
+                roomNumber: item['room_number'],
+                background: _subjectColorPalette[
+                    random.nextInt(_subjectColorPalette.length - 1)],
+                isAllDay: false,
+                lang: 'pl',
+              ))
+          .toList();
+      for (Subject item in fetchedSubjects) {
+        debugPrint(item.toString());
+      }
+      setState(() {
+        _subjects = fetchedSubjects;
+        _subjectDataSource = SubjectDataSource(_subjects!);
+      });
+    } else {
+      throw Exception(
+          "failed to fetch data: HTTP status ${response.statusCode}");
+    }
   }
 
   Widget buildSubject(
@@ -90,9 +86,14 @@ class _ScheduleState extends State<Schedule> {
         width: details.bounds.width,
         height: details.bounds.height,
         decoration: BoxDecoration(
-          color: subject.background.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(5),
-        ),
+            color: subject.background.withOpacity(1),
+            borderRadius: BorderRadius.circular(5),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 4.0,
+                color: Colors.black45,
+              )
+            ]),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -102,13 +103,13 @@ class _ScheduleState extends State<Schedule> {
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       fontSize: 12.0)),
-              Text(subject.location,
+              Text(subject.buildingName + ', ' + subject.roomNumber,
                   style: TextStyle(
                       fontWeight: FontWeight.w400,
                       color: Colors.white70,
                       fontSize: 10.0)),
               Text(
-                  '${subject.from.hour}:${subject.from.minute} - ${subject.to.hour}:${subject.to.minute}}',
+                  '${subject.from.hour}:${subject.from.minute} - ${subject.to.hour}:${subject.to.minute}',
                   style: TextStyle(
                       fontWeight: FontWeight.w400,
                       color: Colors.white70,
@@ -119,60 +120,75 @@ class _ScheduleState extends State<Schedule> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Plan zajęć'), actions: <Widget>[
-        IconButton(
-            onPressed: () {
-              if (ModalRoute.of(context)!.isCurrent) {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/home');
-              }
-              ;
-            },
-            icon: Icon(
-              Icons.home_filled,
-            ))
-      ]),
-      body: SfCalendar(
-        view: CalendarView.day,
-        headerStyle: CalendarHeaderStyle(
-          textAlign: TextAlign.center,
-          backgroundColor: Theme.of(context).brightness == Brightness.light
-              ? Colors.blue[100]
-              : Colors.indigo[100],
-          textStyle: TextStyle(
-              fontSize: 25,
-              fontStyle: FontStyle.normal,
-              letterSpacing: 5,
-              color: Colors.white,
-              fontWeight: FontWeight.w500),
-        ),
-        timeSlotViewSettings: TimeSlotViewSettings(
-          startHour: 7,
-          endHour: 23,
-          nonWorkingDays: <int>[6, 7],
-        ),
-        dataSource: _subjectDataSource,
-        allowViewNavigation: true,
-        appointmentBuilder: buildSubject,
-      ),
+      appBar: USOSBar(title: 'Ustawienia'),
+      body: FutureBuilder(
+          future: _subjectsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              return SfCalendar(
+                view: CalendarView.day,
+                showDatePickerButton: true,
+                headerStyle: CalendarHeaderStyle(
+                  textAlign: TextAlign.center,
+                  backgroundColor:
+                      Theme.of(context).brightness == Brightness.light
+                          ? Colors.blue[100]
+                          : Colors.indigo[100],
+                  textStyle: TextStyle(
+                      fontSize: 25,
+                      fontStyle: FontStyle.normal,
+                      letterSpacing: 5,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500),
+                ),
+                timeSlotViewSettings: TimeSlotViewSettings(
+                  startHour: 7,
+                  endHour: 23,
+                  nonWorkingDays: <int>[6, 7],
+                  minimumAppointmentDuration: Duration(minutes: 45),
+                ),
+                dataSource: _subjectDataSource,
+                allowViewNavigation: true,
+                appointmentBuilder: buildSubject,
+              );
+            }
+          }),
     );
   }
 }
 
 class Subject {
-  Subject(
-      {required this.eventName,
-      required this.from,
-      required this.to,
-      required this.background,
-      required this.isAllDay,
-      required this.location});
+  Subject({
+    required this.eventName,
+    required this.from,
+    required this.to,
+    required this.background,
+    required this.isAllDay,
+    required this.buildingName,
+    required this.lang,
+    required this.roomNumber,
+  });
   String eventName;
-  String location;
+  String buildingName;
+  String roomNumber;
+  String lang;
   DateTime from;
   DateTime to;
   Color background;
   bool isAllDay;
+
+  @override
+  String toString() {
+    return '${this.eventName}';
+  }
 }
 
 class SubjectDataSource extends CalendarDataSource {
@@ -207,6 +223,6 @@ class SubjectDataSource extends CalendarDataSource {
 
   @override
   String getLocation(int index) {
-    return appointments![index].location;
+    return appointments![index].buildingName;
   }
 }

@@ -10,21 +10,17 @@ import 'package:open_usos/user_session.dart';
 import 'package:open_usos/pages/start_page.dart';
 import 'package:open_usos/pages/schedule.dart';
 
-
-
 void main() {
   runApp(OpenUSOS());
 }
 
-
 class OpenUSOS extends StatelessWidget {
-
-  OpenUSOS({super.key}){}
+  OpenUSOS({super.key}) {}
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'OpenUSOS', 
+        title: 'OpenUSOS',
         themeMode: ThemeMode.system,
         theme: OpenUSOSThemes.darkTheme,
         darkTheme: OpenUSOSThemes.darkTheme,
@@ -36,26 +32,26 @@ class OpenUSOS extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         locale: const Locale('pl', ''),
-        home: Home(),
+        home: StartPage(),
         routes: {
           '/home': (context) => Home(),
           '/grades': (context) => Grades(),
           '/settings': (context) => Settings(),
-          '/login': (context) => FutureBuilder(future: UserSession.startLogin(),
-              builder: (context, snapshot){
+          '/login': (context) => FutureBuilder(
+              future: UserSession.startLogin(),
+              builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Scaffold(
                     body: Center(
-                    child: CircularProgressIndicator(),
+                      child: CircularProgressIndicator(),
                     ),
                   );
                 } else {
                   return LoginPage();
                 }
-          }),
+              }),
           '/calendar': (context) => Calendar(),
           '/schedule': (context) => Schedule(),
-        }
-    );
+        });
   }
 }

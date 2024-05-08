@@ -21,18 +21,18 @@ class _CalendarState extends State<Calendar> {
 
   void _showTimePicker(TextEditingController controller) async {
     final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-      initialEntryMode: TimePickerEntryMode.inputOnly,
-      builder: (context, child) {
-        return MediaQuery(
-          child: child!,
-          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-        );
-      }
-    );
+        context: context,
+        initialTime: TimeOfDay.now(),
+        initialEntryMode: TimePickerEntryMode.inputOnly,
+        builder: (context, child) {
+          return MediaQuery(
+            child: child!,
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          );
+        });
     if (picked != null && _selectedDay != null) {
-      DateTime pickedTime = DateTime(_selectedDay!.year, _selectedDay!.month, _selectedDay!.day, picked.hour, picked.minute);
+      DateTime pickedTime = DateTime(_selectedDay!.year, _selectedDay!.month,
+          _selectedDay!.day, picked.hour, picked.minute);
       controller.text = pickedTime.toIso8601String();
     }
   }
@@ -52,7 +52,8 @@ class _CalendarState extends State<Calendar> {
   }
 
   void _addEvent() {
-    if (_selectedDay == null) return; // Nie wykonuj tej funkcji, jeśli _selectedDay jest null
+    if (_selectedDay == null)
+      return; // Nie wykonuj tej funkcji, jeśli _selectedDay jest null
 
     showDialog(
       context: context,
@@ -98,7 +99,8 @@ class _CalendarState extends State<Calendar> {
                   context: context,
                   builder: (context) => AlertDialog(
                     title: Text("Błąd"),
-                    content: Text("Czas zakończenia nie może być wcześniejszy niż czas rozpoczęcia."),
+                    content: Text(
+                        "Czas zakończenia nie może być wcześniejszy niż czas rozpoczęcia."),
                     actions: <Widget>[
                       TextButton(
                         child: Text("OK"),
@@ -118,7 +120,8 @@ class _CalendarState extends State<Calendar> {
                 );
 
                 setState(() {
-                  final dayKey = DateTime(_selectedDay!.year, _selectedDay!.month, _selectedDay!.day);
+                  final dayKey = DateTime(_selectedDay!.year,
+                      _selectedDay!.month, _selectedDay!.day);
                   _events[dayKey] = (_events[dayKey] ?? [])..add(appointment);
                   _eventController.clear();
                   _startingTimeController.clear();
@@ -138,27 +141,35 @@ class _CalendarState extends State<Calendar> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text("Kalendarz akademicki", style: TextStyle(fontWeight: FontWeight.bold)),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {
-              if (ModalRoute.of(context)!.isCurrent) {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/home');
-              };
-            },
-            icon: Icon(Icons.home_filled)
-          )
-        ]
-      ),
+          title: Text("Kalendarz akademicki",
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          actions: <Widget>[
+            IconButton(
+                onPressed: () {
+                  if (ModalRoute.of(context)!.isCurrent) {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/home');
+                  }
+                  ;
+                },
+                icon: Icon(Icons.home_filled))
+          ]),
       body: Column(
         children: <Widget>[
           SfCalendar(
+            firstDayOfWeek: 1,
             view: CalendarView.month,
             headerStyle: CalendarHeaderStyle(
               textAlign: TextAlign.center,
-              backgroundColor: Theme.of(context).brightness == Brightness.light ? Colors.blue[100] : Colors.indigo[100],
-              textStyle: TextStyle(fontSize: 25, fontStyle: FontStyle.normal, letterSpacing: 5, color: Colors.white, fontWeight: FontWeight.w500),
+              backgroundColor: Theme.of(context).brightness == Brightness.light
+                  ? Colors.blue[100]
+                  : Colors.indigo[100],
+              textStyle: TextStyle(
+                  fontSize: 25,
+                  fontStyle: FontStyle.normal,
+                  letterSpacing: 5,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500),
             ),
             dataSource: _DataSource(_events),
             onSelectionChanged: (CalendarSelectionDetails details) {
@@ -172,24 +183,29 @@ class _CalendarState extends State<Calendar> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
-                child: ElevatedButton(
-                  onPressed: _selectedDay != null ? _addEvent : null, // Button is disabled if _selectedDay is null
-                  child: Text('Dodaj wydarzenie do wybranego dnia'),
-                )
-              )
+                  child: ElevatedButton(
+                onPressed: _selectedDay != null
+                    ? _addEvent
+                    : null, // Button is disabled if _selectedDay is null
+                child: Text('Dodaj wydarzenie do wybranego dnia'),
+              ))
             ],
           ),
           SizedBox(height: 10.0),
-          if (_selectedDay != null) // Only show this row if _selectedDay is not null
+          if (_selectedDay !=
+              null) // Only show this row if _selectedDay is not null
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Wydarzenia w wybranym dniu",
+                Text(
+                  "Wydarzenia w wybranym dniu",
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 24.0),
                 )
               ],
             ),
-          if (_selectedDay != null && (_events[_selectedDay]?.isNotEmpty ?? false)) // Only build list if there are events and _selectedDay is not null
+          if (_selectedDay != null &&
+              (_events[_selectedDay]?.isNotEmpty ??
+                  false)) // Only build list if there are events and _selectedDay is not null
             Expanded(
               child: ListView.builder(
                 itemCount: _getEventsForDay(_selectedDay!).length,
@@ -197,7 +213,8 @@ class _CalendarState extends State<Calendar> {
                   final appointment = _getEventsForDay(_selectedDay!)[index];
                   return ListTile(
                     title: Text(appointment.subject),
-                    subtitle: Text('${appointment.startTime.hour}:${appointment.startTime.minute} - ${appointment.endTime.hour}:${appointment.endTime.minute}'),
+                    subtitle: Text(
+                        '${appointment.startTime.hour}:${appointment.startTime.minute} - ${appointment.endTime.hour}:${appointment.endTime.minute}'),
                     trailing: IconButton(
                       icon: Icon(Icons.delete_forever),
                       onPressed: () => _removeEvent(_selectedDay!, index),
@@ -206,10 +223,15 @@ class _CalendarState extends State<Calendar> {
                 },
               ),
             )
-          else if (_selectedDay != null) // Show "Brak" if no events and _selectedDay is not null
+          else if (_selectedDay !=
+              null) // Show "Brak" if no events and _selectedDay is not null
             Expanded(
               child: Center(
-                child: Text('Brak', style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20.0, color: Colors.grey.shade400)),
+                child: Text('Brak',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w300,
+                        fontSize: 20.0,
+                        color: Colors.grey.shade400)),
               ),
             )
         ],
