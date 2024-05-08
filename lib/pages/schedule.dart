@@ -82,6 +82,40 @@ class _ScheduleState extends State<Schedule> {
     });
   }
 
+  Widget buildSubject(
+      BuildContext context, CalendarAppointmentDetails details) {
+    final Subject subject = details.appointments.first;
+
+    return Container(
+        width: details.bounds.width,
+        height: details.bounds.height,
+        decoration: BoxDecoration(
+          color: subject.background.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(subject.eventName,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 12.0)),
+              Text(subject.location,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white70,
+                      fontSize: 10.0)),
+              Text(
+                  '${subject.from.hour}:${subject.from.minute} - ${subject.to.hour}:${subject.to.minute}}',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white70,
+                      fontSize: 10.0)),
+            ]));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,6 +153,7 @@ class _ScheduleState extends State<Schedule> {
         ),
         dataSource: _subjectDataSource,
         allowViewNavigation: true,
+        appointmentBuilder: buildSubject,
       ),
     );
   }
