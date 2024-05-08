@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-
+import 'dart:math';
 
 class Schedule extends StatefulWidget {
   @override
@@ -8,72 +8,140 @@ class Schedule extends StatefulWidget {
 }
 
 class _ScheduleState extends State<Schedule> {
+  List<Color> _subjectColorPalette = [
+    Colors.red.shade400,
+    Colors.cyan,
+    Colors.pink,
+    Colors.blue.shade400,
+    Colors.teal,
+    Colors.indigo,
+    Colors.brown,
+    Colors.orange,
+    Colors.green,
+    Colors.purple,
+    Colors.deepPurple.shade700,
+  ];
+
+  late List<Subject> _subjects;
+  late SubjectDataSource _subjectDataSource;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchSubjects();
+  }
+
+  Future<void> _fetchSubjects() async {
+    var random = Random();
+    List<Subject> fetchedSubjects = [
+      Subject(
+          eventName: 'Matematyka',
+          from: DateTime.now(),
+          to: DateTime.now().add(Duration(hours: 2)),
+          background:
+              _subjectColorPalette[random.nextInt(_subjectColorPalette.length)],
+          isAllDay: false,
+          location: "Budynek1"),
+      Subject(
+          eventName: 'Matematyka',
+          from: DateTime.now(),
+          to: DateTime.now().add(Duration(days: 1, hours: 2)),
+          background:
+              _subjectColorPalette[random.nextInt(_subjectColorPalette.length)],
+          isAllDay: false,
+          location: "Budynek1"),
+      Subject(
+          eventName: 'Matematyka',
+          from: DateTime.now(),
+          to: DateTime.now().add(Duration(days: 2, hours: 2)),
+          background:
+              _subjectColorPalette[random.nextInt(_subjectColorPalette.length)],
+          isAllDay: false,
+          location: "Budynek1"),
+      Subject(
+          eventName: 'Matematyka',
+          from: DateTime.now(),
+          to: DateTime.now().add(Duration(days: 3, hours: 2)),
+          background:
+              _subjectColorPalette[random.nextInt(_subjectColorPalette.length)],
+          isAllDay: false,
+          location: "Budynek1"),
+      Subject(
+          eventName: 'Matematyka',
+          from: DateTime.now(),
+          to: DateTime.now().add(Duration(days: 4, hours: 2)),
+          background:
+              _subjectColorPalette[random.nextInt(_subjectColorPalette.length)],
+          isAllDay: false,
+          location: "Budynek1"),
+    ];
+
+    setState(() {
+      _subjects = fetchedSubjects;
+      _subjectDataSource = SubjectDataSource(_subjects);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Plan zajęć'),
-        actions: <Widget>[
-          IconButton(
+      appBar: AppBar(title: Text('Plan zajęć'), actions: <Widget>[
+        IconButton(
             onPressed: () {
-              if(ModalRoute.of(context)!.isCurrent) {
+              if (ModalRoute.of(context)!.isCurrent) {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, '/home'); 
-              };
+                Navigator.pushNamed(context, '/home');
+              }
+              ;
             },
-            icon: Icon(Icons.home_filled,)
-          )
-        ]
-      ),
+            icon: Icon(
+              Icons.home_filled,
+            ))
+      ]),
       body: SfCalendar(
         view: CalendarView.day,
         headerStyle: CalendarHeaderStyle(
           textAlign: TextAlign.center,
-          backgroundColor: 
-          Theme.of(context).brightness == Brightness.light ? Colors.blue[100] : Colors.indigo[100],
+          backgroundColor: Theme.of(context).brightness == Brightness.light
+              ? Colors.blue[100]
+              : Colors.indigo[100],
           textStyle: TextStyle(
               fontSize: 25,
-            fontStyle: FontStyle.normal,
-            letterSpacing: 5,
-            color: Colors.white,
-            fontWeight: FontWeight.w500
-          ),
+              fontStyle: FontStyle.normal,
+              letterSpacing: 5,
+              color: Colors.white,
+              fontWeight: FontWeight.w500),
         ),
         timeSlotViewSettings: TimeSlotViewSettings(
           startHour: 7,
           endHour: 23,
+          nonWorkingDays: <int>[6, 7],
         ),
-        dataSource: _getCalendarDataSource(),
+        dataSource: _subjectDataSource,
         allowViewNavigation: true,
       ),
     );
   }
-
-  MeetingDataSource _getCalendarDataSource() {
-    List<Meeting> meetings = <Meeting>[];
-
-    final DateTime today = DateTime.now();
-    final DateTime startTime =
-        DateTime(today.year, today.month, today.day, 9, 0, 0);
-    final DateTime endTime = startTime.add(Duration(hours: 2, minutes: 21));
-    meetings.add(Meeting('Lekcja 1', startTime, endTime, Colors.blue, false));
-
-    return MeetingDataSource(meetings);
-  }
 }
 
-class Meeting {
-  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay);
-
+class Subject {
+  Subject(
+      {required this.eventName,
+      required this.from,
+      required this.to,
+      required this.background,
+      required this.isAllDay,
+      required this.location});
   String eventName;
+  String location;
   DateTime from;
   DateTime to;
   Color background;
   bool isAllDay;
 }
 
-class MeetingDataSource extends CalendarDataSource {
-  MeetingDataSource(List<Meeting> source) {
+class SubjectDataSource extends CalendarDataSource {
+  SubjectDataSource(List<Subject> source) {
     appointments = source;
   }
 
@@ -100,5 +168,10 @@ class MeetingDataSource extends CalendarDataSource {
   @override
   bool isAllDay(int index) {
     return appointments![index].isAllDay;
+  }
+
+  @override
+  String getLocation(int index) {
+    return appointments![index].location;
   }
 }
