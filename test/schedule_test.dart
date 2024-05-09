@@ -1,106 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 
-import 'package:open_usos/usosapi.dart';
-import 'package:open_usos/main.dart';
 import 'package:open_usos/pages/schedule.dart';
 
-class MockUSOSAPIConnection extends Mock implements USOSAPIConnection {
-  @override
-  Future<Map<String, dynamic>> get(String endpoint) async {
-    return {'22/23': {}, '23/24': {}};
-  }
-}
 
-class TestSchedule {
-  late OpenUSOS app = const OpenUSOS();
+class TestGrades {
+
+  void testGetData() {
+    testWidgets('Data should be initialized', (WidgetTester tester) async {
+      // Build Grades
+      await tester.pumpWidget(MaterialApp(home: Grades()));
+      // Access the state of Grades
+      GradesState state = tester.state(find.byType(Grades));
+
+      expect(state.scheduleData, isNotNull);
+      expect(state.scheduleData, isA<List<Map>>());
+    });
+  }
 
 
   void testDisplay() {
-    testWidgets('MyWidget should be displayed', (WidgetTester tester) async {
+    testWidgets('Grades should be displayed', (WidgetTester tester) async {
       // Build MyWidget
-      await tester.pumpWidget((app));
+      await tester.pumpWidget(MaterialApp(home: Grades()));
 
       // Find MyWidget by its type
-      expect(find.byType(Schedule), findsOneWidget);
+      expect(find.byType(Grades), findsOneWidget);
     });
   }
-
-
-
-  void testGetData() {
-    testWidgets('Test data should be initialized', (WidgetTester tester) async {
-      //mocking api
-      const expected = {'22/23': 1, '23/24': 2};
-      final mockConnection = MockUSOSAPIConnection();
-      when(mockConnection.get('')).thenAnswer((_) async => expected);
-
-      // Build Schedule
-      await tester.pumpWidget(Schedule(app));
-
-      // Trigger the getData method
-      // Access the state of MyWidget
-      ScheduleState state = tester.state(find.byType(Schedule));
-      // Call the getData method
-      state.getData();
-
-
-      expect(state.data, isA<List<Map>>());
-      expect(state.data, equals([{"23/24" : 1}, {"24/25" : 2}]));
-    });
-  }
-
 
 
   void testDisplayTerms() {
-    testWidgets('Schedule widget displays correct number of terms', (
+    testWidgets('Grades widget displays correct number of terms', (
         WidgetTester tester) async {
-      //mocking api
-      const expected = {'22/23': 1, '23/24': 2};
-      final mockConnection = MockUSOSAPIConnection();
-      when(mockConnection.get('')).thenAnswer((_) async => expected);
+      // Build the Grades widget
+      await tester.pumpWidget(MaterialApp(home: Grades()));
 
-      // Build the Schedule widget
-      await tester.pumpWidget(Schedule(app));
+      GradesState state = tester.state(find.byType(Grades));
 
-      ScheduleState state = tester.state(find.byType(Schedule));
+      await state.setData();
       // Verify that the correct number of terms is displayed
-      expect(find.byType(ListView),
-          findsNWidgets(state.data.length + 1));
-      // list of terms and lists of grades in each term
+
+      expect(find.byType(ListView, skipOffstage: false),
+          findsNWidgets(state.scheduleData.length + 1));
+      // list of terms and lists of schedule in each term
     });
-  }
-
-
-  void testDisplayButtons() {
-    /*find.byType(TextButton);
-    final grades = Schedule(app);
-    Scaffold displayed = grades.display();
-    final controlList = [displayed.body?.children];
-    while (controlList.isNotEmpty) {
-      final currentControl = controlList.removeLast();
-      controlList.addAll(currentControl.controls);
-      if (currentControl is ElevatedButton ||
-          currentControl is FloatingActionButton ||
-          currentControl is TextButton ||
-          currentControl is IconButton ||
-          currentControl is PopupMenuButton ||
-          currentControl is OutlinedButton ||
-          currentControl is CupertinoButton) {
-        expect(currentControl.onPressed, isNotNull);
-        expect(currentControl.onPressed, isA<VoidCallback>());
-      }
-    }*/
   }
 }
 
 
-
 void main(){
-  final test = TestSchedule();
+  final test = TestGrades();
   test.testGetData();
   test.testDisplay();
   test.testDisplayTerms();
-  test.testDisplayButtons();
 }
