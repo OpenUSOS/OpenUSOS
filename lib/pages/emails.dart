@@ -1,45 +1,15 @@
 import 'package:flutter/material.dart';
 
-import 'package:open_usos/main.dart';
-
-
 class Emails extends StatefulWidget {
-  final OpenUSOS app;
-  const Emails( this.app, {super.key});
+  const Emails({super.key});
 
   @override
-  State<Emails> createState() => EmailsState();
+  State<Emails> createState() => _EmailsState();
 }
 
-//we annotate it with visibleForTesting to make sure the state class isn't used anywhere else
-//we make it publics so that it can be tested
-@visibleForTesting
-class EmailsState extends State<Emails> {
-  List data = [];
-
-  //we call the superclass constructor and getData to initialize termList
-  EmailsState() : super(){
-    getData();
-  }
-
-  //getting data from api
-  void getData() {
-    data = [{"23/24" : 1}, {"24/25" : 2}];
-  }
-
-  //build method
+class _EmailsState extends State<Emails> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView.builder(
-        itemCount: data.length,
-        itemBuilder: (context, index){
-          Map<String, dynamic> currentList = data[index];
-          // Use the current list to build a row
-          return Row();
-        },
-      ),
-    );
+    return const Placeholder();
   }
 }
-

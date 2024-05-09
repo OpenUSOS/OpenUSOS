@@ -5,7 +5,6 @@ class Grades extends StatefulWidget {
 
   @override
   State<Grades> createState() => GradesState();
-
 }
 
 //we annotate it with visibleForTesting to make sure the state class isn't used anywhere else
@@ -85,33 +84,19 @@ class GradesState extends State<Grades> {
     var groupedByTerms = {};
 
     return Scaffold(
-        appBar: AppBar(
-            iconTheme: IconThemeData(
-              color: Colors.white,
-            ),
-            elevation: 5.0,
-            backgroundColor: Colors.blueGrey[900],
-            title: Text(
-              "Your grades",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            actions: <Widget>[
-              IconButton(
-                  onPressed: () {
-                    if (ModalRoute.of(context)!.isCurrent) {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/home');
-                    }
-                    ;
-                  },
-                  icon: Icon(
-                    Icons.home_filled,
-                    color: Colors.white,
-                  ))
-            ]),
+        appBar: AppBar(title: Text('Oceny'), actions: <Widget>[
+          IconButton(
+              onPressed: () {
+                if (ModalRoute.of(context)!.isCurrent) {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/home');
+                }
+                ;
+              },
+              icon: Icon(
+                Icons.home_filled,
+              ))
+        ]),
         body: FutureBuilder(
             future: setData(),
             builder: (context, snapshot) {
@@ -122,7 +107,7 @@ class GradesState extends State<Grades> {
                   ),
                 );
               } else {
-              //we group a data into a new list for convenience
+                //we group a data into a new list for convenience
                 for (var item in gradesData)
                   groupedByTerms.putIfAbsent(item['term'], () => []).add(item);
 

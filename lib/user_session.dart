@@ -9,7 +9,8 @@ class UserSession {
   static const host = 'srv27.mikr.us:20117'; //server
   static const logPath = '/login'; // path for login
   static const basePath = '/api'; //path for everything else
-  static String? loginURL; //static because it needs to be accessed by login page
+  static String?
+      loginURL; //static because it needs to be accessed by login page
   static String? accessToken; //access token for api
   static String? accessTokenSecret; //token secret for api
 
@@ -18,12 +19,10 @@ class UserSession {
     var response = await get(url);
     if (response.statusCode == 200) {
       sessionId = response.body;
-    }
-    else {
+    } else {
       throw Exception('Connecting to server failed');
     }
   }
-
 
   static Future startLogin() async {
     await createSession();
@@ -31,8 +30,7 @@ class UserSession {
     var response = await get(urlURL);
     if (response.statusCode == 200) {
       loginURL = response.body;
-    }
-    else {
+    } else {
       throw Exception('Getting Login URL failed');
     }
     return;
@@ -40,29 +38,30 @@ class UserSession {
 
   static Future endLogin(String url) async {
     final receivedUrl = Uri.parse(url);
-    final urlLogin = Uri.http(host, basePath,
-        {'id': sessionId, 'query1': 'log_in', 'query2': receivedUrl.queryParameters['oauth_verifier']});
+    final urlLogin = Uri.http(host, basePath, {
+      'id': sessionId,
+      'query1': 'log_in',
+      'query2': receivedUrl.queryParameters['oauth_verifier']
+    });
     final response = await get(urlLogin);
-    if(response.statusCode == 200){
-      Map<String, dynamic> body =  json.decode(response.body);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> body = json.decode(response.body);
       accessToken = body['AT'];
       accessTokenSecret = body['ATS'];
     }
     return;
   }
 
-
-  static Future logout() async{
-    final logoutURL = Uri.http(host, basePath, {'id': sessionId, 'query1': 'log_out'});
+  static Future logout() async {
+    final logoutURL =
+        Uri.http(host, basePath, {'id': sessionId, 'query1': 'log_out'});
     var response = await get(logoutURL);
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       accessToken = null;
       accessTokenSecret = null;
       // we need to forget tokens
     }
-
   }
-
 }
 
 class LoginPage extends StatelessWidget {
@@ -76,7 +75,7 @@ class LoginPage extends StatelessWidget {
           // Update loading bar.
         },
         onPageStarted: (String url) {
-          if(url.contains('oauth_verifier')) {
+          if (url.contains('oauth_verifier')) {
             UserSession.endLogin(url);
             endWebView();
           }
@@ -90,8 +89,9 @@ class LoginPage extends StatelessWidget {
     )
     ..loadRequest(Uri.parse(UserSession.loginURL!));
 
+
   static void endWebView(){
-    Navigator.popUntil(_context!, (route) => route=='/');
+    Navigator.popUntil(_context!, (route) => route == '/');
     Navigator.pushNamed(_context!, '/home');
   }
 
@@ -99,24 +99,23 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(
-              "Logowanie do systemu USOS",
+          title: Text("Logowanie do systemu USOS",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-              )
-          ),
+              )),
           actions: <Widget>[
             IconButton(
                 onPressed: () {
-                  if(ModalRoute.of(context)!.isCurrent) {
+                  if (ModalRoute.of(context)!.isCurrent) {
                     Navigator.pop(context);
                     Navigator.pushNamed(context, '/home');
-                  };
+                  }
+                  ;
                 },
-                icon: Icon(Icons.home_filled,)
-            )
-          ]
-      ),
+                icon: Icon(
+                  Icons.home_filled,
+                ))
+          ]),
       body: WebViewWidget(
         controller: controller,
       ),

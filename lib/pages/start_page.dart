@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class StartPage extends StatelessWidget{
+class StartPage extends StatelessWidget {
   @override
-  Widget build(BuildContext buildContext){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('OpenUSOS'),
@@ -13,22 +13,14 @@ class StartPage extends StatelessWidget{
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  'Welcome to the OpenUSOS app for managing your university account.',
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  'Witaj w aplikacji OpenUSOS, która pozwoli ci zarządzać swoim kontem USOS.',
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(
-                  height : 10.0,
+                  height: 20.0,
                 ),
                 Text(
-                  'In order to use the app, please log in using your university account credentials.',
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.w400,
-                  ),
+                  'Aby korzystać z funkcji aplikacji zaloguj się kilkając w przycisk poniej.',
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(
@@ -36,16 +28,14 @@ class StartPage extends StatelessWidget{
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(buildContext);
-                      Navigator.pushNamed(buildContext, '/login');
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/login');
                     },
-                    child: Text(
-                        'Go to login'
-                    )
-                )
-              ]
-          )
-      ),
+                    child: Text('Przejdź do logowania'),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.all(16.0),
+                    ))
+              ])),
     );
   }
 }
