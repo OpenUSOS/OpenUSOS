@@ -50,8 +50,6 @@ class GradesState extends State<Grades> {
           value: item['value'],
         );
 
-        debugPrint(item.toString());
-
         if (!gradesByTerm.containsKey(grade.term)) {
           gradesByTerm[grade.term] = [];
         }

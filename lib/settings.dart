@@ -146,20 +146,6 @@ class Settings extends StatelessWidget {
                   );
                 }).toList(),
               )),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  child: Text('Wyloguj'),
-                  onPressed: () {
-                    UserSession.logout();
-                    Navigator.popUntil(context, (route) => false);
-                    Navigator.pushNamed(context, Navigator.defaultRouteName);
-                  },
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );

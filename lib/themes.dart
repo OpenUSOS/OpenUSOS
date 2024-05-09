@@ -39,14 +39,14 @@ class OpenUSOSThemes {
         padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
         foregroundColor: Colors.white,
         textStyle: buttonTextStyle.copyWith(
-          color: Colors.white,
+          color: Colors.black,
         ),
       ),
     ),
     listTileTheme: ListTileThemeData(
-      textColor: Colors.white,
-      iconColor: Colors.white,
-      titleTextStyle: listTileTextStyle.copyWith(color: Colors.white),
+      textColor: Colors.black,
+      iconColor: Colors.black,
+      titleTextStyle: listTileTextStyle.copyWith(color: Colors.black),
     ),
     textTheme: TextTheme(
       titleLarge: TextStyle(color: Colors.black87, fontSize: 22.0),

@@ -28,42 +28,45 @@ class OpenUSOS extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'OpenUSOS',
-        themeMode: ThemeMode.system,
-        theme: OpenUSOSThemes.darkTheme,
-        darkTheme: OpenUSOSThemes.darkTheme,
-        debugShowCheckedModeBanner: false,
-        supportedLocales: [Locale('pl', '')],
-        localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        locale: const Locale('pl', ''),
-        home: StartPage(),
-        routes: {
-          '/home': (context) => Home(),
-          '/grades': (context) => Grades(),
-          '/settings': (context) => Settings(),
-          '/login': (context) => FutureBuilder(
-              future: UserSession.startLogin(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Scaffold(
-                    body: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                } else {
-                  return LoginPage();
-                }
-              }),
-          '/calendar': (context) => Calendar(),
-          '/schedule': (context) => Schedule(),
-          '/user': (context) => Account(),
-          '/email': (context) => Emails(),
-        });
+    return Consumer<SettingsProvider>(
+        builder: (context, settingsProvider, child) {
+      return MaterialApp(
+          title: 'OpenUSOS',
+          themeMode: settingsProvider.themeMode,
+          theme: OpenUSOSThemes.lightTheme,
+          darkTheme: OpenUSOSThemes.darkTheme,
+          debugShowCheckedModeBanner: false,
+          supportedLocales: [Locale('pl', '')],
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          locale: const Locale('pl', ''),
+          home: StartPage(),
+          routes: {
+            '/home': (context) => Home(),
+            '/grades': (context) => Grades(),
+            '/settings': (context) => Settings(),
+            '/login': (context) => FutureBuilder(
+                future: UserSession.startLogin(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Scaffold(
+                      body: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  } else {
+                    return LoginPage();
+                  }
+                }),
+            '/calendar': (context) => Calendar(),
+            '/schedule': (context) => Schedule(),
+            '/user': (context) => Account(),
+            '/email': (context) => Emails(),
+          });
+    });
   }
 }
 
