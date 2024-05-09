@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'dart:convert';
+
 import 'package:open_usos/user_session.dart';
 import 'package:open_usos/appbar.dart';
 
 class Account extends StatefulWidget {
   const Account({super.key});
 
+
   @override
-  State<Account> createState() => _UserState();
+  State<Account> createState() => AccountState();
 }
 
-class _UserState extends State<Account> {
-  User? _user;
+@visibleForTesting
+class AccountState extends State<Account> {
+
+  @visibleForTesting
+  User? user;
 
   @override
   void initState() {
@@ -20,8 +23,7 @@ class _UserState extends State<Account> {
     if (UserSession.sessionId == null) {
       throw Exception('sessionId is null, user not logged in.');
     }
-    debugPrint('AAaAA chuj');
-    _user = UserSession.user;
+    user = UserSession.user;
   }
 
   @override
@@ -35,16 +37,16 @@ class _UserState extends State<Account> {
               SizedBox(height: 20.0),
               CircleAvatar(
                 radius: 50.0,
-                backgroundImage: NetworkImage(_user!.photoUrl),
+                backgroundImage: NetworkImage(user!.photoUrl),
                 backgroundColor: Colors.transparent,
               ),
-              Text('${_user!.firstName} ${_user!.lastName}',
+              Text('${user!.firstName} ${user!.lastName}',
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                   )),
               SizedBox(height: 20.0),
-              Text('${_user!.emailAddr}',
+              Text('${user!.emailAddr}',
                   style: TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.w400,

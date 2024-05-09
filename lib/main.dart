@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:open_usos/themes.dart';
+import 'package:provider/provider.dart';
+import 'package:open_usos/themes.dart';
 import 'package:open_usos/pages/calendar.dart';
 import 'package:open_usos/pages/home.dart';
 import 'package:open_usos/pages/grades.dart';
@@ -9,11 +11,16 @@ import 'package:open_usos/settings.dart';
 import 'package:open_usos/user_session.dart';
 import 'package:open_usos/pages/start_page.dart';
 import 'package:open_usos/pages/schedule.dart';
-import 'package:open_usos/pages/user.dart';
-import 'package:open_usos/pages/email.dart';
+import 'package:open_usos/pages/account.dart';
+import 'package:open_usos/pages/emails.dart';
 
 void main() {
-  runApp(OpenUSOS());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => SettingsProvider(),
+      child: OpenUSOS(),
+    ),
+  );
 }
 
 class OpenUSOS extends StatelessWidget {
@@ -55,7 +62,7 @@ class OpenUSOS extends StatelessWidget {
           '/calendar': (context) => Calendar(),
           '/schedule': (context) => Schedule(),
           '/user': (context) => Account(),
-          '/email': (context) => Email(),
+          '/email': (context) => Emails(),
         });
   }
 }

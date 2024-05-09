@@ -5,11 +5,13 @@ class Calendar extends StatefulWidget {
   const Calendar({super.key});
 
   @override
-  State<Calendar> createState() => _CalendarState();
+  State<Calendar> createState() => CalendarState();
 }
 
-class _CalendarState extends State<Calendar> {
-  DateTime? _selectedDay; // Inicjacja jako null
+@visibleForTesting
+class CalendarState extends State<Calendar> {
+  @visibleForTesting
+  DateTime? selectedDay; // Inicjacja jako null
   Map<DateTime, List<Appointment>> _events = {};
   TextEditingController _eventController = TextEditingController();
   TextEditingController _startingTimeController = TextEditingController();
@@ -30,9 +32,9 @@ class _CalendarState extends State<Calendar> {
             data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
           );
         });
-    if (picked != null && _selectedDay != null) {
-      DateTime pickedTime = DateTime(_selectedDay!.year, _selectedDay!.month,
-          _selectedDay!.day, picked.hour, picked.minute);
+    if (picked != null && selectedDay != null) {
+      DateTime pickedTime = DateTime(selectedDay!.year, selectedDay!.month,
+          selectedDay!.day, picked.hour, picked.minute);
       controller.text = pickedTime.toIso8601String();
     }
   }
@@ -52,7 +54,7 @@ class _CalendarState extends State<Calendar> {
   }
 
   void _addEvent() {
-    if (_selectedDay == null)
+    if (selectedDay == null)
       return; // Nie wykonuj tej funkcji, jeśli _selectedDay jest null
 
     showDialog(
@@ -120,8 +122,8 @@ class _CalendarState extends State<Calendar> {
                 );
 
                 setState(() {
-                  final dayKey = DateTime(_selectedDay!.year,
-                      _selectedDay!.month, _selectedDay!.day);
+                  final dayKey = DateTime(selectedDay!.year,
+                      selectedDay!.month, selectedDay!.day);
                   _events[dayKey] = (_events[dayKey] ?? [])..add(appointment);
                   _eventController.clear();
                   _startingTimeController.clear();
@@ -174,7 +176,7 @@ class _CalendarState extends State<Calendar> {
             dataSource: _DataSource(_events),
             onSelectionChanged: (CalendarSelectionDetails details) {
               setState(() {
-                _selectedDay = details.date;
+                selectedDay = details.date;
               });
             },
           ),
@@ -184,7 +186,7 @@ class _CalendarState extends State<Calendar> {
             children: [
               Expanded(
                   child: ElevatedButton(
-                onPressed: _selectedDay != null
+                onPressed: selectedDay != null
                     ? _addEvent
                     : null, // Button is disabled if _selectedDay is null
                 child: Text('Dodaj wydarzenie do wybranego dnia'),
@@ -192,7 +194,7 @@ class _CalendarState extends State<Calendar> {
             ],
           ),
           SizedBox(height: 10.0),
-          if (_selectedDay !=
+          if (selectedDay !=
               null) // Only show this row if _selectedDay is not null
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -203,27 +205,27 @@ class _CalendarState extends State<Calendar> {
                 )
               ],
             ),
-          if (_selectedDay != null &&
-              (_events[_selectedDay]?.isNotEmpty ??
+          if (selectedDay != null &&
+              (_events[selectedDay]?.isNotEmpty ??
                   false)) // Only build list if there are events and _selectedDay is not null
             Expanded(
               child: ListView.builder(
-                itemCount: _getEventsForDay(_selectedDay!).length,
+                itemCount: _getEventsForDay(selectedDay!).length,
                 itemBuilder: (context, index) {
-                  final appointment = _getEventsForDay(_selectedDay!)[index];
+                  final appointment = _getEventsForDay(selectedDay!)[index];
                   return ListTile(
                     title: Text(appointment.subject),
                     subtitle: Text(
                         '${appointment.startTime.hour}:${appointment.startTime.minute} - ${appointment.endTime.hour}:${appointment.endTime.minute}'),
                     trailing: IconButton(
                       icon: Icon(Icons.delete_forever),
-                      onPressed: () => _removeEvent(_selectedDay!, index),
+                      onPressed: () => _removeEvent(selectedDay!, index),
                     ),
                   );
                 },
               ),
             )
-          else if (_selectedDay !=
+          else if (selectedDay !=
               null) // Show "Brak" if no events and _selectedDay is not null
             Expanded(
               child: Center(

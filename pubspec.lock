@@ -175,7 +175,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_datetime_picker:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: flutter_datetime_picker
       sha256: "8e695c63c769350e541951227c2775190ec73ceda774a315b1dc9a99d5facfe5"
@@ -183,7 +183,7 @@ packages:
     source: hosted
     version: "1.5.1"
   flutter_localizations:
-    dependency: "direct dev"
+    dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
@@ -587,7 +587,7 @@ packages:
     source: hosted
     version: "1.2.0"
   syncfusion_flutter_calendar:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: syncfusion_flutter_calendar
       sha256: "286ff7a451cebc8f21cc0fc7d0032040957851a2535616178bf54e8e488a833f"
@@ -611,7 +611,7 @@ packages:
     source: hosted
     version: "25.2.3"
   table_calendar:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: table_calendar
       sha256: "1e3521a3e6d3fc7f645a58b135ab663d458ab12504f1ea7f9b4b81d47086c478"

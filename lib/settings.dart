@@ -1,82 +1,107 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+
 import 'package:open_usos/appbar.dart';
 import 'package:open_usos/user_session.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:open_usos/themes.dart';
+class SettingsProvider with ChangeNotifier{
+  // we set default values here, they are overwritten in _initPreferences
+  String currentLanguage = 'Polish';
+  bool notificationsOn = false;
 
-class Settings extends StatefulWidget {
   //set of available languages
   final List<String> availableLanguages = [
     'Polski',
     'Polish'
   ]; // duplicated values for testing
   //map of available themes, they can be accessed by name
-  final Map<String, ThemeData> availableThemes = {
-    "Ciemny": OpenUSOSThemes.darkTheme,
-    'Jasny': OpenUSOSThemes.lightTheme
-  };
+  final Map<String, ThemeMode> availableThemes =
+  {'Systemowy': ThemeMode.system, 'Ciemny': ThemeMode.dark, 'Jasny': ThemeMode.light};
+  ThemeMode currentThemeMode = ThemeMode.system;
 
-  @override
-  State<Settings> createState() => _SettingsState();
-}
 
-class _SettingsState extends State<Settings> {
-  //default settings here, if user has other settings set this will be overwritten
-  //in _initState setPreferences
-  String currentLanguage = 'Polish';
-  ThemeData currentTheme = OpenUSOSThemes.lightTheme;
-  bool notificationsOn = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _initPreferences(); //we initialize preferences
+  SettingsProvider(){
+    _initPreferences();
   }
 
-  void _initPreferences() async {
+  Future _initPreferences() async {
     // we get preferences and set them using SharedPreferences library
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      //if settings are saved defaults are overwritten, if not nothing happens
-      bool? notifications = prefs.getBool('notifications');
-      if (notifications != null) {
-        notificationsOn = notifications;
-      }
+    bool? savedNotifications = prefs.getBool('notifications');
+    if (savedNotifications != null) {
+      notificationStatus = savedNotifications;
+    }
 
-      String? language = prefs.getString('language');
-      if (language != null) {
-        setLanguage(language);
-      }
+    String? savedLanguage = prefs.getString('language');
+    if (savedLanguage != null) {
+      language = savedLanguage;
+    }
 
-      String? theme = prefs.getString('theme');
-      if (theme != null) {
-        setTheme(theme);
-      }
-    });
-  }
-
-  // language setter with check if language is available
-  void setLanguage(String language) {
-    if (widget.availableLanguages.contains(language)) {
-      currentLanguage = language;
-    } else {
-      throw Exception('Language not available');
+    String? savedTheme = prefs.getString('theme');
+    if (savedTheme != null) {
+      theme = savedTheme;
     }
   }
 
-  //theme setter with check if theme is available
-  void setTheme(String themeName) {
-    if (widget.availableThemes.containsKey(themeName)) {
+  void saveTheme(String theme) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('theme', theme);
+  }
+
+  void saveLanguage(String language) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('language', language);
+  }
+
+  void saveNotifications(bool notifications) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('notifications', notifications);
+  }
+
+  ThemeMode get themeMode => currentThemeMode;
+
+  void set theme(String? themeName) {
+    if (themeName != null && availableThemes.containsKey(themeName)) {
       // we check if theme is available and set it
-      currentTheme = widget.availableThemes[themeName]!;
+      currentThemeMode = availableThemes[themeName]!;
+      saveTheme(themeName);
+      notifyListeners();
     } else {
       throw Exception('Theme not available');
     }
   }
 
+  String get language => currentLanguage;
+
+  // language setter with check if language is available
+  void set language(String? language) {
+    if (language != null && availableLanguages.contains(language)) {
+      currentLanguage = language;
+      saveLanguage(language);
+      notifyListeners();
+    } else {
+      throw Exception('Language not available');
+    }
+  }
+
+  bool get notificationStatus => notificationsOn;
+
+  // language setter with check if language is available
+  void set notificationStatus(bool notifications) {
+    notificationsOn = notifications;
+    saveNotifications(notifications);
+    notifyListeners();
+  }
+
+}
+
+
+class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final SettingsProvider settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
+
     return Scaffold(
       appBar: USOSBar(title: 'Ustawienia'),
       body: Column(
@@ -84,24 +109,20 @@ class _SettingsState extends State<Settings> {
           ListTile(
             title: Text('Powiadomienia'),
             trailing: Switch(
-              value: notificationsOn,
+              value: settingsProvider.notificationStatus,
               onChanged: (value) {
-                setState(() {
-                  notificationsOn = value;
-                });
+                  settingsProvider.notificationStatus = value;
               },
             ),
           ),
           ListTile(
               title: Text('Język'),
               trailing: DropdownButton<String>(
-                value: currentLanguage,
+                value: settingsProvider.currentLanguage,
                 onChanged: (String? value) {
-                  setState(() {
-                    setLanguage(value!);
-                  });
+                    settingsProvider.language = value;
                 },
-                items: widget.availableLanguages
+                items: settingsProvider.availableLanguages
                     .map<DropdownMenuItem<String>>((String language) {
                   return DropdownMenuItem<String>(
                     value: language,
@@ -112,15 +133,12 @@ class _SettingsState extends State<Settings> {
           ListTile(
               title: Text('Motyw'),
               trailing: DropdownButton<String>(
-                value: widget.availableThemes.entries
-                    .firstWhere((item) => item.value == currentTheme)
-                    .key,
+                value: settingsProvider.availableThemes.entries.firstWhere((item) =>
+                item.value == settingsProvider.currentThemeMode).key,
                 onChanged: (String? value) {
-                  setState(() {
-                    setTheme(value!);
-                  });
+                    settingsProvider.theme = value;
                 },
-                items: widget.availableThemes.keys
+                items: settingsProvider.availableThemes.keys
                     .map<DropdownMenuItem<String>>((String theme) {
                   return DropdownMenuItem<String>(
                     value: theme,

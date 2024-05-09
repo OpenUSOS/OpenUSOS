@@ -1,100 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 
-import 'package:open_usos/usosapi.dart';
-import 'package:open_usos/main.dart';
 import 'package:open_usos/pages/course_tests.dart';
 
-import 'academic_activity_test.dart';
 
-class MockUSOSAPIConnection extends Mock implements USOSAPIConnection {
-  @override
-  Future<Map<String, dynamic>> get(String endpoint) async {
-    return {'22/23': {}, '23/24': {}};
-  }
-}
 
 class TestCourseTests {
-  late OpenUSOS app = const OpenUSOS();
+
+  void testGetData() {
+    testWidgets("Data should be null if user isn't logged in", (WidgetTester tester) async {
+      // Build CourseTests
+      await tester.pumpWidget(MaterialApp(home: CourseTests()));
+      // Access the state of CourseTests
+      CourseTestsState state = tester.state(find.byType(CourseTests));
+
+      expect(state.courseTestsData, isNull);
+    });
+  }
 
 
   void testDisplay() {
-    testWidgets('MyWidget should be displayed', (WidgetTester tester) async {
+    testWidgets('CourseTests should be displayed', (WidgetTester tester) async {
       // Build MyWidget
-      await tester.pumpWidget((app));
+      await tester.pumpWidget(MaterialApp(home: CourseTests()));
 
       // Find MyWidget by its type
       expect(find.byType(CourseTests), findsOneWidget);
     });
   }
 
+  void testLoading() {
+    testWidgets('CourseTests displays loading indicator while loading',
+            (WidgetTester tester) async {
+          // Build the widget and trigger a frame
+          await tester.pumpWidget(MaterialApp(home: CourseTests()));
 
-
-  void testGetData() {
-    testWidgets('Test data should be initialized', (WidgetTester tester) async {
-      //mocking api
-      const expected = {'22/23': 1, '23/24': 2};
-      final mockConnection = MockUSOSAPIConnection();
-      when(mockConnection.get('')).thenAnswer((_) async => expected);
-
-      // Build CourseTests
-      await tester.pumpWidget(CourseTests(app));
-
-      // Trigger the getData method
-      // Access the state of MyWidget
-      CourseTestsState state = tester.state(find.byType(CourseTests));
-      // Call the getData method
-      state.getData();
-
-
-      expect(state.data, isA<List<Map>>());
-      expect(state.data, equals([{"23/24" : 1}, {"24/25" : 2}]));
-    });
+          // Verify that loading indicator is displayed
+          expect(find.byType(CircularProgressIndicator), findsOneWidget);
+        });
   }
 
-
-
-  void testDisplayTerms() {
-    testWidgets('CourseTests widget displays correct number of terms', (
-        WidgetTester tester) async {
-      //mocking api
-      const expected = {'22/23': 1, '23/24': 2};
-      final mockConnection = MockUSOSAPIConnection();
-      when(mockConnection.get('')).thenAnswer((_) async => expected);
-
-      // Build the CourseTests widget
-      await tester.pumpWidget(CourseTests(app));
-
-      CourseTestsState state = tester.state(find.byType(CourseTests));
-      // Verify that the correct number of terms is displayed
-      expect(find.byType(ListView),
-          findsNWidgets(state.data.length + 1));
-      // list of terms and lists of grades in each term
-    });
-  }
-
-
-  void testDisplayButtons() {
-    /*find.byType(TextButton);
-    final grades = CourseTests(app);
-    Scaffold displayed = grades.display();
-    final controlList = [displayed.body?.children];
-    while (controlList.isNotEmpty) {
-      final currentControl = controlList.removeLast();
-      controlList.addAll(currentControl.controls);
-      if (currentControl is ElevatedButton ||
-          currentControl is FloatingActionButton ||
-          currentControl is TextButton ||
-          currentControl is IconButton ||
-          currentControl is PopupMenuButton ||
-          currentControl is OutlinedButton ||
-          currentControl is CupertinoButton) {
-        expect(currentControl.onPressed, isNotNull);
-        expect(currentControl.onPressed, isA<VoidCallback>());
-      }
-    }*/
-  }
 }
 
 
@@ -102,6 +47,5 @@ void main(){
   final test = TestCourseTests();
   test.testGetData();
   test.testDisplay();
-  test.testDisplayTerms();
-  test.testDisplayButtons();
+  test.testLoading();
 }

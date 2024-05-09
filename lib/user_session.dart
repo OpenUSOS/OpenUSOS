@@ -108,7 +108,9 @@ class LoginPage extends StatelessWidget {
             endWebView();
           }
         },
-        onPageFinished: (String url) {},
+        onPageFinished: (String url) {
+          UserSession._getUserData();
+        },
         onWebResourceError: (WebResourceError error) {},
         onNavigationRequest: (NavigationRequest request) {
           return NavigationDecision.navigate;
@@ -117,7 +119,8 @@ class LoginPage extends StatelessWidget {
     )
     ..loadRequest(Uri.parse(UserSession.loginURL!));
 
-  static void endWebView() {
+
+  static void endWebView(){
     Navigator.popUntil(_context!, (route) => route == '/');
     Navigator.pushNamed(_context!, '/home');
   }

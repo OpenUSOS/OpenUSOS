@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:open_usos/user_session.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
+
+import 'package:open_usos/user_session.dart';
 
 class Grades extends StatefulWidget {
   const Grades({super.key});
@@ -10,9 +11,13 @@ class Grades extends StatefulWidget {
   State<Grades> createState() => GradesState();
 }
 
+@visibleForTesting
 class GradesState extends State<Grades> {
-  late Future<void> _gradesFuture;
-  Map<String, List<Grade>> _grades = {};
+
+  late Future<void> _gradesFuture; //neccessary because future builder makes repeated api calls otherwise
+
+  @visibleForTesting
+  Map<String, List<Grade>> grades = {};
 
   @override
   void initState() {
@@ -53,7 +58,7 @@ class GradesState extends State<Grades> {
         gradesByTerm[grade.term]?.add(grade);
       }
       setState(() {
-        _grades = gradesByTerm;
+        grades = gradesByTerm;
       });
     } else {
       throw Exception(
@@ -66,6 +71,7 @@ class GradesState extends State<Grades> {
     Color? failed = Colors.red[800];
     Color? passed = Colors.blue[800];
     //zmienna przechowujaca pogrupowane oceny wzgledem semestrow
+
 
     //grupujemy w nowej mapie map
     return Scaffold(
@@ -94,10 +100,10 @@ class GradesState extends State<Grades> {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
               return ListView.builder(
-                  itemCount: _grades.entries.length,
+                  itemCount: grades.entries.length,
                   itemBuilder: (context, index) {
-                    var term = _grades.entries.elementAt(index).key;
-                    var gradeDetails = _grades.entries.elementAt(index).value;
+                    var term = grades.entries.elementAt(index).key;
+                    var gradeDetails = grades.entries.elementAt(index).value;
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.center,

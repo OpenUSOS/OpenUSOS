@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'dart:math';
 import 'dart:convert';
+import 'package:http/http.dart';
+
 import 'package:open_usos/appbar.dart';
 import 'package:open_usos/user_session.dart';
-import 'package:http/http.dart';
+
 
 class Schedule extends StatefulWidget {
   @override
-  _ScheduleState createState() => _ScheduleState();
+  ScheduleState createState() => ScheduleState();
 }
 
-class _ScheduleState extends State<Schedule> {
+@visibleForTesting
+class ScheduleState extends State<Schedule> {
   List<Color> _subjectColorPalette = [
     Colors.red.shade400,
     Colors.cyan,
@@ -26,17 +29,19 @@ class _ScheduleState extends State<Schedule> {
     Colors.deepPurple.shade700,
   ];
 
-  List<Subject>? _subjects;
+  @visibleForTesting
+  List<Subject>? subjects;
   SubjectDataSource? _subjectDataSource;
   late Future<void> _subjectsFuture;
 
   @override
   void initState() {
     super.initState();
-    _subjectsFuture = _fetchSubjects();
+    _subjectsFuture = fetchSubjects();
   }
 
-  Future<void> _fetchSubjects() async {
+  @visibleForTesting
+  Future<void> fetchSubjects() async {
     var random = Random();
     if (UserSession.sessionId == null) {
       throw Exception("sessionId is null, user not logged in.");
@@ -66,8 +71,8 @@ class _ScheduleState extends State<Schedule> {
               ))
           .toList();
       setState(() {
-        _subjects = fetchedSubjects;
-        _subjectDataSource = SubjectDataSource(_subjects!);
+        subjects = fetchedSubjects;
+        _subjectDataSource = SubjectDataSource(subjects!);
       });
     } else {
       throw Exception(
