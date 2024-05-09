@@ -9,6 +9,8 @@ import 'package:open_usos/settings.dart';
 import 'package:open_usos/user_session.dart';
 import 'package:open_usos/pages/start_page.dart';
 import 'package:open_usos/pages/schedule.dart';
+import 'package:open_usos/pages/user.dart';
+import 'package:open_usos/pages/email.dart';
 
 void main() {
   runApp(OpenUSOS());
@@ -52,6 +54,27 @@ class OpenUSOS extends StatelessWidget {
               }),
           '/calendar': (context) => Calendar(),
           '/schedule': (context) => Schedule(),
+          '/user': (context) => Account(),
+          '/email': (context) => Email(),
         });
+  }
+}
+
+class User {
+  String firstName;
+  String lastName;
+  String emailAddr;
+  String photoUrl;
+  String universityName = "Uniwersytet Jagielloński";
+
+  User(
+      {required this.firstName,
+      required this.lastName,
+      required this.emailAddr,
+      required this.photoUrl});
+
+  @override
+  String toString() {
+    return '${this.firstName}, ${this.lastName}, ${this.emailAddr}, ${this.photoUrl}';
   }
 }

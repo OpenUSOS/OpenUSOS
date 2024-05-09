@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:open_usos/user_session.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
@@ -10,73 +9,36 @@ class NavBar extends StatefulWidget {
 }
 
 class _NavBarState extends State<NavBar> {
-  //potrzebne zmienne
-  late String imageUrl = '';
-  late bool hasImage = false;
-  late String name = '';
-  late String initials = '';
-  late String email = '';
-  late String university = '';
+  late bool hasImage = true;
+  User? _user;
   bool _isTapped = false;
-
-
-
-
 
   @override
   void initState() {
     super.initState();
-    loadData();
-  }
-
-  void tapCallback() => setState(() {_isTapped = true;});
-
-  Future<Map<String, dynamic>> getData() async {
-    var url = 'http://apiAddres:5000/api/data';
-    try {
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        //status HTTP 200 to OK
-        return json.decode(response.body);
-      } else {
-        //inny status HTTP zwracamy pusta liste
-        print('Getting data not possible: ${response.statusCode}');
-        return {};
-      }
-    } catch (e) {
-      //error w trakcie pobierania danych
-      print('Error: $e');
-      return {};
+    if (UserSession.sessionId == null) {
+      throw Exception('sessionId is null, user not logged in.');
     }
+    debugPrint(UserSession.user!.firstName);
+    _user = UserSession.user;
   }
 
-  Future<void> loadData() async {
-    var data = await getData();
-    setState(() {
-      //ustawianie danych
-      imageUrl = data['imageUrl'] ?? "http://exampleurl.com/image.jpg";
-      hasImage = imageUrl != "http://exampleurl.com/image.jpg";
-      name = data['name'] ?? 'User Name';
-      email = data['email'] ?? 'user@example.com';
-      university = data['university'] ?? 'Example University';
-      initials = '';
-      List<String> split = name.split(' ');
-      split.forEach((element) {
-        initials += element[0];
+  void tapCallback() => setState(() {
+        _isTapped = true;
       });
-    });
-  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      clipBehavior: Clip.none,
+        clipBehavior: Clip.none,
         child: ListView(children: <Widget>[
           DrawerHeader(
               margin: EdgeInsets.zero,
               padding: EdgeInsets.zero,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/c/cd/University-of-Alabama-EngineeringResearchCenter-01.jpg'),
+                  image: NetworkImage(
+                      'https://upload.wikimedia.org/wikipedia/commons/c/cd/University-of-Alabama-EngineeringResearchCenter-01.jpg'),
                   fit: BoxFit.cover,
                   colorFilter: ColorFilter.mode(
                     Colors.black.withOpacity(0.2),
@@ -89,7 +51,7 @@ class _NavBarState extends State<NavBar> {
                     offset: Offset(0.0, 4.0),
                     blurRadius: 4.0,
                   )
-                ], 
+                ],
               ),
               child: Row(children: <Widget>[
                 Expanded(
@@ -99,28 +61,25 @@ class _NavBarState extends State<NavBar> {
                       children: <Widget>[
                         hasImage
                             ? CircleAvatar(
-                          radius: 40,
-                          backgroundImage: NetworkImage(imageUrl),
-                        )
+                                radius: 40,
+                                backgroundImage: NetworkImage(_user!.photoUrl),
+                              )
                             : CircleAvatar(
-                            radius: 40,
-                            backgroundColor: Colors.grey[400],
-                            child: Text(
-                                initials,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 40,
-                                    color: Colors.black54,
-                                    shadows: <Shadow>[
-                                      Shadow(
-                                        color: Colors.grey.shade600,
-                                        offset: Offset(2.0, 2.0),
-                                        blurRadius: 3.0,
-                                      )
-                                    ]
-                                )
-                            )
-                        )
+                                radius: 40,
+                                backgroundColor: Colors.grey[400],
+                                child: Text(
+                                    _user!.firstName[0] + _user!.lastName[0],
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 40,
+                                        color: Colors.black54,
+                                        shadows: <Shadow>[
+                                          Shadow(
+                                            color: Colors.grey.shade600,
+                                            offset: Offset(2.0, 2.0),
+                                            blurRadius: 3.0,
+                                          )
+                                        ])))
                       ]),
                 ),
                 Expanded(
@@ -128,25 +87,21 @@ class _NavBarState extends State<NavBar> {
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text(
-                            name,
+                        Text(_user!.firstName + ' ' + _user!.lastName,
                             style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 20,
+                                fontSize: 15,
                                 shadows: <Shadow>[
                                   Shadow(
                                     blurRadius: 3.0,
                                     offset: Offset(2.0, 2.0),
                                     color: Colors.black,
                                   )
-                                ]
-                            )
-                        ),
+                                ])),
                         SizedBox(
                           height: 20,
                         ),
-                        Text(
-                            email,
+                        Text(_user!.emailAddr,
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
@@ -157,11 +112,8 @@ class _NavBarState extends State<NavBar> {
                                     color: Colors.black,
                                   )
                                 ],
-                                fontWeight: FontWeight.bold
-                            )
-                        ),
-                        Text(
-                            university,
+                                fontWeight: FontWeight.bold)),
+                        Text(_user!.universityName,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 10,
@@ -173,21 +125,18 @@ class _NavBarState extends State<NavBar> {
                                 )
                               ],
                               fontWeight: FontWeight.bold,
-                            )
-                        ),
-                      ]
-                  ),
+                            )),
+                      ]),
                 )
               ])),
           ListTile(
-            title: Text("Oceny"),
-            leading: Icon(Icons.grade),
-            onTap: () {
+              title: Text("Oceny"),
+              leading: Icon(Icons.grade),
+              onTap: () {
                 tapCallback();
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/grades');
-            }
-          ),
+              }),
           Divider(
             indent: 20,
             endIndent: 20,
@@ -195,14 +144,13 @@ class _NavBarState extends State<NavBar> {
             thickness: 2.0,
           ),
           ListTile(
-            title: Text("Kalendarz"),
-            leading: Icon(Icons.calendar_month),
-            onTap: () {
+              title: Text("Kalendarz"),
+              leading: Icon(Icons.calendar_month),
+              onTap: () {
                 tapCallback();
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/calendar');
-            }
-          ),
+              }),
           Divider(
             indent: 20,
             endIndent: 20,
@@ -210,14 +158,27 @@ class _NavBarState extends State<NavBar> {
             thickness: 2.0,
           ),
           ListTile(
-            title: Text("Plan zajęć"),
-            leading: Icon(Icons.schedule),
-            onTap: () {
+              title: Text("OpenUSOS mail"),
+              leading: Icon(Icons.mail),
+              onTap: () {
+                tapCallback();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/email');
+              }),
+          Divider(
+            indent: 20,
+            endIndent: 20,
+            height: 5.0,
+            thickness: 2.0,
+          ),
+          ListTile(
+              title: Text("Plan zajęć"),
+              leading: Icon(Icons.schedule),
+              onTap: () {
                 tapCallback();
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/schedule');
-            }
-          ),
+              }),
           Divider(
             indent: 20,
             endIndent: 20,
@@ -225,14 +186,13 @@ class _NavBarState extends State<NavBar> {
             thickness: 2.0,
           ),
           ListTile(
-            title: Text("Sprawdziany"),
-            leading: Icon(Icons.task),
-            onTap: () {
+              title: Text("Sprawdziany"),
+              leading: Icon(Icons.task),
+              onTap: () {
                 tapCallback();
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/exams');
-            }
-          ),
+              }),
           Divider(
             indent: 20,
             endIndent: 20,
@@ -240,15 +200,13 @@ class _NavBarState extends State<NavBar> {
             thickness: 2.0,
           ),
           ListTile(
-            title: Text("Ankiety"),
-            leading: Icon(Icons.dynamic_form),
-            onTap: () {
+              title: Text("Ankiety"),
+              leading: Icon(Icons.dynamic_form),
+              onTap: () {
                 tapCallback();
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/questionnaires');
-            }
-
-          ),
+              }),
           Divider(
             indent: 20,
             endIndent: 20,
@@ -256,14 +214,13 @@ class _NavBarState extends State<NavBar> {
             thickness: 2.0,
           ),
           ListTile(
-            title: Text("Aktualności"),
-            leading: Icon(Icons.newspaper),
-            onTap: () {
+              title: Text("Aktualności"),
+              leading: Icon(Icons.newspaper),
+              onTap: () {
                 tapCallback();
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/news');
-            }
-          ),
+              }),
           Divider(
             indent: 20,
             endIndent: 20,
@@ -271,14 +228,13 @@ class _NavBarState extends State<NavBar> {
             thickness: 2.0,
           ),
           ListTile(
-            title: Text("Grupy zajęciowe"),
-            leading: Icon(Icons.group),
-            onTap: () {
+              title: Text("Grupy zajęciowe"),
+              leading: Icon(Icons.group),
+              onTap: () {
                 tapCallback();
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/courses');
-            }
-          ),
+              }),
           Divider(
             indent: 20,
             endIndent: 20,
@@ -286,14 +242,13 @@ class _NavBarState extends State<NavBar> {
             thickness: 2.0,
           ),
           ListTile(
-            title: Text("Ustawienia"),
-            leading: Icon(Icons.settings),
-            onTap: () {
+              title: Text("Ustawienia"),
+              leading: Icon(Icons.settings),
+              onTap: () {
                 tapCallback();
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/settings');
-            }
-          ),
+              }),
           Divider(
             indent: 20,
             endIndent: 20,
@@ -301,16 +256,13 @@ class _NavBarState extends State<NavBar> {
             thickness: 2.0,
           ),
           ListTile(
-            title: Text("Twoje konto"),
-            leading: Icon(Icons.person),
-            onTap: () {
+              title: Text("Twoje konto"),
+              leading: Icon(Icons.person),
+              onTap: () {
                 tapCallback();
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/user');
-            }
-          ),
-
-
+              }),
         ]));
   }
 }

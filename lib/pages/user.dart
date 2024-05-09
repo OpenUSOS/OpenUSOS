@@ -1,45 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
+import 'package:open_usos/user_session.dart';
+import 'package:open_usos/appbar.dart';
 
-import 'package:open_usos/main.dart';
-
-
-class User extends StatefulWidget {
-  final OpenUSOS app;
-  const User( this.app, {super.key});
+class Account extends StatefulWidget {
+  const Account({super.key});
 
   @override
-  State<User> createState() => UserState();
+  State<Account> createState() => _UserState();
 }
 
-//we annotate it with visibleForTesting to make sure the state class isn't used anywhere else
-//we make it publics so that it can be tested
-@visibleForTesting
-class UserState extends State<User> {
-  List data = [];
+class _UserState extends State<Account> {
+  User? _user;
 
-  //we call the superclass constructor and getData to initialize termList
-  UserState() : super(){
-    getData();
+  @override
+  void initState() {
+    super.initState();
+    if (UserSession.sessionId == null) {
+      throw Exception('sessionId is null, user not logged in.');
+    }
+    debugPrint('AAaAA chuj');
+    _user = UserSession.user;
   }
 
-  //getting data from api
-  void getData() {
-    data = [{"23/24" : 1}, {"24/25" : 2}];
-  }
-
-  //build method
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView.builder(
-        itemCount: data.length,
-        itemBuilder: (context, index){
-          Map<String, dynamic> currentList = data[index];
-          // Use the current list to build a row
-          return Row();
-        },
-      ),
-    );
+        appBar: USOSBar(title: 'Twoje konto'),
+        body: SingleChildScrollView(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+              SizedBox(height: 20.0),
+              CircleAvatar(
+                radius: 50.0,
+                backgroundImage: NetworkImage(_user!.photoUrl),
+                backgroundColor: Colors.transparent,
+              ),
+              Text('${_user!.firstName} ${_user!.lastName}',
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                  )),
+              SizedBox(height: 20.0),
+              Text('${_user!.emailAddr}',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w400,
+                  )),
+              Row(children: [
+                Expanded(
+                    child: ElevatedButton(
+                        child: Text('Wyloguj się'),
+                        onPressed: () {
+                          UserSession.logout();
+                          Navigator.popUntil(context, (route) => false);
+                          Navigator.pushNamed(
+                              context, Navigator.defaultRouteName);
+                        }))
+              ])
+            ])));
   }
 }
-

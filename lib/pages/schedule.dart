@@ -65,9 +65,6 @@ class _ScheduleState extends State<Schedule> {
                 lang: 'pl',
               ))
           .toList();
-      for (Subject item in fetchedSubjects) {
-        debugPrint(item.toString());
-      }
       setState(() {
         _subjects = fetchedSubjects;
         _subjectDataSource = SubjectDataSource(_subjects!);
@@ -99,17 +96,20 @@ class _ScheduleState extends State<Schedule> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(subject.eventName,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       fontSize: 12.0)),
               Text(subject.buildingName + ', ' + subject.roomNumber,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                       fontWeight: FontWeight.w400,
                       color: Colors.white70,
                       fontSize: 10.0)),
               Text(
                   '${subject.from.hour}:${subject.from.minute} - ${subject.to.hour}:${subject.to.minute}',
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                       fontWeight: FontWeight.w400,
                       color: Colors.white70,
@@ -184,7 +184,7 @@ class Subject {
   DateTime to;
   Color background;
   bool isAllDay;
-
+  //only for testing
   @override
   String toString() {
     return '${this.eventName}';

@@ -13,6 +13,33 @@ class UserSession {
       loginURL; //static because it needs to be accessed by login page
   static String? accessToken; //access token for api
   static String? accessTokenSecret; //token secret for api
+  static User? user;
+
+  static Future<void> _getUserData() async {
+    if (UserSession.sessionId == null) {
+      throw Exception("sessionId is null, user not logged in.");
+    }
+
+    final url = Uri.http(UserSession.host, UserSession.basePath,
+        {'id': UserSession.sessionId, 'query1': 'user_info'});
+
+    final response = await get(url);
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+      debugPrint(data.toString());
+      User fetchedUser = User(
+        firstName: data['first_name'],
+        lastName: data['last_name'],
+        photoUrl: data['photo_url']['200x200'],
+        emailAddr: data['email'],
+      );
+      user = fetchedUser;
+    } else {
+      throw Exception(
+          'failed to fetch data: HTTP status ${response.statusCode}');
+    }
+  }
 
   static Future createSession() async {
     final url = Uri.http(host, logPath);
@@ -49,6 +76,7 @@ class UserSession {
       accessToken = body['AT'];
       accessTokenSecret = body['ATS'];
     }
+    _getUserData();
     return;
   }
 
@@ -119,5 +147,24 @@ class LoginPage extends StatelessWidget {
         controller: controller,
       ),
     );
+  }
+}
+
+class User {
+  String firstName;
+  String lastName;
+  String emailAddr;
+  String photoUrl;
+  String universityName = "Uniwersytet Jagielloński";
+
+  User(
+      {required this.firstName,
+      required this.lastName,
+      required this.emailAddr,
+      required this.photoUrl});
+
+  @override
+  String toString() {
+    return '${this.firstName}, ${this.lastName}, ${this.emailAddr}, ${this.photoUrl}';
   }
 }
