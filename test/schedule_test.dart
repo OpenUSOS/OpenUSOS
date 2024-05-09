@@ -4,54 +4,47 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:open_usos/pages/schedule.dart';
 
 
-class TestGrades {
+class TestSchedule {
 
   void testGetData() {
-    testWidgets('Data should be initialized', (WidgetTester tester) async {
-      // Build Grades
-      await tester.pumpWidget(MaterialApp(home: Grades()));
-      // Access the state of Grades
-      GradesState state = tester.state(find.byType(Grades));
+    testWidgets("Data should be null if user isn't logged in", (WidgetTester tester) async {
+      // Build Schedule
+      await tester.pumpWidget(MaterialApp(home: Schedule()));
+      // Access the state of Schedule
+      ScheduleState state = tester.state(find.byType(Schedule));
 
-      expect(state.scheduleData, isNotNull);
-      expect(state.scheduleData, isA<List<Map>>());
+      expect(state.subjects, isNull);
     });
   }
 
 
   void testDisplay() {
-    testWidgets('Grades should be displayed', (WidgetTester tester) async {
+    testWidgets('Schedule should be displayed', (WidgetTester tester) async {
       // Build MyWidget
-      await tester.pumpWidget(MaterialApp(home: Grades()));
+      await tester.pumpWidget(MaterialApp(home: Schedule()));
 
       // Find MyWidget by its type
-      expect(find.byType(Grades), findsOneWidget);
+      expect(find.byType(Schedule), findsOneWidget);
     });
   }
+  
+  void testLoading() {
+    testWidgets('Schedule displays loading indicator while loading',
+            (WidgetTester tester) async {
+          // Build the widget and trigger a frame
+          await tester.pumpWidget(MaterialApp(home: Schedule()));
 
-
-  void testDisplayTerms() {
-    testWidgets('Grades widget displays correct number of terms', (
-        WidgetTester tester) async {
-      // Build the Grades widget
-      await tester.pumpWidget(MaterialApp(home: Grades()));
-
-      GradesState state = tester.state(find.byType(Grades));
-
-      await state.setData();
-      // Verify that the correct number of terms is displayed
-
-      expect(find.byType(ListView, skipOffstage: false),
-          findsNWidgets(state.scheduleData.length + 1));
-      // list of terms and lists of schedule in each term
-    });
+          // Verify that loading indicator is displayed
+          expect(find.byType(CircularProgressIndicator), findsOneWidget);
+        });
   }
+  
 }
 
 
 void main(){
-  final test = TestGrades();
+  final test = TestSchedule();
   test.testGetData();
   test.testDisplay();
-  test.testDisplayTerms();
-}
+  test.testLoading();
+  }

@@ -1,45 +1,83 @@
 import 'package:flutter/material.dart';
 
-import 'package:open_usos/main.dart';
-
-
 class User extends StatefulWidget {
-  final OpenUSOS app;
-  const User( this.app, {super.key});
+  const User({super.key});
 
   @override
   State<User> createState() => UserState();
 }
 
 //we annotate it with visibleForTesting to make sure the state class isn't used anywhere else
-//we make it publics so that it can be tested
+//we make it public so that it can be tested
 @visibleForTesting
 class UserState extends State<User> {
-  List data = [];
+  List<Map<String, dynamic>> userData = [];
 
-  //we call the superclass constructor and getData to initialize termList
-  UserState() : super(){
+  void initState() {
+    super.initState();
     getData();
   }
 
-  //getting data from api
-  void getData() {
-    data = [{"23/24" : 1}, {"24/25" : 2}];
+  Future setData() async {
+    userData = await getData();
+    return;
   }
 
-  //build method
+  Future<List<Map<String, dynamic>>> getData() async {
+    return [
+      {
+        'term': '23/24 Z',
+        'subject': 'Programowanie',
+        'grade': 4.5,
+        'professor': 'Rafael Coffee'
+      },
+      {
+        'term': '23/24 Z',
+        'subject': 'Grafika komputerowa',
+        'grade': 4.5,
+        'professor': 'Rafael Coffee'
+      },
+      {
+        'term': '23/24 Z',
+        'subject': 'Nienawidze programowania 2',
+        'grade': 4.5,
+        'professor': 'Rafael Coffee'
+      },
+      {
+        'term': '23/24 Z',
+        'subject': 'Wstęp do piekła',
+        'grade': 2.0,
+        'professor': 'Rafael Coffee'
+      },
+      {
+        'term': '22/23 Z',
+        'subject': 'Sranie 1',
+        'grade': 4.5,
+        'professor': 'Rafael Coffee'
+      },
+      {
+        'term': '22/23 Z',
+        'subject': 'Sranie 1',
+        'grade': 4.5,
+        'professor': 'Rafael Coffee'
+      },
+      {
+        'term': '21/22 Z',
+        'subject': 'Sranie 1',
+        'grade': 4.5,
+        'professor': 'Rafael Coffee'
+      },
+      {
+        'term': '21/22 Z',
+        'subject': 'Sranie 1',
+        'grade': 4.5,
+        'professor': 'Rafael Coffee'
+      },
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView.builder(
-        itemCount: data.length,
-        itemBuilder: (context, index){
-          Map<String, dynamic> currentList = data[index];
-          // Use the current list to build a row
-          return Row();
-        },
-      ),
-    );
+    throw UnimplementedError();
   }
 }
-

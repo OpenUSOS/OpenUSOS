@@ -30,21 +30,15 @@ class TestGrades {
   }
 
 
-  void testDisplayTerms() {
-    testWidgets('Grades widget displays correct number of terms', (
-        WidgetTester tester) async {
-      // Build the Grades widget
-      await tester.pumpWidget(MaterialApp(home: Grades()));
+  void testLoading() {
+    testWidgets('Grades displays loading indicator while loading',
+            (WidgetTester tester) async {
+          // Build the widget and trigger a frame
+          await tester.pumpWidget(MaterialApp(home: Grades()));
 
-      GradesState state = tester.state(find.byType(Grades));
-
-      await state.setData();
-      // Verify that the correct number of terms is displayed
-
-      expect(find.byType(ListView, skipOffstage: false),
-          findsNWidgets(state.gradesData.length + 1));
-      // list of terms and lists of grades in each term
-    });
+          // Verify that loading indicator is displayed
+          expect(find.byType(CircularProgressIndicator), findsOneWidget);
+        });
   }
 }
 
@@ -53,5 +47,5 @@ void main(){
   final test = TestGrades();
   test.testGetData();
   test.testDisplay();
-  test.testDisplayTerms();
+  test.testLoading();
 }
