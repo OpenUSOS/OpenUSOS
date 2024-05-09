@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'package:open_usos/themes.dart';
 import 'package:provider/provider.dart';
 import 'package:open_usos/themes.dart';
 import 'package:open_usos/pages/calendar.dart';
