@@ -29,6 +29,7 @@ class _NavBarState extends State<NavBar> {
 
   @override
   Widget build(BuildContext context) {
+    Color navTextColor = Colors.white;
     return Drawer(
         clipBehavior: Clip.none,
         child: ListView(children: <Widget>[
@@ -129,140 +130,51 @@ class _NavBarState extends State<NavBar> {
                       ]),
                 )
               ])),
-          ListTile(
-              title: Text("Oceny"),
-              leading: Icon(Icons.grade),
-              onTap: () {
-                tapCallback();
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/grades');
-              }),
-          Divider(
-            indent: 20,
-            endIndent: 20,
-            height: 5.0,
-            thickness: 2.0,
-          ),
-          ListTile(
-              title: Text("Kalendarz"),
-              leading: Icon(Icons.calendar_month),
-              onTap: () {
-                tapCallback();
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/calendar');
-              }),
-          Divider(
-            indent: 20,
-            endIndent: 20,
-            height: 5.0,
-            thickness: 2.0,
-          ),
-          ListTile(
-              title: Text("OpenUSOS mail"),
-              leading: Icon(Icons.mail),
-              onTap: () {
-                tapCallback();
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/email');
-              }),
-          Divider(
-            indent: 20,
-            endIndent: 20,
-            height: 5.0,
-            thickness: 2.0,
-          ),
-          ListTile(
-              title: Text("Plan zajęć"),
-              leading: Icon(Icons.schedule),
-              onTap: () {
-                tapCallback();
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/schedule');
-              }),
-          Divider(
-            indent: 20,
-            endIndent: 20,
-            height: 5.0,
-            thickness: 2.0,
-          ),
-          ListTile(
-              title: Text("Sprawdziany"),
-              leading: Icon(Icons.task),
-              onTap: () {
-                tapCallback();
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/exams');
-              }),
-          Divider(
-            indent: 20,
-            endIndent: 20,
-            height: 5.0,
-            thickness: 2.0,
-          ),
-          ListTile(
-              title: Text("Ankiety"),
-              leading: Icon(Icons.dynamic_form),
-              onTap: () {
-                tapCallback();
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/questionnaires');
-              }),
-          Divider(
-            indent: 20,
-            endIndent: 20,
-            height: 5.0,
-            thickness: 2.0,
-          ),
-          ListTile(
-              title: Text("Aktualności"),
-              leading: Icon(Icons.newspaper),
-              onTap: () {
-                tapCallback();
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/news');
-              }),
-          Divider(
-            indent: 20,
-            endIndent: 20,
-            height: 5.0,
-            thickness: 2.0,
-          ),
-          ListTile(
-              title: Text("Grupy zajęciowe"),
-              leading: Icon(Icons.group),
-              onTap: () {
-                tapCallback();
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/courses');
-              }),
-          Divider(
-            indent: 20,
-            endIndent: 20,
-            height: 5.0,
-            thickness: 2.0,
-          ),
-          ListTile(
-              title: Text("Ustawienia"),
-              leading: Icon(Icons.settings),
-              onTap: () {
-                tapCallback();
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/settings');
-              }),
-          Divider(
-            indent: 20,
-            endIndent: 20,
-            height: 5.0,
-            thickness: 2.0,
-          ),
-          ListTile(
-              title: Text("Twoje konto"),
-              leading: Icon(Icons.person),
-              onTap: () {
-                tapCallback();
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/user');
-              }),
+          buildNavTiles('Oceny', Icons.assessment, '/grades'),
+          buildDivider(),
+          buildNavTiles('Kalendarz', Icons.calendar_view_month, '/calendar'),
+          buildDivider(),
+          buildNavTiles('OpenUSOS mail', Icons.mail, '/email'),
+          buildDivider(),
+          buildNavTiles('Plan zajęć', Icons.calendar_view_day, '/schedule'),
+          buildDivider(),
+          buildNavTiles('Sprawdziany', Icons.task, '/TODO'),
+          buildDivider(),
+          buildNavTiles('Ankiety', Icons.question_answer, '/TODO'),
+          buildDivider(),
+          buildNavTiles('Aktualności', Icons.newspaper, '/TODO'),
+          buildDivider(),
+          buildNavTiles('Grupy zajęciowe', Icons.group, '/TODO'),
+          buildDivider(),
+          buildNavTiles('Ustawienia', Icons.settings, '/settings'),
+          buildDivider(),
+          buildNavTiles('Twoje konto', Icons.person, '/user')
         ]));
+  }
+
+  Widget buildNavTiles(String title, IconData iconData, String path) {
+    return ListTile(
+        title: Text(
+          title,
+          style: TextStyle(color: Colors.white),
+        ),
+        leading: Icon(
+          iconData,
+          color: Colors.white,
+        ),
+        onTap: () {
+          tapCallback();
+          Navigator.pop(context);
+          Navigator.pushNamed(context, path);
+        });
+  }
+
+  Widget buildDivider() {
+    return Divider(
+      indent: 20,
+      endIndent: 20,
+      height: 5.0,
+      thickness: 2.0,
+    );
   }
 }
