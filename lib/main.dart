@@ -63,7 +63,8 @@ class OpenUSOS extends StatelessWidget {
             '/calendar': (context) => Calendar(),
             '/schedule': (context) => Schedule(),
             '/user': (context) => Account(),
-            '/email': (context) => Emails(),
+            '/emails': (context) => Emails(),
+            '/emailSender': (context) => EmailSender(),
           });
     });
   }

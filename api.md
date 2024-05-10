@@ -33,11 +33,11 @@ example:
         "subject": "Test",
         "to": [
             {
-                "email": "oskar.kulinski@student.uj.edu.pl",
+                "email": "example@example",
                 "user": {
-                    "first_name": "Oskar",
+                    "first_name": "Jan",
                     "id": "696969",
-                    "last_name": "Kuliński"
+                    "last_name": "Robak"
                 }
             }
         ]
