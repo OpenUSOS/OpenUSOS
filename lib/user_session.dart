@@ -27,7 +27,6 @@ class UserSession {
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
-      debugPrint(data.toString());
       User fetchedUser = User(
         firstName: data['first_name'],
         lastName: data['last_name'],
