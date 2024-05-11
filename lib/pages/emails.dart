@@ -264,7 +264,7 @@ class Email{
         required this.contents,
         required this.date,
         required this.id,
-        required this.recipients}
+        required this.recipients}){}
 
   @override
   String toString() {

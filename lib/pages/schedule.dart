@@ -112,8 +112,9 @@ class ScheduleState extends State<Schedule> {
                       fontWeight: FontWeight.w400,
                       color: Colors.white70,
                       fontSize: 10.0)),
-              Text(
-                  '${subject.from.hour}:${subject.from.minute} - ${subject.to.hour}:${subject.to.minute}',
+              Text(//added padding for proper minute displaying (without it 10:00 would be displayed as 10:0
+                  '${subject.from.hour}:${subject.from.minute.toString().padRight(2, '0')} - '
+                      '${subject.to.hour}:${subject.to.minute.toString().padRight(2, '0')}',
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                       fontWeight: FontWeight.w400,
@@ -125,7 +126,7 @@ class ScheduleState extends State<Schedule> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: USOSBar(title: 'Ustawienia'),
+      appBar: USOSBar(title: 'Plan zajęć'),
       body: FutureBuilder(
           future: _subjectsFuture,
           builder: (context, snapshot) {
