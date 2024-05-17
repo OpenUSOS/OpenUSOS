@@ -1,18 +1,144 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'dart:convert';
 
 import 'package:open_usos/appbar.dart';
 import 'package:open_usos/user_session.dart';
 
 class Emails extends StatefulWidget {
-  const Emails({super.key});
-
   @override
   State<Emails> createState() => EmailsState();
 }
 
 @visibleForTesting
 class EmailsState extends State<Emails> {
+  @visibleForTesting
+  List<Email> emailData = [];
+  late Future<void>
+      _emailsFuture; //future to prevent future builder from sending repeated api calls
+
+  @override
+  void initState() {
+    super.initState();
+    _emailsFuture = _setEmails();
+  }
+
+  Future _setEmails() async {
+    emailData = await _fetchEmails();
+    return;
+  }
+
+  Future<List<Email>> _fetchEmails() async {
+    final url = Uri.http(UserSession.host, UserSession.basePath,
+        {"id": UserSession.sessionId, "query1": "get_emails"});
+    final response = await get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      List<Email> emailList = [];
+
+      for (dynamic item in data) {
+        emailList.add(Email(
+            subject: item['subject'],
+            contents: item['contents'],
+            date: item['date'],
+            id: item["id"],
+            recipients: item['to']));
+      }
+      return emailList;
+    } else {
+      throw Exception(
+          "Failed to fetch data: HTTP status ${response.statusCode}");
+      ;
+    }
+  }
+
+
+  Widget build(BuildContext context) {
+    Color? failed = Colors.red[800];
+    Color? passed = Colors.blue[800];
+
+    return Scaffold(
+      appBar: AppBar(title: Text('Wysłane maile'), actions: <Widget>[
+        IconButton(
+            onPressed: () {
+              if (ModalRoute.of(context)!.isCurrent) {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/home');
+              }
+              ;
+            },
+            icon: Icon(
+              Icons.home_filled,
+            ))
+      ]),
+      body: FutureBuilder(
+          future: _emailsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Scaffold(
+                  body: Center(
+                child: CircularProgressIndicator(),
+              ));
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              return Column(
+                children: [
+                  Row(children: [
+                    Expanded(
+                        child: ElevatedButton(
+                            child: Text('Nowa wiadomośc'),
+                            onPressed: () {
+                              Navigator.pushNamed(context, 'emailSender');
+                            }))
+                  ]),
+                  ListView.builder(
+                      itemCount: emailData.length,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final item = emailData[index];
+                        return Card(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            elevation: 4.0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: ListTile(
+                              title: Text(
+                                item.subject,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text(
+                                  'Adresaci: ${item.recipientAddressString()}'),
+                              trailing: Text(
+                                item.date),
+                              onTap: () {
+                                Navigator.pushNamed(context, '/emailExpanded', arguments: item);
+                              },
+                            ));
+                      })
+                ],
+              );
+            }
+          }),
+    );
+  }
+}
+
+class EmailSender extends StatefulWidget {
+  const EmailSender({super.key});
+
+  @override
+  State<EmailSender> createState() => EmailSenderState();
+}
+
+@visibleForTesting
+class EmailSenderState extends State<EmailSender> {
   @visibleForTesting
   User? user;
   bool _isSending = false;
@@ -109,5 +235,66 @@ class EmailsState extends State<Emails> {
                       child: Text('Wyślij'),
                     )
             ])));
+  }
+}
+
+class EmailExpanded extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    final email = ModalRoute.of(context)!.settings.arguments as Email;
+
+    return Scaffold(
+        appBar: USOSBar(title: 'OpenUSOS mail'),
+        body: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Column(children: [
+              Container(
+                child:  Text('Odbiorcy: ${email.recipientAddressString()}')
+              ),
+              Container(
+                child:  Text('Temat: ${email.subject}')
+              ),
+              Container(
+                  child:  Text('Data wysłania: ${email.date}')
+              ),
+              Expanded(
+                child: Container(
+                    child:  Text('Treść: ${email.contents}')
+                ),
+              ),
+            ])));
+  }
+
+}
+
+
+class Email {
+  String subject;
+  String contents;
+  String date;
+  String id;
+  List<Map<String, dynamic>> recipients;
+
+  Email(
+      {required this.subject,
+      required this.contents,
+      required this.date,
+      required this.id,
+      required this.recipients}) {}
+
+  String recipientAddressString() {
+    String result = ' ';
+
+    for (Map<String, dynamic> recipient in recipients) {
+      result += recipient['email'] + ", ";
+    }
+
+    result = result.substring(0, result.length - 2);
+    return result;
+  }
+
+  @override
+  String toString() {
+    return '${this.subject}, ${this.contents}, ${this.date}';
   }
 }

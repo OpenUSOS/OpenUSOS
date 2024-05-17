@@ -14,7 +14,7 @@ class Grades extends StatefulWidget {
 @visibleForTesting
 class GradesState extends State<Grades> {
 
-  late Future<void> _gradesFuture; //neccessary because future builder makes repeated api calls otherwise
+  late Future<void> _gradesFuture; //necessary because future builder makes repeated api calls otherwise
 
   @visibleForTesting
   Map<String, List<Grade>> grades = {};
@@ -68,10 +68,7 @@ class GradesState extends State<Grades> {
   Widget build(BuildContext context) {
     Color? failed = Colors.red[800];
     Color? passed = Colors.blue[800];
-    //zmienna przechowujaca pogrupowane oceny wzgledem semestrow
 
-
-    //grupujemy w nowej mapie map
     return Scaffold(
       appBar: AppBar(title: Text('Oceny'), actions: <Widget>[
         IconButton(

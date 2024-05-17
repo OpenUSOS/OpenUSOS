@@ -9,9 +9,9 @@ class TestEmails {
   void testGetData() {
     testWidgets('Data should be initialized without loging', (WidgetTester tester) async {
       // Build Emails
-      await tester.pumpWidget(MaterialApp(home: Emails()));
+      await tester.pumpWidget(MaterialApp(home: EmailSender()));
       // Access the state of Emails
-      EmailsState state = tester.state(find.byType(Emails));
+      EmailSenderState state = tester.state(find.byType(EmailSender));
 
       expect(state.user, isNull);
     });
@@ -21,10 +21,10 @@ class TestEmails {
   void testDisplay() {
     testWidgets('Emails should be displayed', (WidgetTester tester) async {
       // Build MyWidget
-      await tester.pumpWidget(MaterialApp(home: Emails()));
+      await tester.pumpWidget(MaterialApp(home: EmailSender()));
 
       // Find MyWidget by its type
-      expect(find.byType(Emails), findsOneWidget);
+      expect(find.byType(EmailSender), findsOneWidget);
     });
   }
 
