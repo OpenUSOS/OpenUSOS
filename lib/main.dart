@@ -65,6 +65,7 @@ class OpenUSOS extends StatelessWidget {
             '/user': (context) => Account(),
             '/emails': (context) => Emails(),
             '/emailSender': (context) => EmailSender(),
+            '/emailExpanded':(context) => EmailExpanded(),
           });
     });
   }

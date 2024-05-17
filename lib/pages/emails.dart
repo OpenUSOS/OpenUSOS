@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:open_usos/appbar.dart';
 import 'package:open_usos/user_session.dart';
 
-class Emails extends StatefulWidget{
+class Emails extends StatefulWidget {
   @override
   State<Emails> createState() => EmailsState();
 }
@@ -14,7 +14,8 @@ class Emails extends StatefulWidget{
 class EmailsState extends State<Emails> {
   @visibleForTesting
   List<Email> emailData = [];
-  late Future<void> _emailsFuture; //future to prevent future builder from sending repeated api calls
+  late Future<void>
+      _emailsFuture; //future to prevent future builder from sending repeated api calls
 
   @override
   void initState() {
@@ -22,34 +23,34 @@ class EmailsState extends State<Emails> {
     _emailsFuture = _setEmails();
   }
 
-  Future _setEmails() async{
+  Future _setEmails() async {
     emailData = await _fetchEmails();
     return;
   }
 
-  Future<List<Email>> _fetchEmails() async{
-    final url = Uri.http(UserSession.host, UserSession.basePath, {"id": UserSession.sessionId, "query1": "get_emails"});
+  Future<List<Email>> _fetchEmails() async {
+    final url = Uri.http(UserSession.host, UserSession.basePath,
+        {"id": UserSession.sessionId, "query1": "get_emails"});
     final response = await get(url);
 
-
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       final data = json.decode(response.body);
       List<Email> emailList = [];
 
-      for (dynamic item in data){
-       emailList.add(Email(
-           subject: item['subject'],
-           contents: item['contents'],
-           date: item['date'],
-           id: item["id"],
-           recipients: item['to']));
+      for (dynamic item in data) {
+        emailList.add(Email(
+            subject: item['subject'],
+            contents: item['contents'],
+            date: item['date'],
+            id: item["id"],
+            recipients: item['to']));
       }
       return emailList;
+    } else {
+      throw Exception(
+          "Failed to fetch data: HTTP status ${response.statusCode}");
+      ;
     }
-    else{
-      throw Exception("Failed to fetch data: HTTP status ${response.statusCode}");;
-    }
-
   }
 
 
@@ -77,8 +78,8 @@ class EmailsState extends State<Emails> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Scaffold(
                   body: Center(
-                    child: CircularProgressIndicator(),
-                  ));
+                child: CircularProgressIndicator(),
+              ));
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
@@ -89,51 +90,38 @@ class EmailsState extends State<Emails> {
                         child: ElevatedButton(
                             child: Text('Nowa wiadomośc'),
                             onPressed: () {
-                              Navigator.pushNamed(
-                                  context, 'emailSender');
+                              Navigator.pushNamed(context, 'emailSender');
                             }))
                   ]),
                   ListView.builder(
                       itemCount: emailData.length,
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          final item = emailData[index];
-                                  return Card(
-                                      margin: EdgeInsets.symmetric(
-                                          horizontal: 16.0, vertical: 8.0),
-                                      elevation: 4.0,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10.0),
-                                      ),
-                                      child: ListTile(
-                                        title: Text(
-                                          item.name,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        subtitle:
-                                        Text('wystawione przez ${item.author}'),
-                                        leading: CircleAvatar(
-                                          backgroundColor: item.value == '2' ||
-                                              item.value == 'NZAL'
-                                              ? failed
-                                              : passed,
-                                          radius: 30,
-                                          child: Text(
-                                            item.value,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ));
-                                })
-                          ],
-                        );
-                      }),
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final item = emailData[index];
+                        return Card(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            elevation: 4.0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: ListTile(
+                              title: Text(
+                                item.subject,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text(
+                                  'Adresaci: ${item.recipientAddressString()}'),
+                              trailing: Text(
+                                item.date),
+                              onTap: () {
+                                Navigator.pushNamed(context, '/emailExpanded', arguments: item);
+                              },
+                            ));
+                      })
                 ],
               );
             }
@@ -141,7 +129,6 @@ class EmailsState extends State<Emails> {
     );
   }
 }
-
 
 class EmailSender extends StatefulWidget {
   const EmailSender({super.key});
@@ -251,8 +238,37 @@ class EmailSenderState extends State<EmailSender> {
   }
 }
 
+class EmailExpanded extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    final email = ModalRoute.of(context)!.settings.arguments as Email;
 
-class Email{
+    return Scaffold(
+        appBar: USOSBar(title: 'OpenUSOS mail'),
+        body: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Column(children: [
+              Container(
+                child:  Text('Odbiorcy: ${email.recipientAddressString()}')
+              ),
+              Container(
+                child:  Text('Temat: ${email.subject}')
+              ),
+              Container(
+                  child:  Text('Data wysłania: ${email.date}')
+              ),
+              Expanded(
+                child: Container(
+                    child:  Text('Treść: ${email.contents}')
+                ),
+              ),
+            ])));
+  }
+
+}
+
+
+class Email {
   String subject;
   String contents;
   String date;
@@ -261,12 +277,24 @@ class Email{
 
   Email(
       {required this.subject,
-        required this.contents,
-        required this.date,
-        required this.id,
-        required this.recipients}){}
+      required this.contents,
+      required this.date,
+      required this.id,
+      required this.recipients}) {}
+
+  String recipientAddressString() {
+    String result = ' ';
+
+    for (Map<String, dynamic> recipient in recipients) {
+      result += recipient['email'] + ", ";
+    }
+
+    result = result.substring(0, result.length - 2);
+    return result;
+  }
 
   @override
   String toString() {
     return '${this.subject}, ${this.contents}, ${this.date}';
-  }}
+  }
+}
