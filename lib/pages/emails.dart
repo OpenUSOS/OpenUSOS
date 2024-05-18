@@ -3,6 +3,7 @@ import 'package:http/http.dart';
 
 import 'package:open_usos/appbar.dart';
 import 'package:open_usos/user_session.dart';
+import 'package:open_usos/navbar.dart';
 
 class Emails extends StatefulWidget {
   const Emails({super.key});
@@ -77,6 +78,8 @@ class EmailsState extends State<Emails> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: USOSBar(title: 'OpenUSOS mail'),
+        bottomNavigationBar: BottomNavBar(),
+        drawer: NavBar(),
         body: Padding(
             padding: EdgeInsets.all(8.0),
             child: Column(children: [

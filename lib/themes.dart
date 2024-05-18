@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class OpenUSOSThemes {
   static final TextStyle buttonTextStyle = TextStyle(
-    fontFamily: 'Lato', 
+    fontFamily: 'Lato',
     fontWeight: FontWeight.bold,
     fontSize: 14.0,
   );
@@ -53,15 +53,12 @@ class OpenUSOSThemes {
       titleSmall: TextStyle(color: Colors.black87, fontSize: 22.0),
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: Colors.blue.shade900,
-      titleTextStyle: appBarTextStyle.copyWith(color: Colors.white),
-      iconTheme: IconThemeData(
-        color: Colors.white
-      ),
-      actionsIconTheme: IconThemeData(
-        color: Colors.white,
-      )
-    ),
+        backgroundColor: Colors.blue.shade900,
+        titleTextStyle: appBarTextStyle.copyWith(color: Colors.white),
+        iconTheme: IconThemeData(color: Colors.white),
+        actionsIconTheme: IconThemeData(
+          color: Colors.white,
+        )),
   );
 
   static final ThemeData darkTheme = ThemeData(
@@ -96,11 +93,10 @@ class OpenUSOSThemes {
       titleSmall: TextStyle(color: Colors.white, fontSize: 18.0),
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: Colors.indigo.shade400,
-      titleTextStyle: appBarTextStyle.copyWith(color: Colors.white),
-      actionsIconTheme: IconThemeData(
-        color: Colors.white,
-      )
-    ),
+        backgroundColor: Colors.indigo.shade400,
+        titleTextStyle: appBarTextStyle.copyWith(color: Colors.white),
+        actionsIconTheme: IconThemeData(
+          color: Colors.white,
+        )),
   );
 }

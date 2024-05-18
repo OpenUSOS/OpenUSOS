@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:open_usos/user_session.dart';
 import 'package:open_usos/appbar.dart';
+import 'package:open_usos/navbar.dart';
 
 class Account extends StatefulWidget {
   const Account({super.key});
-
 
   @override
   State<Account> createState() => AccountState();
@@ -13,7 +13,6 @@ class Account extends StatefulWidget {
 
 @visibleForTesting
 class AccountState extends State<Account> {
-
   @visibleForTesting
   User? user;
 
@@ -30,6 +29,8 @@ class AccountState extends State<Account> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: USOSBar(title: 'Twoje konto'),
+        drawer: NavBar(),
+        bottomNavigationBar: BottomNavBar(),
         body: SingleChildScrollView(
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,

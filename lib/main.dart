@@ -12,6 +12,7 @@ import 'package:open_usos/pages/start_page.dart';
 import 'package:open_usos/pages/schedule.dart';
 import 'package:open_usos/pages/account.dart';
 import 'package:open_usos/pages/emails.dart';
+import 'package:open_usos/navbar.dart';
 
 void main() {
   runApp(
@@ -64,6 +65,7 @@ class OpenUSOS extends StatelessWidget {
             '/schedule': (context) => Schedule(),
             '/user': (context) => Account(),
             '/email': (context) => Emails(),
+            '/exams': (context) => Home(), // TODO exams page
           });
     });
   }

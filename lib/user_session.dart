@@ -104,7 +104,6 @@ class LoginPage extends StatelessWidget {
         onPageStarted: (String url) {
           if (url.contains('oauth_verifier')) {
             UserSession.endLogin(url);
-            endWebView();
           }
         },
         onPageFinished: (String url) {
@@ -118,14 +117,14 @@ class LoginPage extends StatelessWidget {
     )
     ..loadRequest(Uri.parse(UserSession.loginURL!));
 
-
-  static void endWebView(){
+  static void endWebView() {
     Navigator.popUntil(_context!, (route) => route == '/');
     Navigator.pushNamed(_context!, '/home');
   }
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
     return Scaffold(
       appBar: AppBar(
           title: Text("Logowanie do systemu USOS",

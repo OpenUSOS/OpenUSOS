@@ -8,18 +8,7 @@ class USOSBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-        title: Text(this.title, style: TextStyle(fontWeight: FontWeight.bold)),
-        actions: <Widget>[
-          IconButton(
-              onPressed: () {
-                if (ModalRoute.of(context)!.isCurrent) {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/home');
-                }
-                ;
-              },
-              icon: Icon(Icons.home_filled))
-        ]);
+        title: Text(this.title, style: TextStyle(fontWeight: FontWeight.bold)));
   }
 
   @override

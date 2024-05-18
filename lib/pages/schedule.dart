@@ -6,7 +6,7 @@ import 'package:http/http.dart';
 
 import 'package:open_usos/appbar.dart';
 import 'package:open_usos/user_session.dart';
-
+import 'package:open_usos/navbar.dart';
 
 class Schedule extends StatefulWidget {
   @override
@@ -125,7 +125,9 @@ class ScheduleState extends State<Schedule> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: USOSBar(title: 'Ustawienia'),
+      appBar: USOSBar(title: 'Plan zajęć'),
+      bottomNavigationBar: BottomNavBar(),
+      drawer: NavBar(),
       body: FutureBuilder(
           future: _subjectsFuture,
           builder: (context, snapshot) {

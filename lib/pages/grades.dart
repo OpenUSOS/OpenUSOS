@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:open_usos/user_session.dart';
+import 'package:open_usos/appbar.dart';
+import 'package:open_usos/navbar.dart';
 
 class Grades extends StatefulWidget {
   const Grades({super.key});
@@ -11,13 +13,9 @@ class Grades extends StatefulWidget {
   State<Grades> createState() => GradesState();
 }
 
-@visibleForTesting
 class GradesState extends State<Grades> {
-
-  late Future<void> _gradesFuture; //neccessary because future builder makes repeated api calls otherwise
-
-  @visibleForTesting
-  Map<String, List<Grade>> grades = {};
+  late Future<void> _gradesFuture;
+  Map<String, Map<String, List<Grade>>> grades = {};
 
   @override
   void initState() {
@@ -34,11 +32,11 @@ class GradesState extends State<Grades> {
       'query1': 'get_grades',
     });
 
-    final response = await get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
-      Map<String, List<Grade>> gradesByTerm = {};
+      Map<String, Map<String, List<Grade>>> gradesByTerm = {};
 
       for (dynamic item in data) {
         Grade grade = Grade(
@@ -50,10 +48,10 @@ class GradesState extends State<Grades> {
           value: item['value'],
         );
 
-        if (!gradesByTerm.containsKey(grade.term)) {
-          gradesByTerm[grade.term] = [];
-        }
-        gradesByTerm[grade.term]?.add(grade);
+        gradesByTerm.putIfAbsent(grade.term, () => {});
+        var subjectGrades = gradesByTerm[grade.term]!;
+        subjectGrades.putIfAbsent(grade.name, () => []);
+        subjectGrades[grade.name]!.add(grade);
       }
       setState(() {
         grades = gradesByTerm;
@@ -68,100 +66,71 @@ class GradesState extends State<Grades> {
   Widget build(BuildContext context) {
     Color? failed = Colors.red[800];
     Color? passed = Colors.blue[800];
-    //zmienna przechowujaca pogrupowane oceny wzgledem semestrow
 
-
-    //grupujemy w nowej mapie map
     return Scaffold(
-      appBar: AppBar(title: Text('Oceny'), actions: <Widget>[
-        IconButton(
-            onPressed: () {
-              if (ModalRoute.of(context)!.isCurrent) {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/home');
-              }
-              ;
-            },
-            icon: Icon(
-              Icons.home_filled,
-            ))
-      ]),
+      appBar: USOSBar(title: 'Oceny'),
+      bottomNavigationBar: BottomNavBar(),
+      drawer: NavBar(),
       body: FutureBuilder(
           future: _gradesFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Scaffold(
-                  body: Center(
-                child: CircularProgressIndicator(),
-              ));
+              return Scaffold(body: Center(child: CircularProgressIndicator()));
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
               return ListView.builder(
-                  itemCount: grades.entries.length,
+                  itemCount: grades.keys.length,
                   itemBuilder: (context, index) {
-                    var term = grades.entries.elementAt(index).key;
-                    var gradeDetails = grades.entries.elementAt(index).value;
-
+                    String term = grades.keys.elementAt(index);
+                    Map<String, List<Grade>> subjects = grades[term]!;
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Divider(
-                          indent: 10.0,
-                          endIndent: 10.0,
-                          height: 10.0,
-                          color: Colors.grey[400],
-                        ),
                         Padding(
                             padding: EdgeInsets.all(5.0),
                             child: Text(term,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20.0))),
-                        Divider(
-                          indent: 10.0,
-                          endIndent: 10.0,
-                          height: 10.0,
-                          color: Colors.grey[400],
-                        ),
-                        ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: gradeDetails.length,
-                            itemBuilder: (context, subIndex) {
-                              var item = gradeDetails[subIndex];
-                              return Card(
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  elevation: 4.0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  child: ListTile(
-                                    title: Text(
-                                      item.name,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    subtitle:
-                                        Text('wystawione przez ${item.author}'),
+                        ListView(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          children: subjects.entries.map((entry) {
+                            return Card(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
+                              elevation: 4.0,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0)),
+                              child: ExpansionTile(
+                                title: Text(entry.key,
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                children: entry.value.map((grade) {
+                                  return ListTile(
+                                    title: Text(grade.value,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                    subtitle: Text(
+                                        'Wystawione przez ${grade.author}'),
                                     leading: CircleAvatar(
-                                      backgroundColor: item.value == '2' ||
-                                              item.value == 'NZAL'
+                                      backgroundColor: grade.value == '2' ||
+                                              grade.value == 'NZAL'
                                           ? failed
                                           : passed,
-                                      radius: 30,
-                                      child: Text(
-                                        item.value,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
+                                      child: Text(grade.value,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.bold)),
                                     ),
-                                  ));
-                            })
+                                  );
+                                }).toList(),
+                              ),
+                            );
+                          }).toList(),
+                        )
                       ],
                     );
                   });
@@ -184,9 +153,4 @@ class Grade {
       required this.value,
       required this.name,
       required this.term});
-
-  @override
-  String toString() {
-    return '${this.name}, ${this.term}, ${this.value}, ${this.author}';
-  }
 }
