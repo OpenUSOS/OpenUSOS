@@ -19,7 +19,9 @@ class _NavBarState extends State<NavBar> {
     if (UserSession.sessionId == null) {
       throw Exception('sessionId is null, user not logged in.');
     }
-    debugPrint(UserSession.user!.firstName);
+    if (UserSession.user == null){
+      throw Exception('Failed getting user data');
+    }
     _user = UserSession.user;
   }
 
@@ -134,7 +136,7 @@ class _NavBarState extends State<NavBar> {
           buildDivider(),
           buildNavTiles('Kalendarz', Icons.calendar_view_month, '/calendar'),
           buildDivider(),
-          buildNavTiles('OpenUSOS mail', Icons.mail, '/email'),
+          buildNavTiles('OpenUSOS mail', Icons.mail, '/emails'),
           buildDivider(),
           buildNavTiles('Plan zajęć', Icons.calendar_view_day, '/schedule'),
           buildDivider(),

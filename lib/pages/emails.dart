@@ -25,6 +25,7 @@ class EmailsState extends State<Emails> {
 
   Future _setEmails() async {
     emailData = await _fetchEmails();
+    emailData.sort((a, b) => b.date.compareTo(a.date));
     return;
   }
 
@@ -36,42 +37,28 @@ class EmailsState extends State<Emails> {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       List<Email> emailList = [];
-
+      debugPrint(data.toString());
       for (dynamic item in data) {
         emailList.add(Email(
-            subject: item['subject'],
-            contents: item['contents'],
-            date: item['date'],
-            id: item["id"],
+            subject: item['subject'] != null ? item['subject'] : " ",
+            contents: item['content'] != null ? item['content'] : " ",
+            date: item['date'] != null ? item['date'] : " ",
+            id: item["id"] != null ? item['id'] : " ",
             recipients: item['to']));
       }
       return emailList;
     } else {
       throw Exception(
           "Failed to fetch data: HTTP status ${response.statusCode}");
-      ;
     }
   }
-
 
   Widget build(BuildContext context) {
     Color? failed = Colors.red[800];
     Color? passed = Colors.blue[800];
 
     return Scaffold(
-      appBar: AppBar(title: Text('Wysłane maile'), actions: <Widget>[
-        IconButton(
-            onPressed: () {
-              if (ModalRoute.of(context)!.isCurrent) {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/home');
-              }
-              ;
-            },
-            icon: Icon(
-              Icons.home_filled,
-            ))
-      ]),
+      appBar: USOSBar(title: 'Wysłane Maile'),
       body: FutureBuilder(
           future: _emailsFuture,
           builder: (context, snapshot) {
@@ -90,7 +77,7 @@ class EmailsState extends State<Emails> {
                         child: ElevatedButton(
                             child: Text('Nowa wiadomośc'),
                             onPressed: () {
-                              Navigator.pushNamed(context, 'emailSender');
+                              Navigator.pushNamed(context, '/emailSender');
                             }))
                   ]),
                   ListView.builder(
@@ -115,10 +102,10 @@ class EmailsState extends State<Emails> {
                               ),
                               subtitle: Text(
                                   'Adresaci: ${item.recipientAddressString()}'),
-                              trailing: Text(
-                                item.date),
+                              trailing: Text(item.date),
                               onTap: () {
-                                Navigator.pushNamed(context, '/emailExpanded', arguments: item);
+                                Navigator.pushNamed(context, '/emailExpanded',
+                                    arguments: item);
                               },
                             ));
                       })
@@ -238,7 +225,7 @@ class EmailSenderState extends State<EmailSender> {
   }
 }
 
-class EmailExpanded extends StatelessWidget{
+class EmailExpanded extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final email = ModalRoute.of(context)!.settings.arguments as Email;
@@ -249,31 +236,48 @@ class EmailExpanded extends StatelessWidget{
             padding: EdgeInsets.all(8.0),
             child: Column(children: [
               Container(
-                child:  Text('Odbiorcy: ${email.recipientAddressString()}')
-              ),
+                  alignment: Alignment.topLeft,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                  child: Text(
+                    'Odbiorcy: ${email.recipientAddressString()}',
+                    softWrap: true,
+                  )),
               Container(
-                child:  Text('Temat: ${email.subject}')
-              ),
+                  alignment: Alignment.topLeft,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                  child: Text(
+                    'Temat: ${email.subject}',
+                    softWrap: true,
+                  )),
               Container(
-                  child:  Text('Data wysłania: ${email.date}')
-              ),
-              Expanded(
-                child: Container(
-                    child:  Text('Treść: ${email.contents}')
-                ),
-              ),
+                  alignment: Alignment.topLeft,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                  child: Text(
+                    'Data wysłania: ${email.date}',
+                  )),
+              Container(
+                  alignment: Alignment.topLeft,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                  child: Text('Treść:')),
+              Container(
+                alignment: Alignment.topLeft,
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Text(email.contents),
+              )
             ])));
   }
-
 }
-
 
 class Email {
   String subject;
   String contents;
   String date;
   String id;
-  List<Map<String, dynamic>> recipients;
+  List<dynamic> recipients;
 
   Email(
       {required this.subject,
