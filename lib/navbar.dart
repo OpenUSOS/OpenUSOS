@@ -19,8 +19,9 @@ class _NavBarState extends State<NavBar> {
     if (UserSession.sessionId == null) {
       throw Exception('sessionId is null, user not logged in.');
     }
-    if(UserSession.user == null){
-      throw Exception('Failed gettings user data');
+    if (UserSession.user == null){
+      throw Exception('Failed getting user data');
+
     }
     _user = UserSession.user;
   }
