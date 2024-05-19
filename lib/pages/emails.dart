@@ -57,6 +57,8 @@ class EmailsState extends State<Emails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: USOSBar(title: 'Wysłane Maile'),
+      bottomNavigationBar: BottomNavBar(),
+      drawer: NavBar(),
       body: FutureBuilder(
           future: _emailsFuture,
           builder: (context, snapshot) {

@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
 import 'package:open_usos/appbar.dart';
-import 'package:open_usos/user_session.dart';
 import 'package:open_usos/navbar.dart';
 
 class SettingsProvider with ChangeNotifier {

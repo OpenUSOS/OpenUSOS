@@ -1,19 +1,52 @@
 import 'dart:convert';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:http/http.dart';
 
 class UserSession {
-  static String? sessionId;
   static const host = 'srv27.mikr.us:20117'; //server
   static const logPath = '/login'; // path for login
   static const basePath = '/api'; //path for everything else
   static String?
       loginURL; //static because it needs to be accessed by login page
+  static String? sessionId;
   static String? accessToken; //access token for api
   static String? accessTokenSecret; //token secret for api
   static User? user;
+
+
+  static Future<bool> initSession() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? session = prefs.getString('sessionId');
+    if (session != null) {
+      sessionId = session;
+    }
+    else{
+      await createSession();
+      return false;
+    }
+    String? token = prefs.getString('accessToken');;
+    if (token != null) {
+      accessToken = token;
+    }
+    else{
+      return false;
+      //createSession();
+    }
+
+    String? secret = prefs.getString('accessTokenSecret');;
+    if (secret != null) {
+      accessTokenSecret = secret;
+    }
+    else{
+      return false;
+      //createSession();
+    }
+
+    await _getUserData();
+    return true;
+  }
 
   static Future<void> _getUserData() async {
     if (UserSession.sessionId == null) {
@@ -44,6 +77,8 @@ class UserSession {
     final url = Uri.http(host, logPath);
     var response = await get(url);
     if (response.statusCode == 200) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('sessionId', response.body);
       sessionId = response.body;
     } else {
       throw Exception('Connecting to server failed');
@@ -74,8 +109,12 @@ class UserSession {
       Map<String, dynamic> body = json.decode(response.body);
       accessToken = body['AT'];
       accessTokenSecret = body['ATS'];
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('accesToken', accessToken!);
+      prefs.setString('accessTokenSecret', accessTokenSecret!);
     }
-    _getUserData();
+    await _getUserData();
     return;
   }
 
@@ -139,7 +178,6 @@ class LoginPage extends StatelessWidget {
                     Navigator.pop(context);
                     Navigator.pushNamed(context, '/home');
                   }
-                  ;
                 },
                 icon: Icon(
                   Icons.home_filled,

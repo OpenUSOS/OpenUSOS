@@ -43,7 +43,24 @@ class OpenUSOS extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           locale: const Locale('pl', ''),
-          home: StartPage(),
+          home: FutureBuilder(
+              future: UserSession.initSession(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Scaffold(
+                    body: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                } else {
+                  if(snapshot.hasData == false || snapshot.data == false){
+                    return LoginPage();
+                  }
+                  else{
+                    return Home();
+                  }
+                }
+              }),
           routes: {
             '/home': (context) => Home(),
             '/grades': (context) => Grades(),
