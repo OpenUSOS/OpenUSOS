@@ -42,7 +42,7 @@ class UserSession {
 
     final resume = await resumeSession();
     if (resume == false){
-      return true;
+      return false;
     }
     await _getUserData();
     return true;
@@ -153,8 +153,8 @@ class UserSession {
 
 class LoginPage extends StatelessWidget {
   static BuildContext? _context = null;
-  final controller = WebViewController()
-    ..setJavaScriptMode(JavaScriptMode.unrestricted)..clearCache()
+  final controller = WebViewController()..clearCache()..clearLocalStorage()
+    ..setJavaScriptMode(JavaScriptMode.unrestricted)
     ..setBackgroundColor(const Color(0x00000000))
     ..setNavigationDelegate(
       NavigationDelegate(
@@ -168,7 +168,6 @@ class LoginPage extends StatelessWidget {
           }
         },
         onPageFinished: (String url) {
-
         },
         onWebResourceError: (WebResourceError error) {},
         onNavigationRequest: (NavigationRequest request) {
