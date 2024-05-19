@@ -11,7 +11,7 @@ class NavBar extends StatefulWidget {
 class _NavBarState extends State<NavBar> {
   late bool hasImage = true;
   User? _user;
-  bool _isTapped = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -23,23 +23,27 @@ class _NavBarState extends State<NavBar> {
     _user = UserSession.user;
   }
 
-  void tapCallback() => setState(() {
-        _isTapped = true;
-      });
+  void _openDrawer() {
+    _scaffoldKey.currentState!.openDrawer();
+  }
+
+  void _closeDrawer() {
+    Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
-    Color navTextColor = Colors.white;
     return Drawer(
         clipBehavior: Clip.none,
-        child: ListView(children: <Widget>[
+        child: ListView(padding: EdgeInsets.zero, children: <Widget>[
           DrawerHeader(
               margin: EdgeInsets.zero,
               padding: EdgeInsets.zero,
               decoration: BoxDecoration(
                 image: DecorationImage(
+                  //for now the image is fetched from Wikipedia page of Jagiellonian University
                   image: NetworkImage(
-                      'https://upload.wikimedia.org/wikipedia/commons/c/cd/University-of-Alabama-EngineeringResearchCenter-01.jpg'),
+                      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Jagiellonian_University_Collegium_Novum%2C_1882_designed_by_Feliks_Ksi%C4%99%C5%BCarski%2C_24_Go%C5%82%C4%99bia_street%2C_Old_Town%2C_Krakow%2C_Poland.jpg/1280px-Jagiellonian_University_Collegium_Novum%2C_1882_designed_by_Feliks_Ksi%C4%99%C5%BCarski%2C_24_Go%C5%82%C4%99bia_street%2C_Old_Town%2C_Krakow%2C_Poland.jpg'),
                   fit: BoxFit.cover,
                   colorFilter: ColorFilter.mode(
                     Colors.black.withOpacity(0.2),
@@ -130,30 +134,36 @@ class _NavBarState extends State<NavBar> {
                       ]),
                 )
               ])),
-          buildNavTiles('Oceny', Icons.assessment, '/grades'),
+          buildCategoryHeader('Uczelnia'),
+          buildNavTiles(context, 'OpenUSOS mail', Icons.mail, '/email'),
           buildDivider(),
-          buildNavTiles('Kalendarz', Icons.calendar_view_month, '/calendar'),
+          buildNavTiles(context, 'Ankiety', Icons.question_answer, '/TODO'),
           buildDivider(),
-          buildNavTiles('OpenUSOS mail', Icons.mail, '/email'),
+          buildNavTiles(context, 'Aktualności', Icons.newspaper, '/TODO'),
           buildDivider(),
-          buildNavTiles('Plan zajęć', Icons.calendar_view_day, '/schedule'),
+          buildNavTiles(context, 'Grupy zajęciowe', Icons.group, '/TODO'),
           buildDivider(),
-          buildNavTiles('Sprawdziany', Icons.task, '/TODO'),
+          buildNavTiles(context, 'Twoje rejestracje', Icons.app_registration,
+              '/registration'),
+          buildCategoryHeader('Inne'),
+          buildNavTiles(context, 'Ustawienia', Icons.settings, '/settings'),
           buildDivider(),
-          buildNavTiles('Ankiety', Icons.question_answer, '/TODO'),
+          buildNavTiles(context, 'Twoje konto', Icons.person, '/user'),
           buildDivider(),
-          buildNavTiles('Aktualności', Icons.newspaper, '/TODO'),
-          buildDivider(),
-          buildNavTiles('Grupy zajęciowe', Icons.group, '/TODO'),
-          buildDivider(),
-          buildNavTiles('Ustawienia', Icons.settings, '/settings'),
-          buildDivider(),
-          buildNavTiles('Twoje konto', Icons.person, '/user')
+          buildNavTiles(context, 'Zgłoś błąd', Icons.bug_report, '/bug'),
         ]));
   }
 
-  Widget buildNavTiles(String title, IconData iconData, String path) {
-    return ListTile(
+  Widget buildNavTiles(
+      BuildContext context, String title, IconData iconData, String path) {
+    bool isSelected = ModalRoute.of(context)?.settings.name == path;
+    return Container(
+      decoration: isSelected
+          ? BoxDecoration(
+              border:
+                  Border(right: BorderSide(width: 4.0, color: Colors.white)))
+          : null,
+      child: ListTile(
         title: Text(
           title,
           style: TextStyle(color: Colors.white),
@@ -163,10 +173,11 @@ class _NavBarState extends State<NavBar> {
           color: Colors.white,
         ),
         onTap: () {
-          tapCallback();
           Navigator.pop(context);
           Navigator.pushNamed(context, path);
-        });
+        },
+      ),
+    );
   }
 
   Widget buildDivider() {
@@ -177,4 +188,109 @@ class _NavBarState extends State<NavBar> {
       thickness: 2.0,
     );
   }
+
+  Widget buildCategoryHeader(String title) {
+    return ListTile(
+        title: Text(title,
+            style: TextStyle(
+              fontWeight: FontWeight.w300,
+              fontSize: 12.0,
+              color: Colors.white,
+            )));
+  }
+}
+
+class BottomNavBar extends StatefulWidget {
+  const BottomNavBar({Key? key}) : super(key: key);
+
+  @override
+  State<BottomNavBar> createState() => _BottomNavBarState();
+}
+
+class _BottomNavBarState extends State<BottomNavBar> {
+  final BottomNavBarIndexStore indexStore = BottomNavBarIndexStore();
+  final GlobalKey<_BottomNavBarState> bottomNavBarKey =
+      GlobalKey<_BottomNavBarState>();
+  Map<String, int> routeToIndex = {
+    '/home': 0,
+    '/grades': 1,
+    '/exams': 2,
+    '/schedule': 3,
+    '/calendar': 4,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return NavigationBarTheme(
+        key: bottomNavBarKey,
+        data: NavigationBarThemeData(
+          backgroundColor: Theme.of(context).brightness == Brightness.light
+              ? Colors.blue.shade900
+              : Colors.indigo.shade400,
+          iconTheme: MaterialStateProperty.all(
+            IconThemeData(color: Colors.white),
+          ),
+          labelTextStyle: MaterialStateProperty.all(
+            TextStyle(
+              color: Colors.white,
+              fontSize: 11.0,
+            ),
+          ),
+          indicatorColor:
+              routeToIndex.keys.contains(ModalRoute.of(context)?.settings.name)
+                  ? Theme.of(context).brightness == Brightness.light
+                      ? Colors.blue.shade800
+                      : Colors.indigo.shade300
+                  : Colors.transparent,
+        ),
+        child: NavigationBar(
+          height: 80.0,
+          elevation: 0.0,
+          selectedIndex: indexStore.currentIndex,
+          onDestinationSelected: (index) {
+            setState(() {
+              indexStore.currentIndex = index;
+
+              Navigator.popUntil(context, (route) => route == '/home');
+              Navigator.pushNamed(context, routeToIndex.keys.elementAt(index));
+            });
+          },
+          destinations: [
+            NavigationDestination(
+                icon: Icon(Icons.home), label: 'Strona główna'),
+            NavigationDestination(icon: Icon(Icons.grade), label: 'Oceny'),
+            NavigationDestination(icon: Icon(Icons.task), label: 'Sprawdziany'),
+            NavigationDestination(
+                icon: Icon(Icons.schedule), label: 'Plan zajęć'),
+            NavigationDestination(
+                icon: Icon(Icons.calendar_month), label: 'Kalendarz'),
+          ],
+        ));
+  }
+
+  void clearIndex(String route) {
+    if (!routeToIndex.containsKey(route)) {
+      indexStore.currentIndex = -1;
+    }
+  }
+}
+
+// this class is used to store the current index of bottom navbar globally
+class BottomNavBarIndexStore {
+  static final BottomNavBarIndexStore _singleton =
+      BottomNavBarIndexStore._internal();
+
+  factory BottomNavBarIndexStore() {
+    return _singleton;
+  }
+
+  int _currentIndex = 0;
+
+  int get currentIndex => _currentIndex;
+
+  set currentIndex(index) {
+    _currentIndex = index;
+  }
+
+  BottomNavBarIndexStore._internal();
 }

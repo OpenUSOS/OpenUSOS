@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:open_usos/appbar.dart';
+import 'package:open_usos/navbar.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
@@ -122,8 +124,8 @@ class CalendarState extends State<Calendar> {
                 );
 
                 setState(() {
-                  final dayKey = DateTime(selectedDay!.year,
-                      selectedDay!.month, selectedDay!.day);
+                  final dayKey = DateTime(
+                      selectedDay!.year, selectedDay!.month, selectedDay!.day);
                   _events[dayKey] = (_events[dayKey] ?? [])..add(appointment);
                   _eventController.clear();
                   _startingTimeController.clear();
@@ -142,20 +144,9 @@ class CalendarState extends State<Calendar> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-          title: Text("Kalendarz akademicki",
-              style: TextStyle(fontWeight: FontWeight.bold)),
-          actions: <Widget>[
-            IconButton(
-                onPressed: () {
-                  if (ModalRoute.of(context)!.isCurrent) {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/home');
-                  }
-                  ;
-                },
-                icon: Icon(Icons.home_filled))
-          ]),
+      appBar: USOSBar(title: 'Kalendarz'),
+      drawer: NavBar(),
+      bottomNavigationBar: BottomNavBar(),
       body: Column(
         children: <Widget>[
           SfCalendar(

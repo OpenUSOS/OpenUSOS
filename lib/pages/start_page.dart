@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:open_usos/appbar.dart';
 
 class StartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('OpenUSOS'),
-      ),
+      appBar: USOSBar(title: 'OpenUSOS'),
       body: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(
@@ -31,7 +30,7 @@ class StartPage extends StatelessWidget {
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/login');
                     },
-                    child: Text('Przejdź do logowania'),
+                    child: Text('Przejdź dalej'),
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.all(16.0),
                     ))

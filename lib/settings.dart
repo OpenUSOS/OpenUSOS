@@ -4,8 +4,9 @@ import 'package:provider/provider.dart';
 
 import 'package:open_usos/appbar.dart';
 import 'package:open_usos/user_session.dart';
+import 'package:open_usos/navbar.dart';
 
-class SettingsProvider with ChangeNotifier{
+class SettingsProvider with ChangeNotifier {
   // we set default values here, they are overwritten in _initPreferences
   String currentLanguage = 'Polish';
   bool notificationsOn = false;
@@ -16,12 +17,14 @@ class SettingsProvider with ChangeNotifier{
     'Polish'
   ]; // duplicated values for testing
   //map of available themes, they can be accessed by name
-  final Map<String, ThemeMode> availableThemes =
-  {'Systemowy': ThemeMode.system, 'Ciemny': ThemeMode.dark, 'Jasny': ThemeMode.light};
+  final Map<String, ThemeMode> availableThemes = {
+    'Systemowy': ThemeMode.system,
+    'Ciemny': ThemeMode.dark,
+    'Jasny': ThemeMode.light
+  };
   ThemeMode currentThemeMode = ThemeMode.system;
 
-
-  SettingsProvider(){
+  SettingsProvider() {
     _initPreferences();
   }
 
@@ -44,17 +47,17 @@ class SettingsProvider with ChangeNotifier{
     }
   }
 
-  void saveTheme(String theme) async{
+  void saveTheme(String theme) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('theme', theme);
   }
 
-  void saveLanguage(String language) async{
+  void saveLanguage(String language) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('language', language);
   }
 
-  void saveNotifications(bool notifications) async{
+  void saveNotifications(bool notifications) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('notifications', notifications);
   }
@@ -93,17 +96,18 @@ class SettingsProvider with ChangeNotifier{
     saveNotifications(notifications);
     notifyListeners();
   }
-
 }
-
 
 class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final SettingsProvider settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
+    final SettingsProvider settingsProvider =
+        Provider.of<SettingsProvider>(context, listen: false);
 
     return Scaffold(
       appBar: USOSBar(title: 'Ustawienia'),
+      bottomNavigationBar: BottomNavBar(),
+      drawer: NavBar(),
       body: Column(
         children: [
           ListTile(
@@ -111,7 +115,7 @@ class Settings extends StatelessWidget {
             trailing: Switch(
               value: settingsProvider.notificationStatus,
               onChanged: (value) {
-                  settingsProvider.notificationStatus = value;
+                settingsProvider.notificationStatus = value;
               },
             ),
           ),
@@ -120,7 +124,7 @@ class Settings extends StatelessWidget {
               trailing: DropdownButton<String>(
                 value: settingsProvider.currentLanguage,
                 onChanged: (String? value) {
-                    settingsProvider.language = value;
+                  settingsProvider.language = value;
                 },
                 items: settingsProvider.availableLanguages
                     .map<DropdownMenuItem<String>>((String language) {
@@ -133,10 +137,12 @@ class Settings extends StatelessWidget {
           ListTile(
               title: Text('Motyw'),
               trailing: DropdownButton<String>(
-                value: settingsProvider.availableThemes.entries.firstWhere((item) =>
-                item.value == settingsProvider.currentThemeMode).key,
+                value: settingsProvider.availableThemes.entries
+                    .firstWhere((item) =>
+                        item.value == settingsProvider.currentThemeMode)
+                    .key,
                 onChanged: (String? value) {
-                    settingsProvider.theme = value;
+                  settingsProvider.theme = value;
                 },
                 items: settingsProvider.availableThemes.keys
                     .map<DropdownMenuItem<String>>((String theme) {
