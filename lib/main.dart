@@ -44,9 +44,9 @@ class OpenUSOS extends StatelessWidget {
           ],
           locale: const Locale('pl', ''),
           home: FutureBuilder(
-              future: UserSession.initSession(),
+              future: UserSession.attemptResumeSession(),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
+                if (snapshot.connectionState != ConnectionState.done) {
                   return Scaffold(
                     body: Center(
                       child: CircularProgressIndicator(),
@@ -85,6 +85,7 @@ class OpenUSOS extends StatelessWidget {
             '/emailSender': (context) => EmailSender(),
             '/emailExpanded':(context) => EmailExpanded(),
             '/exams': (context) => Home(),
+            '/start': (context) => StartPage(),
           });
     });
   }

@@ -60,7 +60,7 @@ class AccountState extends State<Account> {
                           UserSession.logout();
                           Navigator.popUntil(context, (route) => false);
                           Navigator.pushNamed(
-                              context, Navigator.defaultRouteName);
+                              context, '/start');
                         }))
               ])
             ])));

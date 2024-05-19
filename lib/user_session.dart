@@ -16,14 +16,18 @@ class UserSession {
   static User? user;
 
 
-  static Future<bool> initSession() async{
+
+  static Future<bool> attemptResumeSession() async{
+    debugPrint('dziala');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? session = prefs.getString('sessionId');
+    debugPrint('dziala');
     if (session != null) {
       sessionId = session;
     }
     else{
-      await createSession();
+      await startLogin();
+      debugPrint('Prawie dziala');
       return false;
     }
     String? token = prefs.getString('accessToken');;
@@ -43,8 +47,26 @@ class UserSession {
       return false;
       //createSession();
     }
-
+    final resume = await resumeSession();
+    if (resume == false){
+      return true;
+    }
     await _getUserData();
+    return true;
+  }
+
+  static Future<bool> resumeSession() async{
+    //resuming session
+    final urlResume = Uri.http(host, basePath, {
+      'id': sessionId,
+      'query1': 'resume',
+      'query2': accessToken,
+      'query3': accessTokenSecret
+    });
+    final response = await get(urlResume);
+    if(response.statusCode != 200 || response.body != 'Y'){
+      return false;
+    }
     return true;
   }
 
@@ -77,8 +99,6 @@ class UserSession {
     final url = Uri.http(host, logPath);
     var response = await get(url);
     if (response.statusCode == 200) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('sessionId', response.body);
       sessionId = response.body;
     } else {
       throw Exception('Connecting to server failed');
@@ -111,9 +131,11 @@ class UserSession {
       accessTokenSecret = body['ATS'];
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('accesToken', accessToken!);
+      prefs.setString('accessToken', accessToken!);
       prefs.setString('accessTokenSecret', accessTokenSecret!);
+      prefs.setString('sessionId', sessionId!);
     }
+    await resumeSession();
     await _getUserData();
     return;
   }
@@ -125,7 +147,13 @@ class UserSession {
     if (response.statusCode == 200) {
       accessToken = null;
       accessTokenSecret = null;
+      sessionId = null;
+      loginURL = null;
       // we need to forget tokens
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.remove('accessToken');
+      prefs.remove('accessTokenSecret');
+      prefs.remove('sessionId');
     }
   }
 }
@@ -133,7 +161,7 @@ class UserSession {
 class LoginPage extends StatelessWidget {
   static BuildContext? _context = null;
   final controller = WebViewController()
-    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+    ..setJavaScriptMode(JavaScriptMode.unrestricted)..clearCache()
     ..setBackgroundColor(const Color(0x00000000))
     ..setNavigationDelegate(
       NavigationDelegate(
@@ -144,6 +172,7 @@ class LoginPage extends StatelessWidget {
           if (url.contains('oauth_verifier')) {
             UserSession.endLogin(url);
             UserSession._getUserData();
+            endWebView();
           }
         },
         onPageFinished: (String url) {
