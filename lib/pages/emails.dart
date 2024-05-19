@@ -41,7 +41,7 @@ class EmailsState extends State<Emails> {
       for (dynamic item in data) {
         emailList.add(Email(
             subject: item['subject'],
-            contents: item['contents'],
+            contents: item['content'],
             date: item['date'],
             id: item["id"],
             recipients: item['to']));
@@ -276,7 +276,7 @@ class Email {
   String contents;
   String date;
   String id;
-  List<Map<String, dynamic>> recipients;
+  List<dynamic> recipients;
 
   Email(
       {required this.subject,

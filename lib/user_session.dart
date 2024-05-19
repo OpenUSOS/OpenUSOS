@@ -104,10 +104,11 @@ class LoginPage extends StatelessWidget {
         onPageStarted: (String url) {
           if (url.contains('oauth_verifier')) {
             UserSession.endLogin(url);
+            UserSession._getUserData();
           }
         },
         onPageFinished: (String url) {
-          UserSession._getUserData();
+
         },
         onWebResourceError: (WebResourceError error) {},
         onNavigationRequest: (NavigationRequest request) {

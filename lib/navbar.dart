@@ -19,7 +19,9 @@ class _NavBarState extends State<NavBar> {
     if (UserSession.sessionId == null) {
       throw Exception('sessionId is null, user not logged in.');
     }
-    debugPrint(UserSession.user!.firstName);
+    if(UserSession.user == null){
+      throw Exception('Failed gettings user data');
+    }
     _user = UserSession.user;
   }
 
@@ -135,7 +137,7 @@ class _NavBarState extends State<NavBar> {
                 )
               ])),
           buildCategoryHeader('Uczelnia'),
-          buildNavTiles(context, 'OpenUSOS mail', Icons.mail, '/email'),
+          buildNavTiles(context, 'OpenUSOS mail', Icons.mail, '/emails'),
           buildDivider(),
           buildNavTiles(context, 'Ankiety', Icons.question_answer, '/TODO'),
           buildDivider(),
