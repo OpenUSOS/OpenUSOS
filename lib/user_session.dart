@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:open_usos/appbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -18,35 +19,27 @@ class UserSession {
 
 
   static Future<bool> attemptResumeSession() async{
-    debugPrint('dziala');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? session = prefs.getString('sessionId');
-    debugPrint('dziala');
     if (session != null) {
       sessionId = session;
     }
     else{
       await startLogin();
-      debugPrint('Prawie dziala');
       return false;
     }
-    String? token = prefs.getString('accessToken');;
-    if (token != null) {
+    String? token = prefs.getString('accessToken');
+    String? secret = prefs.getString('accessTokenSecret');
+    if (token != null && secret != null) {
       accessToken = token;
-    }
-    else{
-      return false;
-      //createSession();
-    }
-
-    String? secret = prefs.getString('accessTokenSecret');;
-    if (secret != null) {
       accessTokenSecret = secret;
     }
     else{
       return false;
       //createSession();
     }
+
+
     final resume = await resumeSession();
     if (resume == false){
       return true;
@@ -171,7 +164,6 @@ class LoginPage extends StatelessWidget {
         onPageStarted: (String url) {
           if (url.contains('oauth_verifier')) {
             UserSession.endLogin(url);
-            UserSession._getUserData();
             endWebView();
           }
         },
@@ -195,23 +187,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     _context = context;
     return Scaffold(
-      appBar: AppBar(
-          title: Text("Logowanie do systemu USOS",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              )),
-          actions: <Widget>[
-            IconButton(
-                onPressed: () {
-                  if (ModalRoute.of(context)!.isCurrent) {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/home');
-                  }
-                },
-                icon: Icon(
-                  Icons.home_filled,
-                ))
-          ]),
+      appBar: USOSBar(title: 'Logowanie do systemu USOS'),
       body: WebViewWidget(
         controller: controller,
       ),

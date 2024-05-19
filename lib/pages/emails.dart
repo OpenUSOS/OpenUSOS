@@ -38,7 +38,6 @@ class EmailsState extends State<Emails> {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       List<Email> emailList = [];
-      debugPrint(data.toString());
       for (dynamic item in data) {
         emailList.add(Email(
             subject: item['subject'] != null ? item['subject'] : " ",

@@ -70,9 +70,6 @@ class GradesState extends State<Grades> {
     Color? failed = Colors.red[800];
     Color? passed = Colors.blue[800];
 
-    debugPrint(UserSession.sessionId);
-    debugPrint(UserSession.accessToken);
-    debugPrint(UserSession.accessTokenSecret);
     return Scaffold(
       appBar: USOSBar(title: 'Oceny'),
       bottomNavigationBar: BottomNavBar(),
