@@ -148,6 +148,9 @@ class UserSession {
       prefs.remove('accessTokenSecret');
       prefs.remove('sessionId');
     }
+    else{
+      throw Exception('Logging out failed, please try again');
+    }
   }
 }
 
