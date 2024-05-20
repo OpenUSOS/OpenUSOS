@@ -25,6 +25,7 @@ class UserSession {
       sessionId = session;
     }
     else{
+      wipeLocalLoginData();
       return false;
     }
     String? token = prefs.getString('accessToken');
@@ -34,11 +35,13 @@ class UserSession {
       accessTokenSecret = secret;
     }
     else{
+      wipeLocalLoginData();
       return false;
     }
 
     final resume = await resumeSession();
     if (resume == false){
+      wipeLocalLoginData();
       return false;
     }
     await _getUserData();
@@ -137,19 +140,23 @@ class UserSession {
         Uri.http(host, basePath, {'id': sessionId, 'query1': 'log_out'});
     var response = await get(logoutURL);
     if (response.statusCode == 200) {
-      accessToken = null;
-      accessTokenSecret = null;
-      sessionId = null;
-      loginURL = null;
-      // we need to forget tokens
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.remove('accessToken');
-      prefs.remove('accessTokenSecret');
-      prefs.remove('sessionId');
+      await wipeLocalLoginData();
     }
     else{
       throw Exception('Logging out failed, please try again');
     }
+  }
+
+  static Future wipeLocalLoginData() async{
+    accessToken = null;
+    accessTokenSecret = null;
+    sessionId = null;
+    loginURL = null;
+    // we need to forget tokens
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('accessToken');
+    prefs.remove('accessTokenSecret');
+    prefs.remove('sessionId');
   }
 }
 

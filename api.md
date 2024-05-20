@@ -60,7 +60,7 @@ info:
 ---------
 tests:
 ---------
-10. id, query1 = get_tests ---- returns a list of dictss, each one with: "term_id" (eg. 22/23Z) and "courses".
+10. id, query1 = get_tests ---- returns a list of dicts, each one with: "term_id" (eg. 22/23Z) and "courses".
 "courses" is a list of the courses that took place during the term. it contains "name" (eg. ASD, sieci) and "tests".
 "tests" is a list of all tests within one course. it contains "name", "description", "points" (of user) "points_max", and "exercises".
 "exercises is a list of all exercises within one test. it contains "name", "description", "points" (of user) and "points_max".
