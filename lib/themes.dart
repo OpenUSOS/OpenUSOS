@@ -93,7 +93,7 @@ class OpenUSOSThemes {
       titleSmall: TextStyle(color: Colors.white, fontSize: 18.0),
     ),
     appBarTheme: AppBarTheme(
-        backgroundColor: Colors.indigo.shade400,
+        backgroundColor: Colors.blue.shade900,
         titleTextStyle: appBarTextStyle.copyWith(color: Colors.white),
         actionsIconTheme: IconThemeData(
           color: Colors.white,
