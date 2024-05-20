@@ -25,7 +25,6 @@ class UserSession {
       sessionId = session;
     }
     else{
-      await startLogin();
       return false;
     }
     String? token = prefs.getString('accessToken');
@@ -36,9 +35,7 @@ class UserSession {
     }
     else{
       return false;
-      //createSession();
     }
-
 
     final resume = await resumeSession();
     if (resume == false){
@@ -94,8 +91,9 @@ class UserSession {
     if (response.statusCode == 200) {
       sessionId = response.body;
     } else {
-      throw Exception('Connecting to server failed');
+      throw Exception('Creating session failed, please check your internet connection');
     }
+    return;
   }
 
   static Future startLogin() async {
@@ -105,7 +103,8 @@ class UserSession {
     if (response.statusCode == 200) {
       loginURL = response.body;
     } else {
-      throw Exception('Getting Login URL failed');
+      throw Exception(
+          'Getting Login URL failed, please check your internet connection and restart the app');
     }
     return;
   }
@@ -155,46 +154,62 @@ class UserSession {
 }
 
 class LoginPage extends StatelessWidget {
-  static BuildContext? _context = null;
-  final controller = WebViewController()..clearCache()..clearLocalStorage()
-    ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    ..setBackgroundColor(const Color(0x00000000))
-    ..setNavigationDelegate(
-      NavigationDelegate(
-        onProgress: (int progress) {
-          // Update loading bar.
-        },
-        onPageStarted: (String url) {
-          if (url.contains('oauth_verifier')) {
-            UserSession.endLogin(url);
-            endWebView();
-          }
-        },
-        onPageFinished: (String url) {
-        },
-        onWebResourceError: (WebResourceError error) {},
-        onNavigationRequest: (NavigationRequest request) {
-          return NavigationDecision.navigate;
-        },
-      ),
-    )
-    ..loadRequest(Uri.parse(UserSession.loginURL!));
 
-  static void endWebView() {
-    Navigator.popUntil(_context!, (route) => route == '/');
-    Navigator.pushNamed(_context!, '/home');
+  void endWebView(BuildContext context) {
+    Navigator.popUntil(context, (route) => route == '/');
+    Navigator.pushNamed(context, '/home');
   }
 
   @override
   Widget build(BuildContext context) {
-    _context = context;
+    final controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (String url) {
+            if (url.contains('oauth_verifier')) {
+              UserSession.endLogin(url);
+              endWebView(context);
+            }
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            return NavigationDecision.navigate;
+          },
+        ),
+      );
+    controller.clearCache();
+    controller.clearLocalStorage();
     return Scaffold(
-      appBar: USOSBar(title: 'Logowanie do systemu USOS'),
-      body: WebViewWidget(
-        controller: controller,
-      ),
+        appBar: USOSBar(title: 'Logowanie do systemu USOS'),
+        body: FutureBuilder(
+            future: UserSession.startLogin(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              } else if(snapshot.connectionState == ConnectionState.done && snapshot.hasError == false){
+                if(UserSession.loginURL == null) {
+                  throw Exception(
+                      'Failed getting login URL from server, please restart the app');
+                }
+                final loginUrl = Uri.parse(UserSession.loginURL!);
+                controller.loadRequest(loginUrl);
+                return WebViewWidget(
+                  controller: controller,
+                );
+              }
+              else{
+                throw Exception('An error ocurred while starting login');
+              }
+            }
+        )
     );
   }
+
+
 }
 
 class User {

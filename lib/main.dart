@@ -43,7 +43,7 @@ class OpenUSOS extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           locale: const Locale('pl', ''),
-          home: FutureBuilder(
+          home: FutureBuilder( // we try to resume the session, if successful we redirect the user to home page
               future: UserSession.attemptResumeSession(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState != ConnectionState.done) {
@@ -54,7 +54,7 @@ class OpenUSOS extends StatelessWidget {
                   );
                 } else {
                   if(snapshot.hasData == false || snapshot.data == false){
-                    return LoginPage();
+                    return StartPage();
                   }
                   else{
                     return Home();
@@ -65,19 +65,7 @@ class OpenUSOS extends StatelessWidget {
             '/home': (context) => Home(),
             '/grades': (context) => Grades(),
             '/settings': (context) => Settings(),
-            '/login': (context) => FutureBuilder(
-                future: UserSession.startLogin(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Scaffold(
-                      body: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  } else {
-                    return LoginPage();
-                  }
-                }),
+            '/login': (context) => LoginPage(),
             '/calendar': (context) => Calendar(),
             '/schedule': (context) => Schedule(),
             '/user': (context) => Account(),
