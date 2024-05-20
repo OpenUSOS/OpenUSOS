@@ -141,6 +141,8 @@ class Notifications{
   }
 
   void _enableNotifications() {
+    plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
     BackgroundFetch.start();
   }
 

@@ -15,19 +15,13 @@ class Schedule extends StatefulWidget {
 
 @visibleForTesting
 class ScheduleState extends State<Schedule> {
-  List<Color> _subjectColorPalette = [
-    Colors.red.shade400,
-    Colors.cyan,
-    Colors.pink,
-    Colors.blue.shade400,
-    Colors.teal,
-    Colors.indigo,
-    Colors.brown,
-    Colors.orange,
-    Colors.green,
-    Colors.purple,
-    Colors.deepPurple.shade700,
-  ];
+  Map<String, Color> _subjectColorPalette = {
+    'Lecture': Colors.green,
+    'Laboratory': Colors.orange,
+    'Practicals': Colors.purple,
+    'Foreign Language': Colors.teal,
+    'Others': Colors.brown
+  };
 
   @visibleForTesting
   List<Subject>? subjects;
@@ -64,8 +58,7 @@ class ScheduleState extends State<Schedule> {
                 to: DateTime.parse(item['end_time']),
                 buildingName: item['building_name']['pl'],
                 roomNumber: item['room_number'],
-                background: _subjectColorPalette[
-                    random.nextInt(_subjectColorPalette.length - 1)],
+                background: _subjectColorPalette['Lecture']!,
                 isAllDay: false,
                 lang: 'pl',
               ))
