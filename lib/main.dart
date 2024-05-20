@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+
+import 'package:open_usos/notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:open_usos/themes.dart';
 import 'package:open_usos/pages/calendar.dart';
@@ -15,6 +17,7 @@ import 'package:open_usos/pages/emails.dart';
 import 'package:open_usos/navbar.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     ChangeNotifierProvider(
       create: (_) => SettingsProvider(),
@@ -28,6 +31,7 @@ class OpenUSOS extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Notifications notifications = Notifications(context);
     return Consumer<SettingsProvider>(
         builder: (context, settingsProvider, child) {
       return MaterialApp(

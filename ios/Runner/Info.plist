@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>PermittedBackGroundTaskSchedulerIdentifiers</key>
+	<array>
+	    <string>com.transistorsoft.fetch</string>
+   </array
 </dict>
 </plist>

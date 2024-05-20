@@ -9,6 +9,7 @@ class SettingsProvider with ChangeNotifier {
   // we set default values here, they are overwritten in _initPreferences
   String currentLanguage = 'Polish';
   bool notificationsOn = false;
+  Duration currentNotificationTime = Duration(hours: 1);
 
   //set of available languages
   final List<String> availableLanguages = [
@@ -22,6 +23,16 @@ class SettingsProvider with ChangeNotifier {
     'Jasny': ThemeMode.light
   };
   ThemeMode currentThemeMode = ThemeMode.system;
+  final Map<String, Duration> availableNotificationTimes = {
+    '1,5 Godziny' : Duration(hours: 1, minutes: 30),
+    'Godzinę': Duration(hours: 1),
+    '45 minut': Duration(minutes: 45),
+    '30 minut': Duration(minutes: 30),
+    '15 minut': Duration(minutes: 15),
+    '10 minut': Duration(minutes: 10),
+    '5 minut': Duration(minutes: 5)
+   };
+
 
   SettingsProvider() {
     _initPreferences();
@@ -30,9 +41,14 @@ class SettingsProvider with ChangeNotifier {
   Future _initPreferences() async {
     // we get preferences and set them using SharedPreferences library
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool? savedNotifications = prefs.getBool('notifications');
-    if (savedNotifications != null) {
-      notificationStatus = savedNotifications;
+    bool? savedNotificationStatus = prefs.getBool('notificationStatus');
+    if (savedNotificationStatus != null) {
+      notificationStatus = savedNotificationStatus;
+    }
+
+    String? savedNotificationTime = prefs.getString('notificationTime');
+    if (savedNotificationTime != null) {
+      notificationTime = savedNotificationTime;
     }
 
     String? savedLanguage = prefs.getString('language');
@@ -56,9 +72,14 @@ class SettingsProvider with ChangeNotifier {
     prefs.setString('language', language);
   }
 
-  void saveNotifications(bool notifications) async {
+  void saveNotificationStatus(bool notifications) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('notifications', notifications);
+    prefs.setBool('notificationStatus', notifications);
+  }
+
+  void saveNotificationTime(String notifications) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('notificationTime', notifications);
   }
 
   ThemeMode get themeMode => currentThemeMode;
@@ -71,6 +92,18 @@ class SettingsProvider with ChangeNotifier {
       notifyListeners();
     } else {
       throw Exception('Theme not available');
+    }
+  }
+
+
+  void set notificationTime(String? notificationTimeToSet) {
+    if (notificationTimeToSet != null && availableNotificationTimes.containsKey(notificationTimeToSet)) {
+      // we check if notification time is available and set it
+      currentNotificationTime = availableNotificationTimes[notificationTimeToSet]!;
+      saveNotificationTime(notificationTimeToSet);
+      notifyListeners();
+    } else {
+      throw Exception('Notification time is not available');
     }
   }
 
@@ -92,7 +125,7 @@ class SettingsProvider with ChangeNotifier {
   // language setter with check if language is available
   void set notificationStatus(bool notifications) {
     notificationsOn = notifications;
-    saveNotifications(notifications);
+    saveNotificationStatus(notifications);
     notifyListeners();
   }
 }
@@ -118,6 +151,25 @@ class Settings extends StatelessWidget {
               },
             ),
           ),
+          ListTile(
+            enabled: settingsProvider.notificationsOn,
+              title: Text('Ile czasu przed zajęciami ma być wysłane powiadomienie'),
+              trailing: DropdownButton<String>(
+                value: settingsProvider.availableNotificationTimes.entries
+                .firstWhere((item) =>
+              item.value == settingsProvider.currentNotificationTime)
+        .       key,
+                onChanged: (String? value) {
+                  settingsProvider.notificationTime = value!;
+                },
+                items: settingsProvider.availableNotificationTimes.keys
+                    .map<DropdownMenuItem<String>>((String notificationTime) {
+                  return DropdownMenuItem<String>(
+                    value: notificationTime,
+                    child: Text(notificationTime),
+                  );
+                }).toList(),
+              )),
           ListTile(
               title: Text('Język'),
               trailing: DropdownButton<String>(
