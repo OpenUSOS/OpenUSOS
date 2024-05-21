@@ -197,7 +197,7 @@ class Subject {
   //only for testing
   @override
   String toString() {
-    return '${this.eventName}';
+    return '${this.eventName}, ${this.from.toIso8601String()}';
   }
 }
 
