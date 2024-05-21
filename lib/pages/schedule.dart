@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'dart:math';
 import 'dart:convert';
 import 'package:http/http.dart';
 
@@ -15,14 +14,6 @@ class Schedule extends StatefulWidget {
 
 @visibleForTesting
 class ScheduleState extends State<Schedule> {
-  Map<String, Color> _subjectColorPalette = {
-    'Lecture': Colors.green,
-    'Laboratory': Colors.orange,
-    'Practicals': Colors.purple,
-    'Foreign Language': Colors.teal,
-    'Others': Colors.brown
-  };
-
   @visibleForTesting
   List<Subject>? subjects;
   SubjectDataSource? _subjectDataSource;
@@ -36,7 +27,6 @@ class ScheduleState extends State<Schedule> {
 
   @visibleForTesting
   Future<void> fetchSubjects() async {
-    var random = Random();
     if (UserSession.sessionId == null) {
       throw Exception("sessionId is null, user not logged in.");
     }
@@ -58,7 +48,7 @@ class ScheduleState extends State<Schedule> {
                 to: DateTime.parse(item['end_time']),
                 buildingName: item['building_name']['pl'],
                 roomNumber: item['room_number'],
-                background: _subjectColorPalette['Lecture']!,
+                background: getColor(item['name']['pl']!),
                 isAllDay: false,
                 lang: 'pl',
               ))
@@ -70,6 +60,25 @@ class ScheduleState extends State<Schedule> {
     } else {
       throw Exception(
           "failed to fetch data: HTTP status ${response.statusCode}");
+    }
+  }
+
+  Color getColor(String name){
+
+    if(name.contains('Wykład')){
+      return Colors.green;
+    }
+    else if(name.contains('Ćwiczenia')){
+      return Colors.purple;
+    }
+    else if(name.contains('Laboratorium')){
+      return Colors.orange;
+    }
+    else if(name.contains('Lektorat')){
+      return Colors.teal;
+    }
+    else{
+      return Colors.brown;
     }
   }
 
