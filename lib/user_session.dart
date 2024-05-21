@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:open_usos/appbar.dart';
+import 'package:open_usos/pages/start_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -15,7 +16,7 @@ class UserSession {
   static String? accessToken; //access token for api
   static String? accessTokenSecret; //token secret for api
   static User? user;
-
+  static String currentlySelectedUniversity = 'The Jagiellonian University';
 
 
   static Future<bool> attemptResumeSession() async{
@@ -89,7 +90,7 @@ class UserSession {
   }
 
   static Future createSession() async {
-    final url = Uri.http(host, logPath);
+    final url = Uri.http(host, logPath, {'query1': currentlySelectedUniversity});
     var response = await get(url);
     if (response.statusCode == 200) {
       sessionId = response.body;
@@ -224,7 +225,7 @@ class User {
   String lastName;
   String emailAddr;
   String photoUrl;
-  String universityName = "Uniwersytet Jagielloński";
+  String universityName = UserSession.currentlySelectedUniversity;
 
   User(
       {required this.firstName,

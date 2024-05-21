@@ -14,7 +14,6 @@ import 'package:open_usos/pages/start_page.dart';
 import 'package:open_usos/pages/schedule.dart';
 import 'package:open_usos/pages/account.dart';
 import 'package:open_usos/pages/emails.dart';
-import 'package:open_usos/navbar.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

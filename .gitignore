@@ -45,3 +45,5 @@ app.*.map.json
 
 .vscode
 vscode
+
+UsosApiList.json
