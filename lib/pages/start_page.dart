@@ -13,7 +13,7 @@ class _StartPageState extends State<StartPage> {
   final List<String> UniversityList = [
     'Uniwersytet Jagielloński',
     'Politechnika Wrocławska',
-    'Uniwersytet Warszawski',
+    // śmierdzą 'Uniwersytet Warszawski',
     'Chrześcijańska Akademia Teologiczna w Warszawie',
   ];
 
