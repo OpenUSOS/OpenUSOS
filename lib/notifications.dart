@@ -27,7 +27,7 @@ class Notifications {
     tzl.initializeTimeZones(); //necessary for timezones to work properly
 
     final initializationSettingsAndroid =
-        AndroidInitializationSettings('/assets/images/androidIcon.jpg');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     final initializationSettingsIOS = DarwinInitializationSettings();
     final initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
