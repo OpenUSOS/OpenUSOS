@@ -1,6 +1,6 @@
 import 'dart:convert';
+
 import 'package:open_usos/appbar.dart';
-import 'package:open_usos/pages/start_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -16,7 +16,7 @@ class UserSession {
   static String? accessToken; //access token for api
   static String? accessTokenSecret; //token secret for api
   static User? user;
-  static String currentlySelectedUniversity = 'The Jagiellonian University';
+  static String currentlySelectedUniversity = 'Uniwersytet Jagielloński';
 
 
   static Future<bool> attemptResumeSession() async{

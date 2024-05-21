@@ -80,6 +80,8 @@ class EmailsState extends State<Emails> {
                             }))
                   ]),
                   ListView.builder(
+                      shrinkWrap: true,
+                      physics: ScrollPhysics(),
                       itemCount: emailData.length,
                       itemBuilder: (context, index) {
                         final item = emailData[index];
