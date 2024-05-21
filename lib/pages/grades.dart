@@ -65,6 +65,36 @@ class GradesState extends State<Grades> {
     }
   }
 
+  void sortGradesByTerm() {
+    var sortedKeys = grades.keys.toList();
+
+    sortedKeys.sort((a, b) {
+      var yearA = int.parse(a.substring(0, 2));
+      var yearB = int.parse(b.substring(0, 2));
+      var termA = a.substring(5);
+      var termB = b.substring(5);
+      if (yearA != yearB) {
+        return yearB.compareTo(yearA);
+      }
+      if (termA == 'L' && termB == 'Z') {
+        return -1;
+      } else {
+        return 1;
+
+      }
+    });
+
+    // rebuilding grades map
+    Map<String, Map<String, List<Grade>>> sortedGrades = {}; 
+    for (var key in sortedKeys) {
+      sortedGrades[key] = grades[key]!;
+    }
+
+    setState(() {
+      grades = sortedGrades;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Color? failed = Colors.red[800];
