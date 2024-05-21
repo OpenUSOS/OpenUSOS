@@ -81,7 +81,6 @@ class EmailsState extends State<Emails> {
                   ]),
                   ListView.builder(
                       itemCount: emailData.length,
-                      shrinkWrap: true,
                       itemBuilder: (context, index) {
                         final item = emailData[index];
                         return Card(

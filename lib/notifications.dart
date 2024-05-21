@@ -54,7 +54,7 @@ class Notifications {
         .subtract(settingsProvider.currentNotificationTime);
     final plannedTimeTZ = //we convert it to timezoned format for proper scheduling
         tz.TZDateTime.from(plannedTime, tz.getLocation('Europe/Warsaw'));
-    if(plannedTime.isBefore(DateTime.now())){
+    if (plannedTime.isBefore(DateTime.now())) {
       return; //we don't schedule the notification if it would be in the past
     }
     await plugin.zonedSchedule(
@@ -166,6 +166,10 @@ class Notifications {
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
+    plugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestExactAlarmsPermission();
     await setRunInBackground();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('lastDate', '2020-04-20');

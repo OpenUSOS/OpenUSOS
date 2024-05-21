@@ -205,7 +205,7 @@ class LoginPage extends StatelessWidget {
                 final loginUrl = Uri.parse(UserSession.loginURL!);
                 controller.loadRequest(loginUrl);
                 return WebViewWidget(
-                  controller: controller,
+                  controller: controller..clearCache()..clearLocalStorage(),
                 );
               }
               else{
