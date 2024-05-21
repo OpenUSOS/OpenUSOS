@@ -45,7 +45,7 @@ class GradesState extends State<Grades> {
         Grade grade = Grade(
           name: item['name'],
           author:
-              item['author']['first_name'] + ' ' + item['author']['last_name'],
+          item['author']['first_name'] + ' ' + item['author']['last_name'],
           date: item['date'],
           term: item['term'],
           value: item['value'],
@@ -58,11 +58,47 @@ class GradesState extends State<Grades> {
       }
       setState(() {
         grades = gradesByTerm;
+        sortGradesByTerm();
       });
     } else {
       throw Exception(
           "failed to fetch data: HTTP status ${response.statusCode}");
     }
+  }
+
+  void sortGradesByTerm() {
+    var sortedKeys = grades.keys.toList();
+
+    sortedKeys.sort((a, b) {
+      var yearA = int.parse(a.substring(0, 2));
+      var yearB = int.parse(b.substring(0, 2));
+      var termA = a.substring(5);
+      var termB = b.substring(5);
+      if (yearA != yearB) {
+        return yearB.compareTo(yearA);
+      }
+      else if(a.length < b.length){
+        return -1;
+      }
+      else if( a.length > b.length){
+        return 1;
+      }
+      else if(termA == 'L' && termB == 'Z') {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+
+    // rebuilding grades map
+    Map<String, Map<String, List<Grade>>> sortedGrades = {};
+    for (var key in sortedKeys) {
+      sortedGrades[key] = grades[key]!;
+    }
+
+    setState(() {
+      grades = sortedGrades;
+    });
   }
 
   @override
@@ -109,7 +145,7 @@ class GradesState extends State<Grades> {
                               child: ExpansionTile(
                                 title: Text(entry.key,
                                     style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
+                                    TextStyle(fontWeight: FontWeight.bold)),
                                 children: entry.value.map((grade) {
                                   return ListTile(
                                     title: Text(grade.value,
@@ -119,7 +155,7 @@ class GradesState extends State<Grades> {
                                         'Wystawione przez ${grade.author}'),
                                     leading: CircleAvatar(
                                       backgroundColor: grade.value == '2' ||
-                                              grade.value == 'NZAL'
+                                          grade.value == 'NZAL'
                                           ? failed
                                           : passed,
                                       child: Text(grade.value,
@@ -152,8 +188,8 @@ class Grade {
 
   Grade(
       {required this.date,
-      required this.author,
-      required this.value,
-      required this.name,
-      required this.term});
+        required this.author,
+        required this.value,
+        required this.name,
+        required this.term});
 }
