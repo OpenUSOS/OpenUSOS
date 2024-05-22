@@ -64,4 +64,16 @@ tests:
 "courses" is a list of the courses that took place during the term. it contains "name" (eg. ASD, sieci) and "tests".
 "tests" is a list of all tests within one course. it contains "name", "description", "points" (of user) "points_max", and "exercises".
 "exercises is a list of all exercises within one test. it contains "name", "description", "points" (of user) and "points_max".
+---------
+surveys:
+---------
+11. id, query1 = get_surveys ----- returns a list of surveys. each one is a dict containing:
+name, id, start_date, end_date, questions. each question is a dict with: id, number, display_text_html, allow_comment,
+possible_answer. each possible anserw is a dict containing: id, display_text_html.
+
+12. id, query1 = anserw_survey, query2 = [id of a query you anserw], query3 = [anserw]. Anserws the specific survey. anserw should
+be a JSON-formatted object, mapping question IDs to their answers, {"question1_id": {"answers": ["possible_answer1_id",
+"possible_answer2_id", ...], "comment": "comment or null"}, "question2_id": ...}
+Note, that all values of this objects are strings (because the IDs of possible answers are strings).
+If comment should be left empty or the question does not allow comments, null has be passed in comment field.
 """
