@@ -41,7 +41,6 @@ class Course {
       }
     }
 
-    // Sprawdzamy, czy json['name'] jest mapą czy stringiem
     String courseName;
     if (json['name'] is Map) {
       courseName = json['name']['pl'];
@@ -76,7 +75,6 @@ class Assessment {
       }
     }
 
-    // Sprawdzamy, czy json['name'] i json['description'] są mapą czy stringiem
     String assessmentName;
     String assessmentDescription;
     if (json['name'] is Map) {
@@ -124,7 +122,6 @@ class Exercise {
       required this.pointsMax});
 
   factory Exercise.fromJson(Map<String, dynamic> json) {
-    // Sprawdzamy, czy json['name'] i json['description'] są mapą czy stringiem
     String exerciseName;
     String exerciseDescription;
     if (json['name'] is Map) {
@@ -149,7 +146,6 @@ class Exercise {
   }
 }
 
-// Funkcja do parsowania termów
 Map<String, Term> parseTerms(String responseBody) {
   final List<dynamic> parsedList = json.decode(responseBody) as List<dynamic>;
   Map<String, Term> termsMap = {};
@@ -161,7 +157,6 @@ Map<String, Term> parseTerms(String responseBody) {
   return termsMap;
 }
 
-// Funkcja do sortowania termów
 List<String> sortTerms(Map<String, Term> termsMap) {
   var sortedTerms = termsMap.keys.toList();
   sortedTerms.sort((a, b) {
@@ -172,9 +167,9 @@ List<String> sortTerms(Map<String, Term> termsMap) {
     var aTerm = aParts[1];
     var bTerm = bParts[1];
     if (aYear != bYear) {
-      return bYear.compareTo(aYear); // Sortowanie po roku malejąco
+      return bYear.compareTo(aYear);
     } else {
-      return aTerm.compareTo(bTerm); // Sortowanie po semestrze
+      return aTerm.compareTo(bTerm);
     }
   });
   return sortedTerms;
