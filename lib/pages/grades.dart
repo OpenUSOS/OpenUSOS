@@ -14,7 +14,6 @@ class Grades extends StatefulWidget {
 }
 
 class GradesState extends State<Grades> {
-  @visibleForTesting
   late Future<void>
       _gradesFuture; //necessary because future builder makes repeated api calls otherwise
 
