@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 
@@ -19,7 +17,7 @@ class SurveysState extends State<Surveys> {
   @visibleForTesting
   List<Survey> surveyData = [];
   late Future<void>
-      _SurveysFuture; //future to prevent future builder from sending repeated api calls
+  _SurveysFuture; //future to prevent future builder from sending repeated api calls
 
   @override
   void initState() {
@@ -33,7 +31,7 @@ class SurveysState extends State<Surveys> {
   }
 
   Future<List<Survey>> _fetchSurveys() async {
-    /* final url = Uri.http(UserSession.host, UserSession.basePath,
+   /* final url = Uri.http(UserSession.host, UserSession.basePath,
         {"id": UserSession.sessionId, "query1": "get_Surveys"});
     final response = await get(url);
 
@@ -366,3 +364,4 @@ class Question {
   Question(this.id, this.number, this.displayText, this.allowComment,
       this.possibleAnswers);
 }
+
