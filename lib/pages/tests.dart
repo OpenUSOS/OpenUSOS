@@ -8,20 +8,22 @@ import 'package:open_usos/navbar.dart';
 
 class Term {
   final String termId;
-  final Map<String, Course> courses;
+  final List<Course> courses;
 
   Term({required this.termId, required this.courses});
 
   factory Term.fromJson(Map<String, dynamic> json) {
-    var courseMap = <String, Course>{};
+    var coursesList = <Course>[];
     if (json['courses'] != null) {
       var coursesJson = json['courses'] as List;
       for (var courseJson in coursesJson) {
         var course = Course.fromJson(courseJson);
-        courseMap[course.name] = course;
+        coursesList.add(course);
       }
+      // Sort the courses alphabetically by name
+      coursesList.sort((a, b) => a.name.compareTo(b.name));
     }
-    return Term(termId: json['term_id'], courses: courseMap);
+    return Term(termId: json['term_id'], courses: coursesList);
   }
 }
 
@@ -41,12 +43,7 @@ class Course {
       }
     }
 
-    String courseName;
-    if (json['name'] is Map) {
-      courseName = json['name']['pl'];
-    } else {
-      courseName = json['name'];
-    }
+    String courseName = json['name']['pl'];
     return Course(name: courseName, assessments: assessmentList);
   }
 }
@@ -75,18 +72,9 @@ class Assessment {
       }
     }
 
-    String assessmentName;
-    String assessmentDescription;
-    if (json['name'] is Map) {
-      assessmentName = json['name']['pl'];
-    } else {
-      assessmentName = json['name'];
-    }
-    if (json['description'] is Map) {
-      assessmentDescription = json['description']['pl'];
-    } else {
-      assessmentDescription = json['description'];
-    }
+    String assessmentName = json['name']['pl'];
+    String assessmentDescription = json['description']['pl'];
+
     return Assessment(
       name: assessmentName,
       description: assessmentDescription,
@@ -101,11 +89,6 @@ class Assessment {
 
   double get totalPoints {
     return exercises.fold(0, (sum, exercise) => sum + (exercise.points ?? 0));
-  }
-
-  double get totalMaxPoints {
-    return exercises.fold(
-        0, (sum, exercise) => sum + (exercise.pointsMax ?? 0));
   }
 }
 
@@ -122,18 +105,9 @@ class Exercise {
       required this.pointsMax});
 
   factory Exercise.fromJson(Map<String, dynamic> json) {
-    String exerciseName;
-    String exerciseDescription;
-    if (json['name'] is Map) {
-      exerciseName = json['name']['pl'];
-    } else {
-      exerciseName = json['name'];
-    }
-    if (json['description'] is Map) {
-      exerciseDescription = json['description']['pl'];
-    } else {
-      exerciseDescription = json['description'];
-    }
+    String exerciseName = json['name']['pl'];
+    String exerciseDescription = json['description']['pl'];
+    debugPrint(json.toString());
     return Exercise(
       name: exerciseName,
       description: exerciseDescription,
@@ -247,39 +221,61 @@ class TermWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Divider(),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(5.0),
           child: Text(
             term.termId,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
           ),
         ),
-        ...term.courses.values.map((course) {
+        ...term.courses.map((course) {
           return Card(
             margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: ExpansionTile(
-              title: Text(course.name),
+              title: Text(
+                course.name,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+              ),
               children: course.assessments.map((assessment) {
                 final points = assessment.points ?? assessment.totalPoints;
-                final pointsMax =
-                    assessment.pointsMax ?? assessment.totalMaxPoints;
+                final pointsMax = assessment.pointsMax;
                 return ExpansionTile(
                   title: Row(
                     children: [
-                      Expanded(child: Text(assessment.name)),
-                      _buildPointsWidget(points, pointsMax),
+                      Expanded(
+                        child: Text(
+                          assessment.name,
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                      _buildPointsWidget(points, pointsMax, context),
                     ],
                   ),
-                  subtitle: Text(assessment.description),
+                  subtitle: assessment.pointsMax == null
+                      ? null
+                      : Text(
+                          'punkty max: ${assessment.pointsMax}',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w300),
+                        ),
                   children: assessment.exercises.map((exercise) {
                     return ListTile(
-                      title: Text(exercise.name),
-                      subtitle: Text(exercise.description),
+                      title: Text(
+                        exercise.name,
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w300),
+                      ),
+                      subtitle: Text(
+                        'punkty max: ${exercise.pointsMax ?? '-'}',
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w200),
+                      ),
                       trailing: _buildPointsWidget(
-                          exercise.points, exercise.pointsMax),
+                          exercise.points, exercise.pointsMax, context),
                     );
                   }).toList(),
                 );
@@ -291,78 +287,17 @@ class TermWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildPointsWidget(double? points, double? pointsMax) {
+  Widget _buildPointsWidget(double? points, double? pointsMax, context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       decoration: BoxDecoration(
-        color: Colors.blue,
+        color: Theme.of(context).brightness == Brightness.light
+            ? Colors.blue[900]
+            : Colors.indigo[300],
         borderRadius: BorderRadius.circular(12.0),
       ),
-      child: Text(
-        points != null && pointsMax != null
-            ? 'Punkty: ${points}/${pointsMax}'
-            : 'Punkty: -/-',
-        style: TextStyle(color: Colors.white),
-      ),
-    );
-  }
-}
-
-class CourseDetailScreen extends StatelessWidget {
-  final Course course;
-
-  CourseDetailScreen({required this.course});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(course.name),
-      ),
-      body: ListView.builder(
-        itemCount: course.assessments.length,
-        itemBuilder: (context, index) {
-          final assessment = course.assessments[index];
-          final points = assessment.points ?? assessment.totalPoints;
-          final pointsMax = assessment.pointsMax ?? assessment.totalMaxPoints;
-          return Card(
-            margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: ExpansionTile(
-              title: Row(
-                children: [
-                  Expanded(child: Text(assessment.name)),
-                  _buildPointsWidget(points, pointsMax),
-                ],
-              ),
-              subtitle: Text(assessment.description),
-              children: assessment.exercises.map((exercise) {
-                return ListTile(
-                  title: Text(exercise.name),
-                  subtitle: Text(exercise.description),
-                  trailing:
-                      _buildPointsWidget(exercise.points, exercise.pointsMax),
-                );
-              }).toList(),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildPointsWidget(double? points, double? pointsMax) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      decoration: BoxDecoration(
-        color: Colors.blue,
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: Text(
-        points != null && pointsMax != null
-            ? 'Punkty: ${points}/${pointsMax}'
-            : 'Punkty: -/-',
-        style: TextStyle(color: Colors.white),
-      ),
+      child: Text(points == null ? '0.0' : '${points}',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
     );
   }
 }
