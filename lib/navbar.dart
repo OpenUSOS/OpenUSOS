@@ -17,11 +17,12 @@ class _NavBarState extends State<NavBar> {
   void initState() {
     super.initState();
     if (UserSession.sessionId == null) {
+      UserSession.wipeLocalLoginData();
       throw Exception('sessionId is null, user not logged in.');
     }
     if (UserSession.user == null){
-      throw Exception('Failed getting user data');
       UserSession.getUserData();
+      throw Exception('Failed getting user data');
     }
     _user = UserSession.user;
   }
@@ -217,7 +218,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   Map<String, int> routeToIndex = {
     '/home': 0,
     '/grades': 1,
-    '/exams': 2,
+    '/tests': 2,
     '/schedule': 3,
     '/calendar': 4,
   };
