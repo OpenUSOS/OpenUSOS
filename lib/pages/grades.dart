@@ -91,7 +91,7 @@ class GradesState extends State<Grades> {
     });
 
     // rebuilding grades map
-    Map<String, Map<String, List<Grade>>> sortedGrades = {};
+    Map<String, Map<String, List<Grade>>> sortedGrades = {}; 
     for (var key in sortedKeys) {
       sortedGrades[key] = grades[key]!;
     }
