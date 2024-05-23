@@ -45,7 +45,7 @@ class UserSession {
       wipeLocalLoginData();
       return false;
     }
-    await _getUserData();
+    await getUserData();
     return true;
   }
 
@@ -64,7 +64,7 @@ class UserSession {
     return true;
   }
 
-  static Future<void> _getUserData() async {
+  static Future<void> getUserData() async {
     if (UserSession.sessionId == null) {
       throw Exception("sessionId is null, user not logged in.");
     }
@@ -132,7 +132,7 @@ class UserSession {
       prefs.setString('sessionId', sessionId!);
     }
     await resumeSession();
-    await _getUserData();
+    await getUserData();
     return;
   }
 
