@@ -21,7 +21,7 @@ class _NavBarState extends State<NavBar> {
     }
     if (UserSession.user == null){
       throw Exception('Failed getting user data');
-
+      UserSession.getUserData();
     }
     _user = UserSession.user;
   }
