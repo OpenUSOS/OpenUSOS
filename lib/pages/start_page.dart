@@ -72,9 +72,8 @@ class _StartPageState extends State<StartPage> {
                     },
                     child: Text('Przejdź dalej'),
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.all(16.0),
-                      minimumSize: Size(100, 24)
-                    ))
+                        padding: EdgeInsets.all(16.0),
+                        minimumSize: Size(100, 24)))
               ])),
     );
   }
