@@ -14,8 +14,8 @@ class Grades extends StatefulWidget {
 }
 
 class GradesState extends State<Grades> {
-
-  late Future<void> _gradesFuture; //necessary because future builder makes repeated api calls otherwise
+  late Future<void>
+      _gradesFuture; //necessary because future builder makes repeated api calls otherwise
 
   @visibleForTesting
   Map<String, Map<String, List<Grade>>> grades = {};
@@ -28,7 +28,7 @@ class GradesState extends State<Grades> {
 
   Future<void> _fetchGrades() async {
     if (UserSession.sessionId == null) {
-      throw Exception("sessionId is null, user not logged in.");
+      throw Exception('sessionId is null, user not logged in.');
     }
     final url = Uri.http(UserSession.host, UserSession.basePath, {
       'id': UserSession.sessionId,
@@ -43,13 +43,14 @@ class GradesState extends State<Grades> {
 
       for (dynamic item in data) {
         Grade grade = Grade(
-          name: item['name'],
-          author:
-          item['author']['first_name'] + ' ' + item['author']['last_name'],
-          date: item['date'],
-          term: item['term'],
-          value: item['value'],
-        );
+            name: item['name'],
+            author: item['author']['first_name'] +
+                ' ' +
+                item['author']['last_name'],
+            date: item['date'],
+            term: item['term'],
+            value: item['value'],
+            type: item['class_type']);
 
         gradesByTerm.putIfAbsent(grade.term, () => {});
         var subjectGrades = gradesByTerm[grade.term]!;
@@ -62,7 +63,7 @@ class GradesState extends State<Grades> {
       });
     } else {
       throw Exception(
-          "failed to fetch data: HTTP status ${response.statusCode}");
+          'failed to fetch data: HTTP status ${response.statusCode}');
     }
   }
 
@@ -76,14 +77,11 @@ class GradesState extends State<Grades> {
       var termB = b.substring(5);
       if (yearA != yearB) {
         return yearB.compareTo(yearA);
-      }
-      else if(a.length < b.length){
+      } else if (a.length < b.length) {
         return -1;
-      }
-      else if( a.length > b.length){
+      } else if (a.length > b.length) {
         return 1;
-      }
-      else if(termA == 'L' && termB == 'Z') {
+      } else if (termA == 'L' && termB == 'Z') {
         return -1;
       } else {
         return 1;
@@ -91,7 +89,7 @@ class GradesState extends State<Grades> {
     });
 
     // rebuilding grades map
-    Map<String, Map<String, List<Grade>>> sortedGrades = {}; 
+    Map<String, Map<String, List<Grade>>> sortedGrades = {};
     for (var key in sortedKeys) {
       sortedGrades[key] = grades[key]!;
     }
@@ -131,41 +129,63 @@ class GradesState extends State<Grades> {
                             child: Text(term,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 20.0))),
+                                    fontSize: 26.0))),
                         ListView(
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           children: subjects.entries.map((entry) {
+                            Iterable<ListTile> tiles = entry.value.map((grade) {
+                              var type = '';
+                              switch (grade.type) {
+                                case 'CW':
+                                  type = 'Ćwiczenia';
+                                case 'LAB':
+                                  type = 'Laboratorium';
+                                case 'WYK':
+                                  type = 'Wykład';
+                                case 'LEK':
+                                  type = 'Lektorat';
+                                case 'WF':
+                                  type = 'Wychowanie fizyczne';
+                                default:
+                                  type = '-';
+                              }
+                              return ListTile(
+                                title: Text(type,
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w500)),
+                                subtitle: Text(
+                                    'Wystawione przez ${grade.author}',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w300)),
+                                leading: CircleAvatar(
+                                  backgroundColor: grade.value == '2' ||
+                                          grade.value == 'NZAL'
+                                      ? failed
+                                      : passed,
+                                  child: Text(grade.value,
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.bold)),
+                                ),
+                              );
+                            });
                             return Card(
                               margin: EdgeInsets.symmetric(
                                   horizontal: 16.0, vertical: 8.0),
                               elevation: 4.0,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0)),
-                              child: ExpansionTile(
-                                title: Text(entry.key,
-                                    style:
-                                    TextStyle(fontWeight: FontWeight.bold)),
-                                children: entry.value.map((grade) {
-                                  return ListTile(
-                                    title: Text(grade.value,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                    subtitle: Text(
-                                        'Wystawione przez ${grade.author}'),
-                                    leading: CircleAvatar(
-                                      backgroundColor: grade.value == '2' ||
-                                          grade.value == 'NZAL'
-                                          ? failed
-                                          : passed,
-                                      child: Text(grade.value,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12.0,
-                                              fontWeight: FontWeight.bold)),
-                                    ),
-                                  );
-                                }).toList(),
+                              child: Column(
+                                children: [
+                                  Text(entry.key,
+                                      style: TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                      )),
+                                  for (var elem in tiles) elem,
+                                ],
                               ),
                             );
                           }).toList(),
@@ -185,11 +205,14 @@ class Grade {
   String value;
   String name;
   String term;
+  String type;
 
-  Grade(
-      {required this.date,
-        required this.author,
-        required this.value,
-        required this.name,
-        required this.term});
+  Grade({
+    required this.date,
+    required this.author,
+    required this.value,
+    required this.name,
+    required this.term,
+    required this.type,
+  });
 }
