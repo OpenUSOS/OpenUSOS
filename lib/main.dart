@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 
 import 'package:open_usos/notifications.dart';
+import 'package:open_usos/pages/surveys.dart';
 import 'package:provider/provider.dart';
 import 'package:open_usos/themes.dart';
 import 'package:open_usos/pages/calendar.dart';
@@ -77,6 +78,8 @@ class OpenUSOS extends StatelessWidget {
             '/emailExpanded':(context) => EmailExpanded(),
             '/exams': (context) => Home(),
             '/start': (context) => StartPage(),
+            '/surveys': (context) => Surveys(),
+            '/surveyFiller':(context) => SurveyFiller(),
           });
     });
   }

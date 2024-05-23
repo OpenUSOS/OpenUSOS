@@ -140,7 +140,7 @@ class _NavBarState extends State<NavBar> {
           buildCategoryHeader('Uczelnia'),
           buildNavTiles(context, 'OpenUSOS mail', Icons.mail, '/emails'),
           buildDivider(),
-          buildNavTiles(context, 'Ankiety', Icons.question_answer, '/TODO'),
+          buildNavTiles(context, 'Ankiety', Icons.question_answer, '/surveys'),
           buildDivider(),
           buildNavTiles(context, 'Aktualności', Icons.newspaper, '/TODO'),
           buildDivider(),
