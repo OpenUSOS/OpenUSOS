@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import 'package:open_usos/appbar.dart';
 import 'package:open_usos/navbar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+import 'package:open_usos/user_session.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
@@ -16,19 +19,88 @@ class Calendar extends StatefulWidget {
 class CalendarState extends State<Calendar> {
   @visibleForTesting
   DateTime? selectedDay;
-  Map<DateTime, List<Appointment>> _events = {};
+  Map<DateTime, List<Appointment>> _userEvents = {};
+  Map<DateTime, Map<String, dynamic>> _highlightedDays = {};
+  Map<String, IconData> _eventIcons = {
+    'holidays': Icons.beach_access,
+    'public_holidays': Icons.flag,
+    'exam_session': Icons.school,
+    'break': Icons.free_breakfast,
+    'dean': Icons.account_balance,
+    'rector': Icons.account_balance_wallet,
+  };
   TextEditingController _eventController = TextEditingController();
   TextEditingController _startingTimeController = TextEditingController();
   TextEditingController _endingTimeController = TextEditingController();
 
+  late Future<void> _futureSpecialDays;
+
   @override
   void initState() {
     super.initState();
-    _loadEvents();
+    _loadUserEvents();
+    _futureSpecialDays = _fetchSpecialDays();
   }
 
-  List<Appointment> _getEventsForDay(DateTime day) {
-    return _events[DateTime(day.year, day.month, day.day)] ?? [];
+  List<Appointment> _getUserEventsForDay(DateTime day) {
+    return _userEvents[DateTime(day.year, day.month, day.day)] ?? [];
+  }
+
+  Future<void> _fetchSpecialDays() async {
+    if (UserSession.sessionId == null) {
+      throw Exception('sessionId is null, user not logged in');
+    }
+    final url = Uri.http(UserSession.host, UserSession.basePath, {
+      'id': UserSession.sessionId,
+      'query1': 'get_events',
+      'query2': '2022-10-01',
+      'query3': '2026-10-01',
+    });
+
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      setState(() {
+        for (var faculty in data) {
+          List<dynamic> events = faculty['list'];
+          for (var item in events) {
+            if ([
+              'holidays',
+              'public_holidays',
+              'exam_session',
+              'break',
+              'dean',
+              'rector'
+            ].contains(item['type'])) {
+              DateTime startDate = DateTime.parse(item['start_date']);
+              DateTime endDate = DateTime.parse(item['end_date']);
+              final subject = item['name']['pl'] ?? 'No Title';
+              final description = item['is_day_off']
+                  ? '$subject - Wolne'
+                  : '$subject - Nie wolne';
+
+              for (DateTime date = startDate;
+                  date.isBefore(endDate) || date.isAtSameMomentAs(endDate);
+                  date = date.add(Duration(days: 1))) {
+                final dayKey = DateTime(date.year, date.month, date.day);
+                if (!_highlightedDays.containsKey(dayKey)) {
+                  _highlightedDays[dayKey] = {
+                    'type': item['type'],
+                    'description': description,
+                    'subject': subject,
+                    'is_day_off': item['is_day_off'],
+                  };
+                }
+              }
+            }
+          }
+        }
+      });
+    } else {
+      throw Exception(
+          'failed to fetch data: HTTP status ${response.statusCode}');
+    }
   }
 
   Future<void> _showTimePicker(TextEditingController controller) async {
@@ -51,11 +123,11 @@ class CalendarState extends State<Calendar> {
 
   void _removeEvent(DateTime day, int index) {
     setState(() {
-      _events[day]?.removeAt(index);
-      if (_events[day]?.isEmpty ?? false) {
-        _events.remove(day);
+      _userEvents[day]?.removeAt(index);
+      if (_userEvents[day]?.isEmpty ?? false) {
+        _userEvents.remove(day);
       }
-      _saveEvents();
+      _saveUserEvents();
     });
   }
 
@@ -137,11 +209,22 @@ class CalendarState extends State<Calendar> {
                 setState(() {
                   final dayKey = DateTime(
                       selectedDay!.year, selectedDay!.month, selectedDay!.day);
-                  _events[dayKey] = (_events[dayKey] ?? [])..add(appointment);
+
+                  if (_userEvents[dayKey] != null &&
+                      _userEvents[dayKey]!.any((app) =>
+                          app.subject == appointment.subject &&
+                          app.startTime == appointment.startTime &&
+                          app.endTime == appointment.endTime &&
+                          app.color == appointment.color)) {
+                    return;
+                  }
+
+                  _userEvents[dayKey] = (_userEvents[dayKey] ?? [])
+                    ..add(appointment);
                   _eventController.clear();
                   _startingTimeController.clear();
                   _endingTimeController.clear();
-                  _saveEvents();
+                  _saveUserEvents();
                 });
                 Navigator.pop(context);
               }
@@ -152,23 +235,23 @@ class CalendarState extends State<Calendar> {
     );
   }
 
-  Future<void> _saveEvents() async {
+  Future<void> _saveUserEvents() async {
     final prefs = await SharedPreferences.getInstance();
     Map<String, String> stringEvents = {};
-    _events.forEach((key, value) {
+    _userEvents.forEach((key, value) {
       stringEvents[key.toIso8601String()] =
           jsonEncode(value.map((e) => _appointmentToJson(e)).toList());
     });
-    await prefs.setString('events', jsonEncode(stringEvents));
+    await prefs.setString('user_events', jsonEncode(stringEvents));
   }
 
-  Future<void> _loadEvents() async {
+  Future<void> _loadUserEvents() async {
     final prefs = await SharedPreferences.getInstance();
-    final String? eventsString = prefs.getString('events');
+    final String? eventsString = prefs.getString('user_events');
     if (eventsString != null) {
       final Map<String, dynamic> decodedEvents = jsonDecode(eventsString);
       setState(() {
-        _events = decodedEvents.map((key, value) {
+        _userEvents = decodedEvents.map((key, value) {
           DateTime date = DateTime.parse(key);
           List<Appointment> appointments = (jsonDecode(value) as List)
               .map((e) => _appointmentFromJson(e))
@@ -192,7 +275,7 @@ class CalendarState extends State<Calendar> {
     return Appointment(
       startTime: DateTime.parse(json['startTime']),
       endTime: DateTime.parse(json['endTime']),
-      subject: json['subject'],
+      subject: json['subject'] ?? 'No Title',
       color: Color(json['color']),
     );
   }
@@ -204,91 +287,155 @@ class CalendarState extends State<Calendar> {
       appBar: USOSBar(title: 'Kalendarz'),
       drawer: NavBar(),
       bottomNavigationBar: BottomNavBar(),
-      body: Column(
-        children: <Widget>[
-          SfCalendar(
-            firstDayOfWeek: 1,
-            view: CalendarView.month,
-            headerStyle: CalendarHeaderStyle(
-              textAlign: TextAlign.center,
-              backgroundColor: Theme.of(context).brightness == Brightness.light
-                  ? Colors.blue[100]
-                  : Colors.indigo[100],
-              textStyle: TextStyle(
-                  fontSize: 25,
-                  fontStyle: FontStyle.normal,
-                  letterSpacing: 5,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500),
-            ),
-            dataSource: _DataSource(_events),
-            onSelectionChanged: (CalendarSelectionDetails details) {
-              setState(() {
-                selectedDay = details.date;
-              });
-            },
-          ),
-          SizedBox(height: 20.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                  child: ElevatedButton(
-                onPressed: selectedDay != null ? _addEvent : null,
-                child: Text('Dodaj wydarzenie do wybranego dnia'),
-              ))
-            ],
-          ),
-          SizedBox(height: 10.0),
-          if (selectedDay != null)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Twoje wydarzenia w wybranym dniu",
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 24.0),
-                )
-              ],
-            ),
-          if (selectedDay != null &&
-              (_events[selectedDay]?.isNotEmpty ?? false))
-            Expanded(
-              child: ListView.builder(
-                itemCount: _getEventsForDay(selectedDay!).length,
-                itemBuilder: (context, index) {
-                  final appointment = _getEventsForDay(selectedDay!)[index];
-                  return Card(
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Colors.blue[900]
-                        : Colors.indigo[300],
-                    child: ListTile(
-                      title: Text(
-                        appointment.subject,
-                        style: TextStyle(color: Colors.white),
+      body: FutureBuilder<void>(
+        future: _futureSpecialDays,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return Column(
+              children: <Widget>[
+                SfCalendar(
+                  firstDayOfWeek: 1,
+                  view: CalendarView.month,
+                  headerStyle: CalendarHeaderStyle(
+                    textAlign: TextAlign.center,
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.light
+                            ? Colors.blue[100]
+                            : Colors.indigo[100],
+                    textStyle: TextStyle(
+                        fontSize: 25,
+                        fontStyle: FontStyle.normal,
+                        letterSpacing: 5,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500),
+                  ),
+                  dataSource: _DataSource(_userEvents),
+                  onSelectionChanged: (CalendarSelectionDetails details) {
+                    setState(() {
+                      selectedDay = details.date;
+                    });
+                  },
+                  monthCellBuilder:
+                      (BuildContext context, MonthCellDetails details) {
+                    final DateTime day = details.date;
+                    bool isHighlighted = _highlightedDays
+                        .containsKey(DateTime(day.year, day.month, day.day));
+                    Map<String, dynamic>? eventDetails = _highlightedDays[
+                        DateTime(day.year, day.month, day.day)];
+                    return Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
                       ),
-                      subtitle: Text(
-                          '${appointment.startTime.hour}:${appointment.startTime.minute} - ${appointment.endTime.hour}:${appointment.endTime.minute}',
-                          style: TextStyle(color: Colors.white)),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete_forever, color: Colors.white),
-                        onPressed: () => _removeEvent(selectedDay!, index),
+                      child: Stack(
+                        children: [
+                          Center(
+                            child: Text(
+                              day.day.toString(),
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          if (isHighlighted && eventDetails != null)
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Icon(
+                                  _eventIcons[eventDetails['type']],
+                                  size: 16,
+                                  color: Colors.purple[300],
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
+                    );
+                  },
+                ),
+                SizedBox(height: 20.0),
+                if (selectedDay != null &&
+                    _highlightedDays.containsKey(selectedDay))
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      '${_highlightedDays[selectedDay]!['subject']} - ${_highlightedDays[selectedDay]!['is_day_off'] ? 'Wolne' : 'Nie wolne'}',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                  );
-                },
-              ),
-            )
-          else if (selectedDay != null)
-            Expanded(
-              child: Center(
-                child: Text('Brak',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w300,
-                        fontSize: 20.0,
-                        color: Colors.grey.shade400)),
-              ),
-            )
-        ],
+                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                        child: ElevatedButton(
+                      onPressed: selectedDay != null ? _addEvent : null,
+                      child: Text('Dodaj wydarzenie do wybranego dnia'),
+                    ))
+                  ],
+                ),
+                SizedBox(height: 10.0),
+                if (selectedDay != null)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Twoje wydarzenia w wybranym dniu",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 24.0),
+                      )
+                    ],
+                  ),
+                if (selectedDay != null &&
+                    (_userEvents[selectedDay]?.isNotEmpty ?? false))
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _getUserEventsForDay(selectedDay!).length,
+                      itemBuilder: (context, index) {
+                        final appointment =
+                            _getUserEventsForDay(selectedDay!)[index];
+                        return Card(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.blue[900]
+                                  : Colors.indigo[300],
+                          child: ListTile(
+                            title: Text(
+                              appointment.subject,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            subtitle: Text(
+                                '${appointment.startTime.hour}:${appointment.startTime.minute} - ${appointment.endTime.hour}:${appointment.endTime.minute}',
+                                style: TextStyle(color: Colors.white)),
+                            trailing: IconButton(
+                              icon: Icon(Icons.delete_forever,
+                                  color: Colors.white),
+                              onPressed: () =>
+                                  _removeEvent(selectedDay!, index),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                else if (selectedDay != null)
+                  Expanded(
+                    child: Center(
+                      child: Text('Brak',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w300,
+                              fontSize: 20.0,
+                              color: Colors.grey.shade400)),
+                    ),
+                  )
+              ],
+            );
+          }
+        },
       ),
     );
   }
