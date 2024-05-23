@@ -71,7 +71,7 @@ surveys:
 name, id, start_date, end_date, questions. each question is a dict with: id, number, display_text_html, allow_comment,
 possible_answer. each possible anserw is a dict containing: id, display_text_html.
 
-12. id, query1 = answer_survey, query2 = [id of a query you anserw], query3 = [anserw]. Anserws the specific survey. anserw should
+12. id, query1 = anserw_survey, query2 = [id of a query you anserw], query3 = [anserw]. Anserws the specific survey. anserw should
 be a JSON-formatted object, mapping question IDs to their answers, {"question1_id": {"answers": ["possible_answer1_id",
 "possible_answer2_id", ...], "comment": "comment or null"}, "question2_id": ...}
 Note, that all values of this objects are strings (because the IDs of possible answers are strings).
