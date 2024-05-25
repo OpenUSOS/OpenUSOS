@@ -82,5 +82,18 @@ events:
 13. id, query1 = get_events, query2 = [from_date], query3 = [to_date], gets list of events begining from and ending at.
 each object in a list is a dict with "name" that has the name of a programme from which the event is, and "list"
 with the list of the events. each event has a name, start_date, end_date, type, is_day_off (telling if it's a day of).
+----------
+news:
+----------
+14. id, query1 = get_news, query2 = [from_date], query3 = [start], query4 = [num] (100 <)
+returns a dict with: 
+[from date] - from where. [num] - how many should be returned
+[start] - from which news to start.
+"next_page" - true if there are more items. 
+"total" - int showing how many items were matched
+"items" a list of items. each item has just one field, "article" 
+(kinda usless, but supposedly they can add more types of items in the future).
+each article contains: name, author, publication_date, title, headline_html, content_html.
+
 
 """
