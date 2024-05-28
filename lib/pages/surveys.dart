@@ -1,5 +1,7 @@
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 
@@ -17,7 +19,7 @@ class SurveysState extends State<Surveys> {
   @visibleForTesting
   List<Survey> surveyData = [];
   late Future<void>
-  _SurveysFuture; //future to prevent future builder from sending repeated api calls
+      _SurveysFuture; //future to prevent future builder from sending repeated api calls
 
   @override
   void initState() {
@@ -31,7 +33,7 @@ class SurveysState extends State<Surveys> {
   }
 
   Future<List<Survey>> _fetchSurveys() async {
-   /* final url = Uri.http(UserSession.host, UserSession.basePath,
+    /* final url = Uri.http(UserSession.host, UserSession.basePath,
         {"id": UserSession.sessionId, "query1": "get_Surveys"});
     final response = await get(url);
 
@@ -52,11 +54,22 @@ class SurveysState extends State<Surveys> {
           "Failed to fetch data: HTTP status ${response.statusCode}");
     }*/
     return [
-      Survey(name: 'Przykładowa', startDate: DateTime.now(), endDate: DateTime.now(), id: 'Tak', questions: [
-        {'id': 'Pyt1', 'number': '1.1', 'display_text_html': 'Pytanie Testowe numer 1', 'allow_comment' : true, 'possible_answers': []},
-        {'id': 'Pyt2', 'number': '1.2', 'display_text_html': 'Pytanie Testowe numer 2', 'allow_comment' : false,
-        'possible_answers': [{'id':'1', 'display_text_html':'Tak'},{'id':'2', 'display_text_html':'Nie'}]}
-      ])
+      Survey(
+          name: 'Przykładowa',
+          startDate: DateTime.now(),
+          endDate: DateTime.now(),
+          id: 'Tak',
+          questions: [
+            Question('Pyt1', '1.1', 'Pytanie Testowe numer 1', true, []),
+            Question(
+                'Pyt2',
+                '1.2',
+                'Pytanie Testowe numer 2 o bardzo długiej treści w celu przetestowania wyosce długich treści pytań',
+                false, [
+              {'id': '1', 'display_text_html': 'Tak'},
+              {'id': '2', 'display_text_html': 'Nie'}
+            ])
+          ])
     ];
   }
 
@@ -71,40 +84,39 @@ class SurveysState extends State<Surveys> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Scaffold(
                   body: Center(
-                    child: CircularProgressIndicator(),
-                  ));
+                child: CircularProgressIndicator(),
+              ));
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
               return ListView.builder(
-                      shrinkWrap: true,
-                      physics: ScrollPhysics(),
-                      itemCount: surveyData.length,
-                      itemBuilder: (context, index) {
-                        final item = surveyData[index];
-                        return Card(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
-                            elevation: 4.0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
+                  shrinkWrap: true,
+                  physics: ScrollPhysics(),
+                  itemCount: surveyData.length,
+                  itemBuilder: (context, index) {
+                    final item = surveyData[index];
+                    return Card(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        elevation: 4.0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: ListTile(
+                          title: Text(
+                            item.name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
                             ),
-                            child: ListTile(
-                              title: Text(
-                                item.name,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              subtitle: Text(
-                                  'Można wypełnić do: ${item.endDate.toIso8601String()}'),
-                              onTap: () {
-                                Navigator.pushNamed(context, '/surveyFiller',
-                                    arguments: item);
-                              },
-                            ));
-                      }
-                      );
+                          ),
+                          subtitle: Text(
+                              'Można wypełnić do: ${item.endDate.toIso8601String()}'),
+                          onTap: () {
+                            Navigator.pushNamed(context, '/surveyFiller',
+                                arguments: item);
+                          },
+                        ));
+                  });
             }
           }),
     );
@@ -121,15 +133,15 @@ class SurveyFiller extends StatefulWidget {
 @visibleForTesting
 class SurveyFillerState extends State<SurveyFiller> {
   bool _isSending = false;
-  final TextEditingController _recipientController = TextEditingController();
-  final TextEditingController _subjectController = TextEditingController();
-  final TextEditingController _bodyController = TextEditingController();
+  Map<String, TextEditingController> answerControllers = {};
+  Map<String, Map<String, dynamic>> answers = {};
+  Map<String, Map<String, Color>> _buttonColors = {};
 
   @override
   void dispose() {
-    _bodyController.dispose();
-    _subjectController.dispose();
-    _recipientController.dispose();
+    for (String controller in answerControllers.keys) {
+      answerControllers[controller]?.dispose();
+    }
     super.dispose();
   }
 
@@ -179,9 +191,36 @@ class SurveyFillerState extends State<SurveyFiller> {
     }*/
   }
 
+  void initControllersAndColors(Survey survey) {
+    for (final question in survey.questions) {
+      answers[question.id] = {"answers": [], "comment": null};
+      _buttonColors[question.id] = {};
+      for (final answer in question.possibleAnswers) {
+        _buttonColors[question.id]?[answer["id"]] = Colors.grey;
+      }
+    }
+  }
+
+  void changeButtonColor(String questionId, String answerId) {
+    setState(() {
+      _buttonColors[questionId]?[answerId] =
+      _buttonColors[questionId]?[answerId] == Colors.grey
+          ? Colors.blue
+          : Colors.grey;
+
+    });
+  }
+
+  void initAnswers(Survey survey) {
+    for (final question in survey.questions) {
+      answers[question.id] = {"answers": [], "comment": null};
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final survey = ModalRoute.of(context)!.settings.arguments as Survey;
+    initAnswers(survey);
     return Scaffold(
         appBar: USOSBar(title: 'Wypełnij ankietę'),
         bottomNavigationBar: BottomNavBar(),
@@ -192,70 +231,107 @@ class SurveyFillerState extends State<SurveyFiller> {
               Container(
                 child: Text(survey.name),
               ),
-              ListView.builder(
-                  shrinkWrap: true,
-                  physics: ScrollPhysics(),
-                  itemCount: survey.questions.length,
-                  itemBuilder: (context, index){
-                    final item = survey.questions[index];
-                    return Card(
-                        margin: EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        elevation: 4.0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Column(
-                          children: [
-                            Container(
-                              child: Text(
-                                item['display_text_html']
+              Expanded(
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    physics: ScrollPhysics(),
+                    itemCount: survey.questions.length,
+                    itemBuilder: (context, index) {
+                      Question question = survey.questions[index];
+                      return Card(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          elevation: 4.0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Column(
+                            children: [
+                              Container(
+                                child: Text(
+                                  question.displayText,
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                            ),
-                            ListView.builder(
-                                itemCount: item['possible_answers'].length,
-                                itemBuilder: (context, answerIndex) {
-                                  if (item['allow_comment'] == false) {
-                                    return ListTile(
-                                        trailing: Text(
-                                            item['possible_answers'][answerIndex]['id']),
-                                        title: ElevatedButton(
-                                          child: Text(
-                                              item['possible_answers'][answerIndex]['display_text_html']),
-                                          onPressed: () {},
-                                        )
-                                    );
-                                  }
-
-                                  else {
-                                    return TextField(
-                                      controller: _recipientController,
-                                      decoration: InputDecoration(labelText: 'Odpowiedź'),
-                                    );
-                                  }
-                                }
-                            )
-
-                          ],
-                        )
-
-
-                    );
-                  }),
+                              question.possibleAnswers.length > 0
+                                  ? SizedBox(
+                                      height:
+                                          question.possibleAnswers.length * 50 +
+                                              5,
+                                      child: ListView.builder(
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemCount:
+                                              question.possibleAnswers.length,
+                                          itemBuilder: (context, answerIndex) {
+                                            return ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                            _buttonColors[question
+                                                                .id]?[question
+                                                                    .possibleAnswers[
+                                                                answerIndex]]),
+                                                child: Text(
+                                                    question.possibleAnswers[
+                                                            answerIndex]
+                                                        ["display_text_html"],
+                                                    maxLines: 5),
+                                                onPressed: () {
+                                                    changeButtonColor(
+                                                        question.id,
+                                                        question.possibleAnswers[
+                                                            answerIndex]["id"]);
+                                                  if (answers[question.id]
+                                                          ?["answers"]
+                                                      .contains(question
+                                                              .possibleAnswers[
+                                                          answerIndex]?["id"])) {
+                                                    answers[question.id]
+                                                            ?["answers"]
+                                                        .remove(question
+                                                                .possibleAnswers[
+                                                            answerIndex]?["id"]);
+                                                  } else {
+                                                    answers[question.id]
+                                                            ?["answers"]
+                                                        .add(question
+                                                                .possibleAnswers[
+                                                            answerIndex]?["id"]);
+                                                    debugPrint(
+                                                        answers.toString());
+                                                  }
+                                                });
+                                          }),
+                                    )
+                                  : Container(),
+                              question.allowComment == true
+                                  ? TextField(
+                                      maxLines: 7,
+                                      maxLength: 350,
+                                      controller: TextEditingController(),
+                                      decoration: InputDecoration(
+                                          labelText: 'Odpowiedź'),
+                                    )
+                                  : Container()
+                            ],
+                          ));
+                    }),
+              ),
               SizedBox(height: 20.0),
               _isSending == true
                   ? Center(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text('Wysyłanie...'),
-                        CircularProgressIndicator()
-                      ]))
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                          Text('Wysyłanie...'),
+                          CircularProgressIndicator()
+                        ]))
                   : ElevatedButton(
-                onPressed: _sendSurveys,
-                child: Text('Wyślij'),
-              )
+                      onPressed: _sendSurveys,
+                      child: Text('Wyślij'),
+                    )
             ])));
   }
 }
@@ -265,17 +341,28 @@ class Survey {
   DateTime startDate;
   DateTime endDate;
   String id;
-  List<dynamic> questions;
+  List<Question> questions;
 
   Survey(
       {required this.name,
-        required this.startDate,
-        required this.endDate,
-        required this.id,
-        required this.questions}) {}
+      required this.startDate,
+      required this.endDate,
+      required this.id,
+      required this.questions}) {}
 
   @override
   String toString() {
     return '${this.name}, ${this.endDate}';
   }
+}
+
+class Question {
+  String id;
+  String number;
+  String displayText;
+  bool allowComment;
+  List<dynamic> possibleAnswers;
+
+  Question(this.id, this.number, this.displayText, this.allowComment,
+      this.possibleAnswers);
 }
