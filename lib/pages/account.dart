@@ -23,7 +23,7 @@ class AccountState extends State<Account> {
       throw Exception('sessionId is null, user not logged in.');
     }
     user = UserSession.user;
-  }testDisplay
+  }
 
   @override
   Widget build(BuildContext context) {
