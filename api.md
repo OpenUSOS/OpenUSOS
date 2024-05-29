@@ -71,17 +71,12 @@ surveys:
 name, id, start_date, end_date, questions. each question is a dict with: id, number, display_text_html, allow_comment,
 possible_answer. each possible answers is a dict containing: id, display_text_html.
 
-<<<<<<< HEAD
-
 12. id, query1 = answer_survey, query2 = [id of a query you answer], query3 = [answer]. Answers the specific survey. Answer should
-=======
-12. id, query1 = answer_survey, query2 = [id of a query you answer], query3 = [answer]. Answers the specific survey. Answer should
->>>>>>> 64eede4 (Partially working version of surveys)
->>>>>>> ab8fa84 (Partially working version of surveys)
 be a JSON-formatted object, mapping question IDs to their answers, {"question1_id": {"answers": ["possible_answer1_id",
 "possible_answer2_id", ...], "comment": "comment or null"}, "question2_id": ...}
 Note, that all values of this objects are strings (because the IDs of possible answers are strings).
 If comment should be left empty or the question does not allow comments, null has be passed in comment field.
+
 ----------
 events:
 ----------

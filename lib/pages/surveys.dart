@@ -134,6 +134,7 @@ class SurveyFillerState extends State<SurveyFiller> {
   Map<String, TextEditingController> answerControllers = {};
   Map<String, Map<String, dynamic>> answers = {};
   Map<String, Map<String, Color>> _buttonColors = {};
+  late Survey survey;
 
   @override
   void dispose() {
@@ -143,24 +144,15 @@ class SurveyFillerState extends State<SurveyFiller> {
     super.dispose();
   }
 
-  Future<void> _sendSurveys() async {
-    /*
-    if (_recipientController.text.isEmpty ||
-        _subjectController.text.isEmpty ||
-        _bodyController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Proszę wypełnić wszystkie pola!')));
-      return;
-    }
+  Future<void> _sendSurvey() async {
     setState(() {
       _isSending = true;
     });
     final url = Uri.http(UserSession.host, UserSession.basePath, {
       'id': UserSession.sessionId,
-      'query1': 'send_email',
-      'query2': _recipientController.text,
-      'query3': _subjectController.text,
-      'query4': _bodyController.text
+      'query1': 'answer_survey',
+      "query2": survey.id,
+      'query3': answers
     });
 
     try {
@@ -186,10 +178,10 @@ class SurveyFillerState extends State<SurveyFiller> {
       setState(() {
         _isSending = false;
       });
-    }*/
+    }
   }
 
-  void initControllersAndColors(Survey survey) {
+  void initControllersAndColors() {
     for (final question in survey.questions) {
       answers[question.id] = {"answers": [], "comment": null};
       _buttonColors[question.id] = {};
@@ -200,15 +192,15 @@ class SurveyFillerState extends State<SurveyFiller> {
   }
 
   void changeButtonColor(String questionId, String answerId) {
+    setState(() {
       _buttonColors[questionId]?[answerId] =
       _buttonColors[questionId]?[answerId] == Colors.grey
           ? Colors.blue
           : Colors.grey;
-    setState(() {
     });
   }
 
-  void initAnswers(Survey survey) {
+  void initAnswers() {
     for (final question in survey.questions) {
       answers[question.id] = {"answers": [], "comment": null};
     }
@@ -216,8 +208,9 @@ class SurveyFillerState extends State<SurveyFiller> {
 
   @override
   Widget build(BuildContext context) {
-    final survey = ModalRoute.of(context)!.settings.arguments as Survey;
-    initAnswers(survey);
+    survey = ModalRoute.of(context)!.settings.arguments as Survey;
+    initAnswers();
+    initControllersAndColors();
     return Scaffold(
         appBar: USOSBar(title: 'Wypełnij ankietę'),
         bottomNavigationBar: BottomNavBar(),
@@ -326,7 +319,7 @@ class SurveyFillerState extends State<SurveyFiller> {
                           CircularProgressIndicator()
                         ]))
                   : ElevatedButton(
-                      onPressed: _sendSurveys,
+                      onPressed: _sendSurvey,
                       child: Text('Wyślij'),
                     )
             ])));
