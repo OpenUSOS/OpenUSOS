@@ -8,6 +8,8 @@ import 'package:open_usos/appbar.dart';
 import 'package:open_usos/navbar.dart';
 import 'package:open_usos/user_session.dart';
 
+
+
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
 
@@ -29,6 +31,7 @@ class CalendarState extends State<Calendar> {
     'dean': Icons.account_balance,
     'rector': Icons.account_balance_wallet,
   };
+
   TextEditingController _eventController = TextEditingController();
   TextEditingController _startingTimeController = TextEditingController();
   TextEditingController _endingTimeController = TextEditingController();
@@ -101,7 +104,9 @@ class CalendarState extends State<Calendar> {
       throw Exception(
           'failed to fetch data: HTTP status ${response.statusCode}');
     }
+
   }
+
 
   Future<void> _showTimePicker(TextEditingController controller) async {
     final TimeOfDay? picked = await showTimePicker(
