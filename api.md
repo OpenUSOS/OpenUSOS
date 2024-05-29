@@ -10,20 +10,20 @@ logging in/out:
 ---------
 1. id, query1 = url, query2 empty ---- returns a string, url which has to be used to log in.
 2. id, query1 = log_in, query2 = PIN (The value)  ---- logging the user in. 
-returns dict {'AT', ATS'} with [access token] and [access token secret] used to resume the session, or 'N' if not succesful
+returns dict {'AT', ATS'} with [access token] and [access token secret] used to resume the session, or 'N' if not successful
 3. id, query1 = resume, query2 [access token], query3 = [access token secret] ---- resumes the session.
 returns 'Y' if was successful, and 'N' if not.
 4. id, query1 = log_out, query2 empty ---- invalidates the access token.
 ---------
 mail:
 ---------
-5. id, query1 = send_email, query2 = [recepient], query3 = [subject], query4 = [content] ---- sends an email to
-email adress given in [recepient], with subject given in [subject], and content given in [content].
-returns 'Y' if message was send sucessfully, and 'N' if not.
+5. id, query1 = send_email, query2 = [recipient], query3 = [subject], query4 = [content] ---- sends an email to
+email address given in [recipient], with subject given in [subject], and content given in [content].
+returns 'Y' if message was send successfully, and 'N' if not.
 6. id, query1 = get_emails ---- returns a list of mails send by user, where every element is a mail.
 each element is a dict with: "id" : unique message id, "subject", "content", "date", 
-and "to" - a list with two dicts:[ "email" - email of the recepient (or null), 
-"user" - dict with information of the recepient: "first_name", "id", "last_name"]
+and "to" - a list with two dicts:[ "email" - email of the recipient (or null), 
+"user" - dict with information of the recipient: "first_name", "id", "last_name"]
 
 example:
     {
@@ -80,7 +80,7 @@ If comment should be left empty or the question does not allow comments, null ha
 ----------
 events:
 ----------
-13. id, query1 = get_events, query2 = [from_date], query3 = [to_date], gets list of events begining from and ending at.
+13. id, query1 = get_events, query2 = [from_date], query3 = [to_date], gets list of events beginning from and ending at.
 each object in a list is a dict with "name" that has the name of a programme from which the event is, and "list"
 with the list of the events. each event has a name, start_date, end_date, type, is_day_off (telling if it's a day of).
 
