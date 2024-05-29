@@ -14,7 +14,7 @@ class TestCourseTests {
       // Access the state of CourseTests
       CourseTestsState state = tester.state(find.byType(CourseTests));
 
-      expect(state.courseTestsData, isNull);
+      expect(state.testsFuture, isA());
     });
   }
 

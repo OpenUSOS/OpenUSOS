@@ -153,16 +153,18 @@ class CourseTests extends StatefulWidget {
   const CourseTests({super.key});
 
   @override
-  State<CourseTests> createState() => _TestsState();
+  State<CourseTests> createState() => CourseTestsState();
 }
 
-class _TestsState extends State<CourseTests> {
-  late Future<Map<String, Term>> _testsFuture;
+@visibleForTesting
+class CourseTestsState extends State<CourseTests> {
+  @visibleForTesting
+  late Future<Map<String, Term>> testsFuture;
 
   @override
   void initState() {
     super.initState();
-    _testsFuture = _fetchTests();
+    testsFuture = _fetchTests();
   }
 
   Future<Map<String, Term>> _fetchTests() async {
@@ -191,7 +193,7 @@ class _TestsState extends State<CourseTests> {
       bottomNavigationBar: BottomNavBar(),
       drawer: NavBar(),
       body: FutureBuilder<Map<String, Term>>(
-          future: _testsFuture,
+          future: testsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());

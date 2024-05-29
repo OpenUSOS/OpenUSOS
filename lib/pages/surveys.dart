@@ -200,12 +200,11 @@ class SurveyFillerState extends State<SurveyFiller> {
   }
 
   void changeButtonColor(String questionId, String answerId) {
-    setState(() {
       _buttonColors[questionId]?[answerId] =
       _buttonColors[questionId]?[answerId] == Colors.grey
           ? Colors.blue
           : Colors.grey;
-
+    setState(() {
     });
   }
 

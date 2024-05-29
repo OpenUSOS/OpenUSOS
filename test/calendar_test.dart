@@ -37,7 +37,7 @@ class TestCalendar {
           await tester.pumpWidget(MaterialApp(home: Calendar()));
 
           // Verify that loading indicator is displayed
-          expect(find.byType(SfCalendar), findsOneWidget);
+          expect(find.byType(CircularProgressIndicator), findsOneWidget);
         });
   }
 }

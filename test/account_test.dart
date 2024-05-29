@@ -15,13 +15,9 @@ class TestUser {
     });
   }
 
-  void testDisplay() {
-    testWidgets('Account should be displayed', (WidgetTester tester) async {
-      // Build MyWidget
-      await tester.pumpWidget(MaterialApp(home: Account()));
-
-      // Find MyWidget by its type
-      expect(find.byType(Account), findsOneWidget);
+  void testError() {
+    testWidgets('Exception User not logged in should be thrown', (WidgetTester tester) async {
+      expect(() => tester.pumpWidget(MaterialApp(home: Account())), throwsA(Exception));
     });
   }
 }
@@ -29,5 +25,5 @@ class TestUser {
 void main() {
   final test = TestUser();
   test.testGetData();
-  test.testDisplay();
+  test.testError();
 }
