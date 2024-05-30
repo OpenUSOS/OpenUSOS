@@ -1,5 +1,4 @@
-
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 
@@ -133,8 +132,14 @@ class SurveyFillerState extends State<SurveyFiller> {
   bool _isSending = false;
   Map<String, TextEditingController> answerControllers = {};
   Map<String, Map<String, dynamic>> answers = {};
-  Map<String, Map<String, Color>> _buttonColors = {};
+  Map<String, Map<String, MaterialColor>> _buttonColors = {};
   late Survey survey;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
 
   @override
   void dispose() {
@@ -144,7 +149,16 @@ class SurveyFillerState extends State<SurveyFiller> {
     super.dispose();
   }
 
+  void assignComments(){
+    for(Question question in survey.questions){
+      if(question.allowComment == true && answerControllers[question.id]?.text != null && answerControllers[question.id]?.text != ""){
+        answers[question.id]?["comment"] = answerControllers[question.id]?.text;
+      }
+    }
+  }
+
   Future<void> _sendSurvey() async {
+    assignComments();
     setState(() {
       _isSending = true;
     });
@@ -152,7 +166,7 @@ class SurveyFillerState extends State<SurveyFiller> {
       'id': UserSession.sessionId,
       'query1': 'answer_survey',
       "query2": survey.id,
-      'query3': answers
+      'query3': answers.toString()
     });
 
     try {
@@ -182,8 +196,12 @@ class SurveyFillerState extends State<SurveyFiller> {
   }
 
   void initControllersAndColors() {
+    if(answerControllers.isNotEmpty || _buttonColors.isNotEmpty){
+      return; //we do nothing if values are already initialised,
+      // to prevent overwriting them when build is called again
+    }
     for (final question in survey.questions) {
-      answers[question.id] = {"answers": [], "comment": null};
+      answerControllers[question.id] = TextEditingController();
       _buttonColors[question.id] = {};
       for (final answer in question.possibleAnswers) {
         _buttonColors[question.id]?[answer["id"]] = Colors.grey;
@@ -192,15 +210,16 @@ class SurveyFillerState extends State<SurveyFiller> {
   }
 
   void changeButtonColor(String questionId, String answerId) {
-    setState(() {
-      _buttonColors[questionId]?[answerId] =
-      _buttonColors[questionId]?[answerId] == Colors.grey
+      this._buttonColors[questionId]?[answerId] =
+      this._buttonColors[questionId]?[answerId] == Colors.grey
           ? Colors.blue
           : Colors.grey;
-    });
   }
 
   void initAnswers() {
+    if(answers.isNotEmpty){
+      return;//if answers already initialised we do nothing to prevent overwriting answers
+    }
     for (final question in survey.questions) {
       answers[question.id] = {"answers": [], "comment": null};
     }
@@ -261,7 +280,7 @@ class SurveyFillerState extends State<SurveyFiller> {
                                                             _buttonColors[question
                                                                 .id]?[question
                                                                     .possibleAnswers[
-                                                                answerIndex]]),
+                                                                answerIndex]["id"]]),
                                                 child: Text(
                                                     question.possibleAnswers[
                                                             answerIndex]
@@ -288,9 +307,10 @@ class SurveyFillerState extends State<SurveyFiller> {
                                                         .add(question
                                                                 .possibleAnswers[
                                                             answerIndex]?["id"]);
-                                                    debugPrint(
-                                                        answers.toString());
                                                   }
+                                                  setState(() {
+
+                                                  });
                                                 });
                                           }),
                                     )
@@ -299,7 +319,7 @@ class SurveyFillerState extends State<SurveyFiller> {
                                   ? TextField(
                                       maxLines: 7,
                                       maxLength: 350,
-                                      controller: TextEditingController(),
+                                      controller: answerControllers[question.id],
                                       decoration: InputDecoration(
                                           labelText: 'Odpowiedź'),
                                     )
