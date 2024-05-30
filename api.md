@@ -10,7 +10,7 @@ logging in/out:
 ---------
 1. id, query1 = url, query2 empty ---- returns a string, url which has to be used to log in.
 2. id, query1 = log_in, query2 = PIN (The value)  ---- logging the user in. 
-returns dict {'AT', ATS'} with [access token] and [access token secret] used to resume the session, or 'N' if not successful
+returns dict {'AT', ATS'} with [access token] and [access token secret] used to resume the session, or 'N' if not succesful
 3. id, query1 = resume, query2 [access token], query3 = [access token secret] ---- resumes the session.
 returns 'Y' if was successful, and 'N' if not.
 4. id, query1 = log_out, query2 empty ---- invalidates the access token.
@@ -68,20 +68,34 @@ tests:
 surveys:
 ---------
 11. id, query1 = get_surveys ----- returns a list of surveys. each one is a dict containing:
-name, id, start_date, end_date, questions. each question is a dict with: id, number, display_text_html, allow_comment,
-possible_answer. each possible answers is a dict containing: id, display_text_html.
+"name", "id", "headline_html", "start_date", "end_date", lecturer: {"first_name", "last_name"}, "group": {"course_name","class_type"}
+"questions". each question is a dict with: "id", "number", "display_text_html", "allow_comment",
+"comment_length", "possible_answer". each possible answer is a dict containing: "id", "display_text_html".
 
-12. id, query1 = answer_survey, query2 = [id of a query you answer], query3 = [answer]. Answers the specific survey. Answer should
+
+12. id, query1 = answer_survey, query2 = [id of a query you answer], query3 = [answer]. answer the specific survey. answer should
 be a JSON-formatted object, mapping question IDs to their answers, {"question1_id": {"answers": ["possible_answer1_id",
 "possible_answer2_id", ...], "comment": "comment or null"}, "question2_id": ...}
 Note, that all values of this objects are strings (because the IDs of possible answers are strings).
 If comment should be left empty or the question does not allow comments, null has be passed in comment field.
-
 ----------
 events:
 ----------
 13. id, query1 = get_events, query2 = [from_date], query3 = [to_date], gets list of events beginning from and ending at.
 each object in a list is a dict with "name" that has the name of a programme from which the event is, and "list"
 with the list of the events. each event has a name, start_date, end_date, type, is_day_off (telling if it's a day of).
+----------
+news:
+----------
+14. id, query1 = get_news, query2 = [from_date], query3 = [start], query4 = [num] (100 <)
+returns a dict with: 
+[from date] - from where. [num] - how many should be returned
+[start] - from which news to start.
+"next_page" - true if there are more items. 
+"total" - int showing how many items were matched
+"items" a list of items. each item has just one field, "article" 
+(kinda useless, but supposedly they can add more types of items in the future).
+each article contains: name, author, publication_date, title, headline_html, content_html.
+
 
 """
