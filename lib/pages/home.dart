@@ -52,7 +52,6 @@ class _HomeState extends State<Home> {
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
-      debugPrint(response.body.toString());
       var data = json.decode(response.body);
       List<NewsArticle> articles = [];
       for (var item in data['items']) { 
@@ -126,7 +125,6 @@ class _HomeState extends State<Home> {
           else if (snapshot.hasError) {
             throw Exception("Error: ${snapshot.error}");
           } else { 
-          debugPrint(subjects.toString());
           return Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

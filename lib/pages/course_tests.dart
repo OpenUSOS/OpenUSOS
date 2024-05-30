@@ -107,7 +107,6 @@ class Exercise {
   factory Exercise.fromJson(Map<String, dynamic> json) {
     String exerciseName = json['name']['pl'];
     String exerciseDescription = json['description']['pl'];
-    debugPrint(json.toString());
     return Exercise(
       name: exerciseName,
       description: exerciseDescription,
