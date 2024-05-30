@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
@@ -234,40 +235,67 @@ class EmailExpanded extends StatelessWidget {
     return Scaffold(
         appBar: USOSBar(title: 'OpenUSOS mail'),
         body: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(16.0),
             child: Column(children: [
               Container(
+                  color: Colors.grey.shade400,
                   alignment: Alignment.topLeft,
                   padding:
                       EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
                   child: Text(
                     'Odbiorcy: ${email.recipientAddressString()}',
                     softWrap: true,
+                    textScaler: TextScaler.linear(1.25),
                   )),
               Container(
+                height: 16,
+              ),
+              Container(
+                  color: Colors.grey.shade400,
                   alignment: Alignment.topLeft,
                   padding:
                       EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
                   child: Text(
                     'Temat: ${email.subject}',
                     softWrap: true,
+                    textScaler: TextScaler.linear(1.25),
+                    maxLines: 3,
                   )),
               Container(
+                height: 16,
+              ),
+              Container(
+                  color: Colors.grey.shade400,
                   alignment: Alignment.topLeft,
                   padding:
                       EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
                   child: Text(
                     'Data wysłania: ${email.date}',
+                    textScaler: TextScaler.linear(1.25),
                   )),
               Container(
+                height: 16,
+              ),
+              Container(
+                  color: Colors.grey.shade400,
                   alignment: Alignment.topLeft,
                   padding:
                       EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                  child: Text('Treść:')),
+                  child: Text(
+                    'Treść:',
+                    textScaler: TextScaler.linear(1.25),
+                  )),
               Container(
-                alignment: Alignment.topLeft,
-                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Text(email.contents),
+                height: 16,
+              ),
+              Expanded(
+                child: Container(
+                  color: Colors.grey.shade400,
+                  alignment: Alignment.topLeft,
+                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: Text(email.contents,
+                    textScaler: TextScaler.linear(1.25),),
+                ),
               )
             ])));
   }
