@@ -17,13 +17,13 @@ returns 'Y' if was successful, and 'N' if not.
 ---------
 mail:
 ---------
-5. id, query1 = send_email, query2 = [recepient], query3 = [subject], query4 = [content] ---- sends an email to
-email adress given in [recepient], with subject given in [subject], and content given in [content].
-returns 'Y' if message was send sucessfully, and 'N' if not.
+5. id, query1 = send_email, query2 = [recipient], query3 = [subject], query4 = [content] ---- sends an email to
+email address given in [recipient], with subject given in [subject], and content given in [content].
+returns 'Y' if message was send successfully, and 'N' if not.
 6. id, query1 = get_emails ---- returns a list of mails send by user, where every element is a mail.
 each element is a dict with: "id" : unique message id, "subject", "content", "date", 
-and "to" - a list with two dicts:[ "email" - email of the recepient (or null), 
-"user" - dict with information of the recepient: "first_name", "id", "last_name"]
+and "to" - a list with two dicts:[ "email" - email of the recipient (or null), 
+"user" - dict with information of the recipient: "first_name", "id", "last_name"]
 
 example:
     {
@@ -70,10 +70,10 @@ surveys:
 11. id, query1 = get_surveys ----- returns a list of surveys. each one is a dict containing:
 "name", "id", "headline_html", "start_date", "end_date", lecturer: {"first_name", "last_name"}, "group": {"course_name","class_type"}
 "questions". each question is a dict with: "id", "number", "display_text_html", "allow_comment",
-"comment_length", "possible_answer". each possible anserw is a dict containing: "id", "display_text_html".
+"comment_length", "possible_answer". each possible answer is a dict containing: "id", "display_text_html".
 
 
-12. id, query1 = anserw_survey, query2 = [id of a query you anserw], query3 = [anserw]. Anserws the specific survey. anserw should
+12. id, query1 = answer_survey, query2 = [id of a query you answer], query3 = [answer]. answer the specific survey. answer should
 be a JSON-formatted object, mapping question IDs to their answers, {"question1_id": {"answers": ["possible_answer1_id",
 "possible_answer2_id", ...], "comment": "comment or null"}, "question2_id": ...}
 Note, that all values of this objects are strings (because the IDs of possible answers are strings).
@@ -81,7 +81,7 @@ If comment should be left empty or the question does not allow comments, null ha
 ----------
 events:
 ----------
-13. id, query1 = get_events, query2 = [from_date], query3 = [to_date], gets list of events begining from and ending at.
+13. id, query1 = get_events, query2 = [from_date], query3 = [to_date], gets list of events beginning from and ending at.
 each object in a list is a dict with "name" that has the name of a programme from which the event is, and "list"
 with the list of the events. each event has a name, start_date, end_date, type, is_day_off (telling if it's a day of).
 ----------
@@ -93,8 +93,8 @@ returns a dict with:
 [start] - from which news to start.
 "next_page" - true if there are more items. 
 "total" - int showing how many items were matched
-"items" a list of items. each item has just one field, "article" 
-(kinda usless, but supposedly they can add more types of items in the future).
+"items" a list of items. each item has just one field, "article"
+(kinda useless, but supposedly they can add more types of items in the future).
 each article contains: name, author, publication_date, title, headline_html, content_html.
 
 

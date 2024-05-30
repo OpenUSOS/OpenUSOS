@@ -141,7 +141,7 @@ class _NavBarState extends State<NavBar> {
           buildCategoryHeader('Uczelnia'),
           buildNavTiles(context, 'OpenUSOS mail', Icons.mail, '/emails'),
           buildDivider(),
-          buildNavTiles(context, 'Ankiety', Icons.question_answer, '/TODO'),
+          buildNavTiles(context, 'Ankiety', Icons.question_answer, '/surveys'),
           buildDivider(),
           buildNavTiles(context, 'Aktualności', Icons.newspaper, '/TODO'),
           buildDivider(),
@@ -218,7 +218,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   Map<String, int> routeToIndex = {
     '/home': 0,
     '/grades': 1,
-    '/tests': 2,
+    '/courseTests': 2,
     '/schedule': 3,
     '/calendar': 4,
   };
