@@ -1,6 +1,7 @@
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 
 import 'package:open_usos/appbar.dart';
 import 'package:open_usos/user_session.dart';
@@ -30,26 +31,38 @@ class SurveysState extends State<Surveys> {
   }
 
   Future<List<Survey>> _fetchSurveys() async {
-   /* final url = Uri.http(UserSession.host, UserSession.basePath,
-        {"id": UserSession.sessionId, "query1": "get_Surveys"});
+   final url = Uri.http(UserSession.host, UserSession.basePath,
+        {"id": UserSession.sessionId, "query1": "get_surveys"});
     final response = await get(url);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      List<Email> emailList = [];
+      List<Survey> surveyList = [];
       for (dynamic item in data) {
-        emailList.add(Email(
-            subject: item['subject'] != null ? item['subject'] : " ",
-            contents: item['content'] != null ? item['content'] : " ",
-            date: item['date'] != null ? item['date'] : " ",
-            id: item["id"] != null ? item['id'] : " ",
-            recipients: item['to']));
+        List<Question> questionList = [];
+        for(dynamic question in item["questions"]){
+          questionList.add(Question(
+              id: question["id"].toString(),
+              number: question["number"].toString(),
+              displayText: question["display_text_html"]["pl"],
+              allowComment: question["allow_comment"],
+              possibleAnswers: question["possible_answers"]
+          ));
+        }
+        surveyList.add(Survey(
+          name: item["name"]["pl"],
+          id: item["id"].toString(),
+          startDate: item["start_date"] != null ? DateTime.parse(item["start_date"]) : DateTime.now(),
+          endDate: DateTime.parse(item["end_date"]),
+          questions: questionList
+        ));
+
       }
-      return emailList;
+      return surveyList;
     } else {
       throw Exception(
           "Failed to fetch data: HTTP status ${response.statusCode}");
-    }*/
+    }
     return [
       Survey(
           name: 'Przykładowa',
@@ -57,12 +70,12 @@ class SurveysState extends State<Surveys> {
           endDate: DateTime.now(),
           id: 'Tak',
           questions: [
-            Question('Pyt1', '1.1', 'Pytanie Testowe numer 1', true, []),
+            Question(id: 'Pyt1', number: '1.1', displayText:  'Pytanie Testowe numer 1', allowComment: true, possibleAnswers: []),
             Question(
-                'Pyt2',
-                '1.2',
-                'Pytanie Testowe numer 2 o bardzo długiej treści w celu przetestowania wyosce długich treści pytań',
-                false, [
+                id: 'Pyt2',
+                number: '1.2',
+                displayText: 'Pytanie Testowe numer 2 o bardzo długiej treści w celu przetestowania wyosce długich treści pytań',
+                allowComment: false, possibleAnswers: [
               {'id': '1', 'display_text_html': 'Tak'},
               {'id': '2', 'display_text_html': 'Nie'}
             ])
@@ -162,11 +175,12 @@ class SurveyFillerState extends State<SurveyFiller> {
     setState(() {
       _isSending = true;
     });
+
     final url = Uri.http(UserSession.host, UserSession.basePath, {
       'id': UserSession.sessionId,
       'query1': 'answer_survey',
       "query2": survey.id,
-      'query3': answers.toString()
+      'query3': jsonEncode(answers)
     });
 
     try {
@@ -182,8 +196,8 @@ class SurveyFillerState extends State<SurveyFiller> {
               content: Text('Wysyłanie nie powiodło się! Spróbuj ponownie.')));
         }
       } else {
-        throw Exception(
-            'Something went wrong when sending request, HTTP code: ${response.statusCode}');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Wysyłanie nie powiodło się! HTTP code: ${response.statusCode}')));
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -238,7 +252,11 @@ class SurveyFillerState extends State<SurveyFiller> {
             padding: EdgeInsets.all(8.0),
             child: Column(children: [
               Container(
-                child: Text(survey.name),
+                child: Text(
+                    survey.name,
+                    textAlign: TextAlign.center,
+                    textScaler: TextScaler.linear(1.5),
+                ),
               ),
               Expanded(
                 child: ListView.builder(
@@ -257,9 +275,8 @@ class SurveyFillerState extends State<SurveyFiller> {
                           child: Column(
                             children: [
                               Container(
-                                child: Text(
-                                  question.displayText,
-                                  textAlign: TextAlign.center,
+                                child: HtmlWidget(
+                                  question.displayText
                                 ),
                               ),
                               question.possibleAnswers.length > 0
@@ -281,11 +298,10 @@ class SurveyFillerState extends State<SurveyFiller> {
                                                                 .id]?[question
                                                                     .possibleAnswers[
                                                                 answerIndex]["id"]]),
-                                                child: Text(
+                                                child: HtmlWidget(
                                                     question.possibleAnswers[
                                                             answerIndex]
-                                                        ["display_text_html"],
-                                                    maxLines: 5),
+                                                        ["display_text_html"]["pl"]),
                                                 onPressed: () {
                                                     changeButtonColor(
                                                         question.id,
@@ -372,8 +388,7 @@ class Question {
   String displayText;
   bool allowComment;
   List<dynamic> possibleAnswers;
-
-  Question(this.id, this.number, this.displayText, this.allowComment,
-      this.possibleAnswers);
+  Question({required this.id, required this.number, required this.displayText, required this.allowComment,
+     required this.possibleAnswers});
 }
 
