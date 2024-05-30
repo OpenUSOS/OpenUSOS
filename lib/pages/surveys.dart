@@ -17,7 +17,7 @@ class SurveysState extends State<Surveys> {
   @visibleForTesting
   List<Survey> surveyData = [];
   late Future<void>
-  _SurveysFuture; //future to prevent future builder from sending repeated api calls
+      _SurveysFuture; //future to prevent future builder from sending repeated api calls
 
   @override
   void initState() {
@@ -31,7 +31,7 @@ class SurveysState extends State<Surveys> {
   }
 
   Future<List<Survey>> _fetchSurveys() async {
-   final url = Uri.http(UserSession.host, UserSession.basePath,
+    final url = Uri.http(UserSession.host, UserSession.basePath,
         {"id": UserSession.sessionId, "query1": "get_surveys"});
     final response = await get(url);
 
@@ -40,47 +40,32 @@ class SurveysState extends State<Surveys> {
       List<Survey> surveyList = [];
       for (dynamic item in data) {
         List<Question> questionList = [];
-        for(dynamic question in item["questions"]){
+        for (dynamic question in item["questions"]) {
           questionList.add(Question(
               id: question["id"].toString(),
               number: question["number"].toString(),
               displayText: question["display_text_html"]["pl"],
               allowComment: question["allow_comment"],
-              possibleAnswers: question["possible_answers"]
-          ));
+              maxLength: question["comment_length"] != null
+                  ? question["comment_length"]
+                  : 500,
+              possibleAnswers: question["possible_answers"]));
         }
         surveyList.add(Survey(
-          name: item["name"]["pl"],
-          id: item["id"].toString(),
-          startDate: item["start_date"] != null ? DateTime.parse(item["start_date"]) : DateTime.now(),
-          endDate: DateTime.parse(item["end_date"]),
-          questions: questionList
-        ));
-
+            name: item["name"]["pl"],
+            header: item["headline_html"],
+            id: item["id"].toString(),
+            startDate: item["start_date"] != null
+                ? DateTime.parse(item["start_date"])
+                : DateTime.now(),
+            endDate: DateTime.parse(item["end_date"]),
+            questions: questionList));
       }
       return surveyList;
     } else {
       throw Exception(
           "Failed to fetch data: HTTP status ${response.statusCode}");
     }
-    return [
-      Survey(
-          name: 'Przykładowa',
-          startDate: DateTime.now(),
-          endDate: DateTime.now(),
-          id: 'Tak',
-          questions: [
-            Question(id: 'Pyt1', number: '1.1', displayText:  'Pytanie Testowe numer 1', allowComment: true, possibleAnswers: []),
-            Question(
-                id: 'Pyt2',
-                number: '1.2',
-                displayText: 'Pytanie Testowe numer 2 o bardzo długiej treści w celu przetestowania wyosce długich treści pytań',
-                allowComment: false, possibleAnswers: [
-              {'id': '1', 'display_text_html': 'Tak'},
-              {'id': '2', 'display_text_html': 'Nie'}
-            ])
-          ])
-    ];
   }
 
   Widget build(BuildContext context) {
@@ -113,14 +98,11 @@ class SurveysState extends State<Surveys> {
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                         child: ListTile(
-                          title: Text(
-                            item.name,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
+                          title: HtmlWidget(
+                            item.header,
                           ),
                           subtitle: Text(
-                              'Można wypełnić do: ${item.endDate.toIso8601String()}'),
+                              'Można wypełnić do: ${item.endDate.toString().substring(0, 16)}'),
                           onTap: () {
                             Navigator.pushNamed(context, '/surveyFiller',
                                 arguments: item);
@@ -153,7 +135,6 @@ class SurveyFillerState extends State<SurveyFiller> {
     super.initState();
   }
 
-
   @override
   void dispose() {
     for (String controller in answerControllers.keys) {
@@ -162,9 +143,11 @@ class SurveyFillerState extends State<SurveyFiller> {
     super.dispose();
   }
 
-  void assignComments(){
-    for(Question question in survey.questions){
-      if(question.allowComment == true && answerControllers[question.id]?.text != null && answerControllers[question.id]?.text != ""){
+  void assignComments() {
+    for (Question question in survey.questions) {
+      if (question.allowComment == true &&
+          answerControllers[question.id]?.text != null &&
+          answerControllers[question.id]?.text != "") {
         answers[question.id]?["comment"] = answerControllers[question.id]?.text;
       }
     }
@@ -197,7 +180,8 @@ class SurveyFillerState extends State<SurveyFiller> {
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Wysyłanie nie powiodło się! HTTP code: ${response.statusCode}')));
+            content: Text(
+                'Wysyłanie nie powiodło się! HTTP code: ${response.statusCode}')));
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -210,7 +194,7 @@ class SurveyFillerState extends State<SurveyFiller> {
   }
 
   void initControllersAndColors() {
-    if(answerControllers.isNotEmpty || _buttonColors.isNotEmpty){
+    if (answerControllers.isNotEmpty || _buttonColors.isNotEmpty) {
       return; //we do nothing if values are already initialised,
       // to prevent overwriting them when build is called again
     }
@@ -224,15 +208,15 @@ class SurveyFillerState extends State<SurveyFiller> {
   }
 
   void changeButtonColor(String questionId, String answerId) {
-      this._buttonColors[questionId]?[answerId] =
-      this._buttonColors[questionId]?[answerId] == Colors.grey
-          ? Colors.blue
-          : Colors.grey;
+    this._buttonColors[questionId]?[answerId] =
+        this._buttonColors[questionId]?[answerId] == Colors.grey
+            ? Colors.blue
+            : Colors.grey;
   }
 
   void initAnswers() {
-    if(answers.isNotEmpty){
-      return;//if answers already initialised we do nothing to prevent overwriting answers
+    if (answers.isNotEmpty) {
+      return; //if answers already initialised we do nothing to prevent overwriting answers
     }
     for (final question in survey.questions) {
       answers[question.id] = {"answers": [], "comment": null};
@@ -253,19 +237,18 @@ class SurveyFillerState extends State<SurveyFiller> {
             child: Column(children: [
               Container(
                 child: Text(
-                    survey.name,
-                    textAlign: TextAlign.center,
-                    textScaler: TextScaler.linear(1.5),
+                  survey.name,
+                  textAlign: TextAlign.center,
+                  textScaler: TextScaler.linear(1.5),
                 ),
               ),
               Expanded(
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: ScrollPhysics(),
-                    itemCount: survey.questions.length,
-                    itemBuilder: (context, index) {
-                      Question question = survey.questions[index];
-                      return Card(
+                child: ListView(
+                  shrinkWrap: true,
+                  physics: ScrollPhysics(),
+                  children: List<Widget>.filled(1, HtmlWidget(survey.header)) +
+                      (survey.questions.map((question) {
+                        return Card(
                           margin: EdgeInsets.symmetric(
                               horizontal: 16.0, vertical: 8.0),
                           elevation: 4.0,
@@ -275,76 +258,72 @@ class SurveyFillerState extends State<SurveyFiller> {
                           child: Column(
                             children: [
                               Container(
-                                child: HtmlWidget(
-                                  question.displayText
-                                ),
+                                child: HtmlWidget(question.displayText),
                               ),
-                              question.possibleAnswers.length > 0
-                                  ? SizedBox(
-                                      height:
-                                          question.possibleAnswers.length * 50 +
-                                              5,
-                                      child: ListView.builder(
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          shrinkWrap: true,
-                                          itemCount:
-                                              question.possibleAnswers.length,
-                                          itemBuilder: (context, answerIndex) {
-                                            return ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                            _buttonColors[question
-                                                                .id]?[question
-                                                                    .possibleAnswers[
-                                                                answerIndex]["id"]]),
-                                                child: HtmlWidget(
+                              if (question.possibleAnswers.isNotEmpty)
+                                SizedBox(
+                                  height:
+                                      question.possibleAnswers.length * 50 + 5,
+                                  child: ListView.builder(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemCount:
+                                          question.possibleAnswers.length,
+                                      itemBuilder: (context, answerIndex) {
+                                        return ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                                backgroundColor: _buttonColors[
+                                                        question.id]?[
                                                     question.possibleAnswers[
-                                                            answerIndex]
-                                                        ["display_text_html"]["pl"]),
-                                                onPressed: () {
-                                                    changeButtonColor(
-                                                        question.id,
-                                                        question.possibleAnswers[
-                                                            answerIndex]["id"]);
-                                                  if (answers[question.id]
-                                                          ?["answers"]
-                                                      .contains(question
-                                                              .possibleAnswers[
-                                                          answerIndex]?["id"])) {
-                                                    answers[question.id]
-                                                            ?["answers"]
-                                                        .remove(question
-                                                                .possibleAnswers[
-                                                            answerIndex]?["id"]);
-                                                  } else {
-                                                    answers[question.id]
-                                                            ?["answers"]
-                                                        .add(question
-                                                                .possibleAnswers[
-                                                            answerIndex]?["id"]);
-                                                  }
-                                                  setState(() {
-
-                                                  });
-                                                });
-                                          }),
-                                    )
-                                  : Container(),
-                              question.allowComment == true
-                                  ? TextField(
-                                      maxLines: 7,
-                                      maxLength: 350,
-                                      controller: answerControllers[question.id],
-                                      decoration: InputDecoration(
-                                          labelText: 'Odpowiedź'),
-                                    )
-                                  : Container()
+                                                        answerIndex]["id"]]),
+                                            child: HtmlWidget(question
+                                                    .possibleAnswers[answerIndex]
+                                                ["display_text_html"]["pl"]),
+                                            onPressed: () {
+                                              changeButtonColor(
+                                                  question.id,
+                                                  question.possibleAnswers[
+                                                      answerIndex]["id"]);
+                                              if (answers[question.id]
+                                                      ?["answers"]
+                                                  .contains(question
+                                                          .possibleAnswers[
+                                                      answerIndex]?["id"])) {
+                                                answers[question.id]?["answers"]
+                                                    .remove(question
+                                                            .possibleAnswers[
+                                                        answerIndex]?["id"]);
+                                              } else {
+                                                answers[question.id]?["answers"]
+                                                    .add(question
+                                                            .possibleAnswers[
+                                                        answerIndex]?["id"]);
+                                              }
+                                              setState(() {});
+                                            });
+                                      }),
+                                )
+                              else
+                                Container(),
+                              if (question.allowComment == true)
+                                TextField(
+                                  maxLines: 7,
+                                  maxLength: question.maxLength,
+                                  controller: answerControllers[question.id],
+                                  decoration:
+                                      InputDecoration(labelText: 'Odpowiedź'),
+                                )
+                              else
+                                Container()
                             ],
-                          ));
-                    }),
+                          ),
+                        );
+                      }).toList()),
+                ),
               ),
-              SizedBox(height: 20.0),
+              SizedBox(
+                height: 20.0,
+              ),
               _isSending == true
                   ? Center(
                       child: Column(
@@ -363,6 +342,7 @@ class SurveyFillerState extends State<SurveyFiller> {
 }
 
 class Survey {
+  String header;
   String name;
   DateTime startDate;
   DateTime endDate;
@@ -371,6 +351,7 @@ class Survey {
 
   Survey(
       {required this.name,
+      required this.header,
       required this.startDate,
       required this.endDate,
       required this.id,
@@ -387,8 +368,13 @@ class Question {
   String number;
   String displayText;
   bool allowComment;
+  int maxLength;
   List<dynamic> possibleAnswers;
-  Question({required this.id, required this.number, required this.displayText, required this.allowComment,
-     required this.possibleAnswers});
+  Question(
+      {required this.id,
+      required this.number,
+      required this.displayText,
+      required this.allowComment,
+      required this.maxLength,
+      required this.possibleAnswers});
 }
-
