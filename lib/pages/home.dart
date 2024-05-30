@@ -60,7 +60,6 @@ class _HomeState extends State<Home> {
       }
       setState(() {
         news = articles;
-        debugPrint(articles.toString());
       });
     } else {
       throw Exception(

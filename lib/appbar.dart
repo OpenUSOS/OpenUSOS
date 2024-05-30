@@ -9,9 +9,7 @@ class USOSBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
         title: Text(this.title, style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Theme.of(context).brightness == Brightness.light
-            ? Colors.blue[900]
-            : Colors.indigo[400]);
+        backgroundColor: Colors.blue.shade900);
   }
 
   @override

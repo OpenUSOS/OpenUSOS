@@ -228,9 +228,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     return NavigationBarTheme(
         key: bottomNavBarKey,
         data: NavigationBarThemeData(
-          backgroundColor: Theme.of(context).brightness == Brightness.light
-              ? Colors.blue.shade900
-              : Colors.indigo.shade400,
+          backgroundColor: Colors.blue.shade900,
           iconTheme: MaterialStateProperty.all(
             IconThemeData(color: Colors.white),
           ),
@@ -242,9 +240,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           ),
           indicatorColor:
               routeToIndex.keys.contains(ModalRoute.of(context)?.settings.name)
-                  ? Theme.of(context).brightness == Brightness.light
-                      ? Colors.blue.shade800
-                      : Colors.indigo.shade300
+                  ? Colors.blue.shade500
                   : Colors.transparent,
         ),
         child: NavigationBar(
