@@ -53,6 +53,16 @@ class SurveysState extends State<Surveys> {
         }
         surveyList.add(Survey(
             name: item["name"]["pl"],
+            lecturer: item["lecturer"] != null
+                ? item["lecturer"]["first_name"] +
+                    " " +
+                    item["lecturer"]["last_name"]
+                : item["name"]["pl"],
+            course: item["group"] != null
+                ? item["group"]["course_name"]["pl"] +
+                    " - " +
+                    item["group"]["class_type"]["pl"]
+                : "Ankieta ogólnouniwersytecka",
             header: item["headline_html"],
             id: item["id"].toString(),
             startDate: item["start_date"] != null
@@ -98,11 +108,17 @@ class SurveysState extends State<Surveys> {
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                         child: ListTile(
-                          title: HtmlWidget(
-                            item.header,
+                          title: Text(
+                            item.course,
                           ),
                           subtitle: Text(
-                              'Można wypełnić do: ${item.endDate.toString().substring(0, 16)}'),
+                            item.lecturer,
+                            textScaler: TextScaler.linear(1.25),
+                          ),
+                          trailing: Text(
+                              "Koniec:\n${item.endDate.toString().substring(0, 10)}\n"
+                                  "${item.endDate.toString().substring(11, 16)}",
+                          textScaler: TextScaler.linear(1.15),),
                           onTap: () {
                             Navigator.pushNamed(context, '/surveyFiller',
                                 arguments: item);
@@ -343,6 +359,8 @@ class SurveyFillerState extends State<SurveyFiller> {
 
 class Survey {
   String header;
+  String lecturer;
+  String course;
   String name;
   DateTime startDate;
   DateTime endDate;
@@ -351,6 +369,8 @@ class Survey {
 
   Survey(
       {required this.name,
+      required this.lecturer,
+      required this.course,
       required this.header,
       required this.startDate,
       required this.endDate,
