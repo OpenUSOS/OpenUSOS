@@ -71,7 +71,7 @@ class OpenUSOSThemes {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.indigo.shade400,
+        backgroundColor: Colors.blue.shade900,
         padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
         foregroundColor: Colors.white,
         textStyle: buttonTextStyle.copyWith(
@@ -81,7 +81,7 @@ class OpenUSOSThemes {
     ),
     scaffoldBackgroundColor: Colors.grey.shade800,
     drawerTheme: DrawerThemeData(
-      backgroundColor: Colors.indigo.shade400,
+      backgroundColor: Colors.blue.shade900,
     ),
     listTileTheme: ListTileThemeData(
       textColor: Colors.white,
