@@ -68,8 +68,7 @@ tests:
 surveys:
 ---------
 11. id, query1 = get_surveys ----- returns a list of surveys. each one is a dict containing:
-name, id, start_date, end_date, questions. each question is a dict with: id, number, display_text_html, allow_comment,
-possible_answer. each possible anserw is a dict containing: id, display_text_html.
+name, id, headline_html, start_date, end_date, questions. each question is a dict with: id, number, display_text_html, allow_comment, possible_answer, comment_length. each possible anserw is a dict containing: id, display_text_html.
 
 12. id, query1 = anserw_survey, query2 = [id of a query you anserw], query3 = [anserw]. Anserws the specific survey. anserw should
 be a JSON-formatted object, mapping question IDs to their answers, {"question1_id": {"answers": ["possible_answer1_id",
