@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:provider/provider.dart';
 
+import 'package:provider/provider.dart';
 import 'package:open_usos/pages/surveys.dart';
 import 'package:open_usos/pages/course_tests.dart';
 import 'package:open_usos/notifications.dart';
@@ -15,6 +15,8 @@ import 'package:open_usos/pages/start_page.dart';
 import 'package:open_usos/pages/schedule.dart';
 import 'package:open_usos/pages/account.dart';
 import 'package:open_usos/pages/emails.dart';
+import 'package:open_usos/pages/news.dart';
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,7 +49,8 @@ class OpenUSOS extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           locale: const Locale('pl', ''),
-          home: FutureBuilder( // we try to resume the session, if successful we redirect the user to home page
+          home: FutureBuilder(
+              // we try to resume the session, if successful we redirect the user to home page
               future: UserSession.attemptResumeSession(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState != ConnectionState.done) {
@@ -57,10 +60,9 @@ class OpenUSOS extends StatelessWidget {
                     ),
                   );
                 } else {
-                  if(snapshot.hasData == false || snapshot.data == false){
+                  if (snapshot.hasData == false || snapshot.data == false) {
                     return StartPage();
-                  }
-                  else{
+                  } else {
                     return Home();
                   }
                 }
@@ -80,6 +82,7 @@ class OpenUSOS extends StatelessWidget {
             '/start': (context) => StartPage(),
             '/surveys': (context) => Surveys(),
             '/surveyFiller':(context) => SurveyFiller(),
+            '/news': (context) => News(),
           });
     });
   }

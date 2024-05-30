@@ -63,21 +63,16 @@ class ScheduleState extends State<Schedule> {
     }
   }
 
-  Color getColor(String name){
-
-    if(name.contains('Wykład')){
+  Color getColor(String name) {
+    if (name.contains('Wykład')) {
       return Colors.green;
-    }
-    else if(name.contains('Ćwiczenia')){
+    } else if (name.contains('Ćwiczenia')) {
       return Colors.purple;
-    }
-    else if(name.contains('Laboratorium')){
+    } else if (name.contains('Laboratorium')) {
       return Colors.orange;
-    }
-    else if(name.contains('Lektorat')){
+    } else if (name.contains('Lektorat')) {
       return Colors.teal;
-    }
-    else{
+    } else {
       return Colors.brown;
     }
   }
@@ -114,9 +109,10 @@ class ScheduleState extends State<Schedule> {
                       fontWeight: FontWeight.w400,
                       color: Colors.white70,
                       fontSize: 10.0)),
-              Text(//added padding for proper minute displaying (without it 10:00 would be displayed as 10:0
+              Text(
+                  //added padding for proper minute displaying (without it 10:00 would be displayed as 10:0
                   '${subject.from.hour}:${subject.from.minute.toString().padRight(2, '0')} - '
-                      '${subject.to.hour}:${subject.to.minute.toString().padRight(2, '0')}',
+                  '${subject.to.hour}:${subject.to.minute.toString().padRight(2, '0')}',
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                       fontWeight: FontWeight.w400,

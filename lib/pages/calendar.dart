@@ -6,8 +6,8 @@ import 'dart:convert';
 
 import 'package:open_usos/appbar.dart';
 import 'package:open_usos/navbar.dart';
-
 import 'package:open_usos/user_session.dart';
+
 
 
 class Calendar extends StatefulWidget {
@@ -107,7 +107,8 @@ class CalendarState extends State<Calendar> {
 
   }
 
-  void _showTimePicker(TextEditingController controller) async {
+
+  Future<void> _showTimePicker(TextEditingController controller) async {
     final TimeOfDay? picked = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now(),
@@ -132,7 +133,6 @@ class CalendarState extends State<Calendar> {
         _userEvents.remove(day);
       }
       _saveUserEvents();
-
     });
   }
 
@@ -145,8 +145,7 @@ class CalendarState extends State<Calendar> {
   }
 
   void _addEvent() {
-    if (selectedDay == null)
-      return; // Nie wykonuj tej funkcji, jeśli _selectedDay jest null
+    if (selectedDay == null) return;
 
     showDialog(
       context: context,
@@ -442,7 +441,6 @@ class CalendarState extends State<Calendar> {
             );
           }
         },
-
       ),
     );
   }
