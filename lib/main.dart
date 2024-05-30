@@ -15,7 +15,7 @@ import 'package:open_usos/pages/schedule.dart';
 import 'package:open_usos/pages/account.dart';
 import 'package:open_usos/pages/emails.dart';
 import 'package:open_usos/pages/tests.dart';
-
+import 'package:open_usos/pages/news.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
@@ -79,6 +79,7 @@ class OpenUSOS extends StatelessWidget {
             '/exams': (context) => Tests(),
             '/tests': (context) => CourseTests(),
             '/start': (context) => StartPage(),
+            '/news': (context) => News(),
           });
     });
   }

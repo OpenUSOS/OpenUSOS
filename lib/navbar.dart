@@ -143,7 +143,7 @@ class _NavBarState extends State<NavBar> {
           buildDivider(),
           buildNavTiles(context, 'Ankiety', Icons.question_answer, '/TODO'),
           buildDivider(),
-          buildNavTiles(context, 'Aktualności', Icons.newspaper, '/TODO'),
+          buildNavTiles(context, 'Aktualności', Icons.newspaper, '/news'),
           buildDivider(),
           buildNavTiles(context, 'Grupy zajęciowe', Icons.group, '/TODO'),
           buildDivider(),
