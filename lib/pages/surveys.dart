@@ -57,12 +57,12 @@ class SurveysState extends State<Surveys> {
                 ? item["lecturer"]["first_name"] +
                     " " +
                     item["lecturer"]["last_name"]
-                : item["name"]["pl"],
+                : "Ankieta ogólnouczelniania",
             course: item["group"] != null
                 ? item["group"]["course_name"]["pl"] +
                     " - " +
                     item["group"]["class_type"]["pl"]
-                : "Ankieta ogólnouniwersytecka",
+                : item["name"]["pl"],
             header: item["headline_html"],
             id: item["id"].toString(),
             startDate: item["start_date"] != null
