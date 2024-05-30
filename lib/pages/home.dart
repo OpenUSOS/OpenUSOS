@@ -29,7 +29,7 @@ class _HomeState extends State<Home> {
   @visibleForTesting
   Future<void> fetchHomeComponents() async {
     fetchSubjects();
-    fetchNews(DateTime.now().year.toString() + '-' + DateTime.now().month.toString() + '-' + DateTime.now().day.toString(), '0', '30');
+    fetchNews(DateTime.now().year.toString() + '-' + DateTime.now().month.toString() + '-' + (DateTime.now().day -1).toString(), '0', '30');
   }
 
   @visibleForTesting
@@ -60,6 +60,7 @@ class _HomeState extends State<Home> {
       }
       setState(() {
         news = articles;
+        debugPrint(articles.toString());
       });
     } else {
       throw Exception(

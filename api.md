@@ -87,7 +87,7 @@ with the list of the events. each event has a name, start_date, end_date, type, 
 ----------
 news:
 ----------
-14. id, query1 = get_news, query2 = [from_date], query3 = [start], query4 = [num] (100 <)
+14. id, query1 = get_news, query2 = [from_date], query3 = [start], query4 = [num] (<100)
 returns a dict with: 
 [from date] - from where. [num] - how many should be returned
 [start] - from which news to start.
