@@ -5,7 +5,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
 import 'package:open_usos/user_session.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tzl;
 import 'package:background_fetch/background_fetch.dart';
@@ -43,13 +42,12 @@ class Notifications {
     });
   }
 
-  Future<void> scheduleClassNotification(Subject academicActivity) async {
+  Future<void> scheduleClassNotification(Subject academicActivity, int currentId) async {
     String notificationTimeName = settingsProvider
         .availableNotificationTimes.entries
         .firstWhere(
             (item) => item.value == settingsProvider.currentNotificationTime)
         .key;
-
     final plannedTime = academicActivity.from
         .subtract(settingsProvider.currentNotificationTime);
     final plannedTimeTZ = //we convert it to timezoned format for proper scheduling
@@ -58,7 +56,7 @@ class Notifications {
       return; //we don't schedule the notification if it would be in the past
     }
     await plugin.zonedSchedule(
-      0,
+      currentId,
       academicActivity.eventName,
       '${academicActivity.eventName} zaczyna się za ${notificationTimeName} w sali ${academicActivity.roomNumber}',
       plannedTimeTZ,
@@ -100,9 +98,11 @@ class Notifications {
                 lang: 'pl',
               ))
           .toList();
-
+      print(fetchedSubjects.toString());
+      int id = 0;
       for (final subject in fetchedSubjects) {
-        scheduleClassNotification(subject);
+        scheduleClassNotification(subject, id);
+        id++;
       }
     } else {
       throw Exception(
@@ -111,39 +111,16 @@ class Notifications {
   }
 
   Future<void> run() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String lastDateString = prefs.getString('lastDate')!;
+    await plugin.cancelAll();
     final currentDate = DateTime.now();
-    final lastDate = DateTime(
-        int.parse(lastDateString.substring(0, 4)),
-        int.parse(lastDateString.substring(5, 7)),
-        int.parse(lastDateString.substring(8, 9)));
-    if (currentDate.compareTo(lastDate) >= 0) {
       getClassesFromDateForDays(currentDate.toIso8601String().substring(0, 10),
           runIntervalDays.toString());
-      prefs.setString(
-          'lastDate',
-          currentDate
-              .add(Duration(days: runIntervalDays))
-              .toIso8601String()
-              .substring(0, 10));
-    } else {
-      final difference = lastDate.difference(currentDate);
-      getClassesFromDateForDays(lastDateString, difference.inDays.toString());
-      prefs.setString(
-          'lastDate',
-          currentDate
-              .add(Duration(days: runIntervalDays) -
-                  Duration(days: difference.inDays))
-              .toIso8601String()
-              .substring(0, 10));
-    }
   }
 
   Future<void> setRunInBackground() async {
     await BackgroundFetch.configure(
         BackgroundFetchConfig(
-            minimumFetchInterval: 5 * 60 * 24, //we run it every 5 days
+            minimumFetchInterval: runIntervalDays * 60 * 24, //we run it every 5 days
             stopOnTerminate: false,
             enableHeadless: true,
             requiresBatteryNotLow: false,
@@ -171,17 +148,11 @@ class Notifications {
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestExactAlarmsPermission();
     await setRunInBackground();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('lastDate', '2020-04-20');
-    //we set the last notification day to some date in the past, to make sure the pref is always set
-    BackgroundFetch.start();
-    await run();
+    //await run();
   }
 
   void _disableNotifications() async {
     await plugin.cancelAll();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('lastDate', '2020-04-20');
     //we set the last notification day to some date in the past, to make sure the pref is always set
     BackgroundFetch.stop();
   }

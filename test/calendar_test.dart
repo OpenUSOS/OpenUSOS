@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:open_usos/pages/calendar.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 
 class TestCalendar {
