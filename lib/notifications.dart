@@ -148,7 +148,7 @@ class Notifications {
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestExactAlarmsPermission();
     await setRunInBackground();
-    //await run();
+    await run();
   }
 
   void _disableNotifications() async {
