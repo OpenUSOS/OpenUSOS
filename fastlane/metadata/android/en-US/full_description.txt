@@ -1,0 +1,14 @@
+An open source unofficial USOS app, for students in Poland.
+Here you can
+-set and receive notifications about upcoming classes
+-view your grades
+-view your test results
+-check your class schedule
+-see the academic year calendar
+-fill out university surveys
+-send emails to university staff
+
+Currently supported universities
+-Uniwersytet Jagielloński
+-Politechnika Wrocławska
+-Chrześcijańska Akademia Teologiczna w Warszawie.
