@@ -98,7 +98,6 @@ class Notifications {
                 lang: 'pl',
               ))
           .toList();
-      print(fetchedSubjects.toString());
       int id = 0;
       for (final subject in fetchedSubjects) {
         scheduleClassNotification(subject, id);
