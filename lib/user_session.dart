@@ -22,24 +22,12 @@ class UserSession {
   static Future<bool> attemptResumeSession() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? session = prefs.getString('sessionId');
-    if (session != null) {
-      sessionId = session;
-    }
-    else{
-      wipeLocalLoginData();
-      return false;
-    }
-    String? token = prefs.getString('accessToken');
+    sessionId = session;
+      String? token = prefs.getString('accessToken');
     String? secret = prefs.getString('accessTokenSecret');
-    if (token != null && secret != null) {
-      accessToken = token;
-      accessTokenSecret = secret;
-    }
-    else{
-      wipeLocalLoginData();
-      return false;
-    }
-
+    accessToken = token;
+    accessTokenSecret = secret;
+  
     final resume = await resumeSession();
     if (resume == false){
       wipeLocalLoginData();

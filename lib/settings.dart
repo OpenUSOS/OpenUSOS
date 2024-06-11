@@ -42,25 +42,17 @@ class SettingsProvider with ChangeNotifier {
     // we get preferences and set them using SharedPreferences library
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool? savedNotificationStatus = prefs.getBool('notificationStatus');
-    if (savedNotificationStatus != null) {
-      notificationStatus = savedNotificationStatus;
-    }
-
+    notificationStatus = savedNotificationStatus!;
+  
     String? savedNotificationTime = prefs.getString('notificationTime');
-    if (savedNotificationTime != null) {
-      notificationTime = savedNotificationTime;
-    }
-
+    notificationTime = savedNotificationTime;
+  
     String? savedLanguage = prefs.getString('language');
-    if (savedLanguage != null) {
-      language = savedLanguage;
-    }
-
+    language = savedLanguage;
+  
     String? savedTheme = prefs.getString('theme');
-    if (savedTheme != null) {
-      theme = savedTheme;
+    theme = savedTheme;
     }
-  }
 
   void saveTheme(String theme) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
