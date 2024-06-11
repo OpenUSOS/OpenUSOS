@@ -152,7 +152,8 @@ class _HomeState extends State<Home> {
                           child: ListTile(
                             title: Text(subject.eventName),
                             subtitle: Text(
-                                '${subject.from.hour}:${subject.from.minute} - ${subject.to.hour}:${subject.to.minute}\n'
+                                '${subject.from.hour}:${subject.from.minute.toString().padRight(2, '0')} - '
+                            '${subject.to.hour}:${subject.to.minute.toString().padRight(2, '0')}\n'
                                 'Budynek: ${subject.buildingName}, Sala: ${subject.roomNumber}'),
                           ),
                         );

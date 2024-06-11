@@ -414,7 +414,8 @@ class CalendarState extends State<Calendar> {
                               style: TextStyle(color: Colors.white),
                             ),
                             subtitle: Text(
-                                '${appointment.startTime.hour}:${appointment.startTime.minute} - ${appointment.endTime.hour}:${appointment.endTime.minute}',
+                                '${appointment.startTime.hour}:${appointment.startTime.minute.toString().padRight(2, '0')} - '
+                                    '${appointment.endTime.hour}:${appointment.endTime.minute.toString().padRight(2, '0')}',
                                 style: TextStyle(color: Colors.white)),
                             trailing: IconButton(
                               icon: Icon(Icons.delete_forever,
