@@ -31,7 +31,7 @@ class Course {
   final String name;
   final List<Assessment> assessments;
 
-  Course({required this.name, required this.assessments});
+  Course({required this.name, required this.id, required this.assessments});
 
   factory Course.fromJson(Map<String, dynamic> json) {
     var assessmentList = <Assessment>[];
@@ -172,7 +172,7 @@ class CourseTestsState extends State<CourseTests> {
     }
     final url = Uri.http(UserSession.host, UserSession.basePath, {
       'id': UserSession.sessionId,
-      'query1': 'get_tests',
+      'query1': 'get_tests_top',
     });
 
     final response = await http.get(url);
@@ -214,10 +214,21 @@ class CourseTestsState extends State<CourseTests> {
   }
 }
 
-class TermWidget extends StatelessWidget {
+class TermWidget extends StatefulWidget {
   final Term term;
 
   TermWidget({required this.term});
+
+  @override
+  State<TermWidget> createState() => _TermWidgetState();
+}
+
+class _TermWidgetState extends State<TermWidget> {
+  late Future<void> _nodesFuture;
+
+  Future _fetchNodes() async{
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -228,61 +239,76 @@ class TermWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(5.0),
           child: Text(
-            term.termId,
+            widget.term.termId,
             style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
           ),
         ),
-        ...term.courses.map((course) {
+        ...widget.term.courses.map((course) {
           return Card(
-            margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: ExpansionTile(
-              title: Text(
-                course.name,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-              ),
-              children: course.assessments.map((assessment) {
-                final points = assessment.points ?? assessment.totalPoints;
-                final pointsMax = assessment.pointsMax;
-                return ExpansionTile(
-                  title: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          assessment.name,
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      _buildPointsWidget(points, pointsMax, context),
-                    ],
-                  ),
-                  subtitle: assessment.pointsMax == null
-                      ? null
-                      : Text(
-                          'punkty max: ${assessment.pointsMax}',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w300),
-                        ),
-                  children: assessment.exercises.map((exercise) {
-                    return ListTile(
-                      title: Text(
-                        exercise.name,
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w300),
-                      ),
-                      subtitle: Text(
-                        'punkty max: ${exercise.pointsMax ?? '-'}',
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w200),
-                      ),
-                      trailing: _buildPointsWidget(
-                          exercise.points, exercise.pointsMax, context),
-                    );
-                  }).toList(),
-                );
-              }).toList(),
-            ),
-          );
+              margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              child: ExpansionTile(
+                title: Text(
+                  course.name,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                ),
+                children: List<Widget>.filled(
+                    1,
+                    (FutureBuilder(
+                        future: _fetchNodes(course.),
+                        builder: (context, snapshot) {
+                          return Column(
+                            children: course.assessments.map((assessment) {
+                              final points =
+                                  assessment.points ?? assessment.totalPoints;
+                              final pointsMax = assessment.pointsMax;
+                              return ExpansionTile(
+                                title: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        assessment.name,
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                    ),
+                                    _buildPointsWidget(
+                                        points, pointsMax, context),
+                                  ],
+                                ),
+                                subtitle: assessment.pointsMax == null
+                                    ? null
+                                    : Text(
+                                        'punkty max: ${assessment.pointsMax}',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w300),
+                                      ),
+                                children: assessment.exercises.map((exercise) {
+                                  return ListTile(
+                                    title: Text(
+                                      exercise.name,
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w300),
+                                    ),
+                                    subtitle: Text(
+                                      'punkty max: ${exercise.pointsMax ?? '-'}',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w200),
+                                    ),
+                                    trailing: _buildPointsWidget(
+                                        exercise.points,
+                                        exercise.pointsMax,
+                                        context),
+                                  );
+                                }).toList(),
+                              );
+                            }).toList(),
+                          );
+                        }))),
+              ));
         }).toList(),
       ],
     );
