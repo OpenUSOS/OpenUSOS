@@ -1,28 +1,78 @@
+![](fastlane/metadata/en-US/images/icon.png)
 # OpenUSOS
-Authors: Oskar Kuliński, Filip Ciebiera, Wieńczysław Włodyga   
-An open source USOS mobile app, made for Software Engineering course 2023/2024 at Jagiellonian University.
-### Current version: 0.0.0
+## Authors: Oskar Kuliński, Filip Ciebiera, Wieńczysław Włodyga   
+### Current version: 1.0.0
 
-## Our goals:
-### Must have:
-- working app for Jagiellonian University,  
-- email sending and sent history,    
-- class schedule,  
-- grades,   
-- tests,   
-- notifications for upcoming classes.
-### Should have:
-- calendar,   
-- university news,   
-- notifications about registrations,   
-- surveys.
-### Could have:
-- registration for courses,  
-- class groups,   
-- information about other courses and students,   
-- support for other Universities.
-### Won't have:
-- map,  
-- reading mail,  
-- student ID card viewing,  
-- viewing personal data.   
+### An open source unofficial USOS app, for students in Poland.
+Here you can
+- set and receive notifications about upcoming classes
+- view your grades
+- view your test results
+- check your class schedule
+- see the academic year calendar and add your own events to it
+- fill out university surveys
+- send emails to university staff
+
+Currently supported universities
+- Uniwersytet Jagielloński
+- Politechnika Wrocławska
+- Chrześcijańska Akademia Teologiczna w Warszawie.
+
+
+We use our own server to communicate with the USOS system. You can view its code here:
+https://github.com/OpenUSOS/OpenUSOS-server
+
+
+Our plans for the future:
+- speed up the app
+- improve the look of emails
+- add viewing course groups
+- in app bug reporting
+- release on Google Play Store
+- add notifications about upcoming registrations
+- add registration for classes
+- start work on an IOS release
+
+## Some screenshots for you to admire the amazingness of our app
+
+![You can view your class schedule](
+fastlane/metadata/en-US/images/screenshot_schedule.png)
+
+![You can see what surveys are available for you to fill](
+fastlane/metadata/en-US/images/screenshot_surveys.png)
+
+![YOu can fill your surveys](
+fastlane/metadata/en-US/images/screenshot_survey_filler.png)
+
+![You can set how much time before a class you want to receive notifications](
+fastlane/metadata/en-US/images/icon.png)
+
+![You can see your test results \(and a dark mode is available, as you might have noticed\)](
+fastlane/metadata/en-US/images/screenshot_tests.png)
+
+![You can check the academic calendar to see when you have a day off, easily visible with icons](
+fastlane/metadata/en-US/images/icon.png)
+
+![You can add your own event to the calendar, so you don't forget about an exam](
+fastlane/metadata/en-US/images/screenshot.png)
+
+
+## Contributing
+- If you want to report a bug, you can do so by opening on issue in our github.    
+- If you want to make some visual changes to the app you can edit 
+[lib/pages/whatever_page_you_want_to_improve.dart].
+The file names there should be pretty self explanatory, with every page having its own file. 
+- You can also modify the lib/themes.dart file, where our themes are stored.
+- If you want to add a new feature all by yourself you need to add it both in the app, and the server
+- If you can/want to do it in only one place, let us know, we will do our best to help you out, 
+and implement the feature on the other side
+- If you want to help us out financially, an option will be available soon.
+
+## Self hosting
+The app uses our server to communicate with the USOS system. If you want additional security feel
+free to host your own instance of the server. All you have to do is change the UserSession.host
+to the address of your server in lib/user_session.dart and follow the steps in here:  
+https://github.com/OpenUSOS/OpenUSOS-server/blob/main/README.md#self-hosting
+
+## Making your own server
+https://github.com/OpenUSOS/OpenUSOS-server/blob/main/README.md#making-your-own-server
