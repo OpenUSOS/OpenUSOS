@@ -64,6 +64,7 @@ class Assessment {
       points = double.tryParse(grade);
     }
 
+
     return Assessment(
       id: json['id'].toString(),
       name: json['name']['pl'] ?? '',
@@ -133,6 +134,7 @@ class CourseTestsState extends State<CourseTests> {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
+      print('Response body: ${response.body}');
       return parseTerms(response.body);
     } else {
       throw Exception('Failed to fetch data: HTTP status ${response.statusCode}');
@@ -188,6 +190,7 @@ class TermWidget extends StatelessWidget {
           ),
         ),
         ...term.courses.map((course) => CourseCard(course: course)).toList(),
+
       ],
     );
   }
