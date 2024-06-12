@@ -73,6 +73,7 @@ Each node is a dict with "name", "description", "points" (of user) "points_max" 
 which is a list containing the ids of the subnodes (Can and will be empty if it's the last node).
 
 These informations can be recived by using:   
+
 12. id, query1 = get_tests_node, query2 = [node_id] ---- returns a dict containing "name", "description", "points", "points_max"
 and "subnodes_ids", which is a list containing ids of the subnodes (Can and will be empty at some point).
 
