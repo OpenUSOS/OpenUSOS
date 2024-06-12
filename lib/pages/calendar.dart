@@ -315,7 +315,6 @@ class CalendarState extends State<Calendar> {
                         fontSize: 25,
                         fontStyle: FontStyle.normal,
                         letterSpacing: 5,
-                        color: Colors.white,
                         fontWeight: FontWeight.w500),
                   ),
                   dataSource: _DataSource(_userEvents),
@@ -340,9 +339,6 @@ class CalendarState extends State<Calendar> {
                           Center(
                             child: Text(
                               day.day.toString(),
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
                             ),
                           ),
                           if (isHighlighted && eventDetails != null)
@@ -435,7 +431,7 @@ class CalendarState extends State<Calendar> {
                           style: TextStyle(
                               fontWeight: FontWeight.w300,
                               fontSize: 20.0,
-                              color: Colors.grey.shade400)),
+                              color: Colors.grey.shade500)),
                     ),
                   )
               ],
