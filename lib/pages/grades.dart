@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -6,27 +7,19 @@ import 'package:open_usos/user_session.dart';
 import 'package:open_usos/appbar.dart';
 import 'package:open_usos/navbar.dart';
 
+
 class Grades extends StatefulWidget {
   const Grades({super.key});
+  static Map<String, Map<String, List<Grade>>> grades = {};
 
-  @override
-  State<Grades> createState() => GradesState();
-}
 
-class GradesState extends State<Grades> {
-  late Future<void>
-      _gradesFuture; //necessary because future builder makes repeated api calls otherwise
-
-  @visibleForTesting
-  Map<String, Map<String, List<Grade>>> grades = {};
-
-  @override
-  void initState() {
-    super.initState();
-    _gradesFuture = _fetchGrades();
+  static Future setGrades() async{
+    final unsortedGrades = await getGrades();
+    final sortedGrades = sortGradesByTerm(unsortedGrades);
+    grades = sortedGrades;
   }
 
-  Future<void> _fetchGrades() async {
+  static Future<Map<String, Map<String, List<Grade>>>> getGrades() async{
     if (UserSession.sessionId == null) {
       throw Exception('sessionId is null, user not logged in.');
     }
@@ -57,17 +50,15 @@ class GradesState extends State<Grades> {
         subjectGrades.putIfAbsent(grade.name, () => []);
         subjectGrades[grade.name]!.add(grade);
       }
-      setState(() {
-        grades = gradesByTerm;
-        sortGradesByTerm();
-      });
+      print(gradesByTerm.toString());
+      return gradesByTerm;
     } else {
       throw Exception(
           'failed to fetch data: HTTP status ${response.statusCode}');
     }
   }
 
-  void sortGradesByTerm() {
+  static Map<String, Map<String, List<Grade>>> sortGradesByTerm(Map<String, Map<String, List<Grade>>> gradesToSort) {
     var sortedKeys = grades.keys.toList();
 
     sortedKeys.sort((a, b) {
@@ -93,11 +84,46 @@ class GradesState extends State<Grades> {
     for (var key in sortedKeys) {
       sortedGrades[key] = grades[key]!;
     }
-
-    setState(() {
-      grades = sortedGrades;
-    });
+    return sortedGrades;
   }
+
+  @override
+  State<Grades> createState() => GradesState();
+}
+
+class GradesState extends State<Grades> {
+  late Future<void>
+      _gradesFuture; //necessary because future builder makes repeated api calls otherwise
+
+  @visibleForTesting
+  Map<String, Map<String, List<Grade>>> grades = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _gradesFuture = _fetchGrades();
+  }
+
+  Future<void> _fetchGrades() async {
+    if(!mapEquals(Grades.grades, {})){
+      print('aaa');
+      grades = Grades.grades;
+      return;
+    }
+    else {
+      final newGrades = await Grades.getGrades();
+      if (!mapEquals(newGrades, Grades.grades)) {
+        setState(() {
+          grades = Grades.sortGradesByTerm(newGrades);
+        });
+        return;
+      }
+      else{
+        return;
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
