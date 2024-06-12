@@ -33,7 +33,8 @@ Our plans for the future:
 - add registration for classes
 - start work on an IOS release
 
-## Some screenshots for you to admire the amazingness of our app
+## Screenshots 
+Some screenshots for you to admire the amazingness of our app
 
 <img src="fastlane/metadata/android/en-US/images/screenshot_schedule.png" 
 alt="You can view your class schedule" 
@@ -50,7 +51,6 @@ width="336" height="748"/>
 <img src="fastlane/metadata/android/en-US/images/screenshot_tests.png"
 alt="You can see your test results \(and a dark mode is available, as you might have noticed\)" 
 width="336" height="748"/>
-
 <img src="fastlane/metadata/android/en-US/images/screenshot_calendar.png"
 alt="You can check the academic calendar to see when you have a day off, easily visible with icons" 
 width="336" height="748"/>
@@ -60,15 +60,16 @@ width="336" height="748"/>
 
 
 ## Contributing
-- If you want to report a bug, you can do so by opening on issue in our github.    
+- If you want to report a bug, you can do so by opening an issue here 
+https://github.com/OpenUSOS/OpenUSOS/issues    
 - If you want to make some visual changes to the app you can edit 
-[lib/pages/whatever_page_you_want_to_improve.dart].
-The file names there should be pretty self explanatory, with every page having its own file. 
-- You can also modify the lib/themes.dart file, where our themes are stored.
+*lib/pages/whatever_page_you_want_to_improve.dart*
+The file names there should be pretty self explanatory, with every page having its own file 
+- You can also modify the *lib/themes.dart* file, where our themes are stored
 - If you want to add a new feature all by yourself you need to add it both in the app, and the server
 - If you can/want to do it in only one place, let us know, we will do our best to help you out, 
 and implement the feature on the other side
-- If you want to help us out financially, an option will be available soon.
+- If you want to help us out financially, an option will be available soon
 
 ## Self hosting
 The app uses our server to communicate with the USOS system. If you want additional security feel
