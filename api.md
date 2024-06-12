@@ -24,23 +24,23 @@ each element is a dict with: "id" : unique message id, "subject", "content", "da
 and "to" - a list with two dicts:[ "email" - email of the recipient (or null), 
 "user" - dict with information of the recipient: "first_name", "id", "last_name"]
 
-   example:
-           {
-            "content": "To jest test",
-            "date": "2024-03-03 00:08:32",
-            "id": "1780158",
-            "subject": "Test",
-            "to": [
-               {
-               "email": "example@example",
-               "user": {
-                    "first_name": "Jan",
-                    "id": "696969",
-                    "last_name": "Robak"
-                }
-            }
-        ]
-    }
+         example:
+              {
+               "content": "To jest test",
+               "date": "2024-03-03 00:08:32",
+               "id": "1780158",
+               "subject": "Test",
+               "to": [
+                  {
+                  "email": "example@example",
+                  "user": {
+                       "first_name": "Jan",
+                       "id": "696969",
+                       "last_name": "Robak"
+                   }
+               }
+           ]
+       }
 ---------
 grades:
 ---------
