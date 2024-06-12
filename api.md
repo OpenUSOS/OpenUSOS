@@ -65,7 +65,7 @@ tests:
 "exercises is a list of all exercises within one test. it contains "name", "description", "points" (of user) and "points_max".
 
 11. id, query1 = get_tests_top ---- returns a list of dicts, each one with: "term_id",  and "courses".
-"courses" is a list of the courses that took place during the term. Each course contains "name" (eg. ASD, sieci) and "nodes_id".
+"courses" is a list of the courses that took place during the term. Each course contains "name" (eg. ASD, sieci) and "node_id".
 
 Each node_id coresponds to a node.
 Each node is a dict with "name", "description", "points" (of user) "points_max" and "subnodes_ids",
