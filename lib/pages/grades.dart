@@ -16,7 +16,7 @@ class Grades extends StatefulWidget {
   static Future setGrades() async{
     final unsortedGrades = await getGrades();
     final sortedGrades = sortGradesByTerm(unsortedGrades);
-    grades = sortedGrades;
+    Grades.grades = sortedGrades;
   }
 
   static Future<Map<String, Map<String, List<Grade>>>> getGrades() async{
@@ -50,7 +50,6 @@ class Grades extends StatefulWidget {
         subjectGrades.putIfAbsent(grade.name, () => []);
         subjectGrades[grade.name]!.add(grade);
       }
-      print(gradesByTerm.toString());
       return gradesByTerm;
     } else {
       throw Exception(
@@ -59,7 +58,7 @@ class Grades extends StatefulWidget {
   }
 
   static Map<String, Map<String, List<Grade>>> sortGradesByTerm(Map<String, Map<String, List<Grade>>> gradesToSort) {
-    var sortedKeys = grades.keys.toList();
+    var sortedKeys = gradesToSort.keys.toList();
 
     sortedKeys.sort((a, b) {
       var yearA = int.parse(a.substring(0, 2));
@@ -82,7 +81,7 @@ class Grades extends StatefulWidget {
     // rebuilding grades map
     Map<String, Map<String, List<Grade>>> sortedGrades = {};
     for (var key in sortedKeys) {
-      sortedGrades[key] = grades[key]!;
+      sortedGrades[key] = gradesToSort[key]!;
     }
     return sortedGrades;
   }
@@ -106,8 +105,9 @@ class GradesState extends State<Grades> {
 
   Future<void> _fetchGrades() async {
     if(!mapEquals(Grades.grades, {})){
-      print('aaa');
-      grades = Grades.grades;
+      setState(() {
+        grades = Grades.grades;
+      });
       return;
     }
     else {
