@@ -23,98 +23,65 @@ class Term {
       // Sort the courses alphabetically by name
       coursesList.sort((a, b) => a.name.compareTo(b.name));
     }
-    return Term(termId: json['term_id'], courses: coursesList);
+    return Term(termId: json['term_id'] ?? '', courses: coursesList);
   }
 }
 
 class Course {
   final String name;
-  final List<Assessment> assessments;
+  final String nodeId;
+  List<Assessment>? assessments;
 
-  Course({required this.name, required this.assessments});
+  Course({required this.name, required this.nodeId, this.assessments});
 
   factory Course.fromJson(Map<String, dynamic> json) {
-    var assessmentList = <Assessment>[];
-    if (json['tests'] != null) {
-      var testsJson = json['tests'] as List;
-      for (var testJson in testsJson) {
-        var assessment = Assessment.fromJson(testJson);
-        assessmentList.add(assessment);
-      }
-    }
-
-    String courseName = json['name']['pl'];
-    return Course(name: courseName, assessments: assessmentList);
+    return Course(
+      name: json['name']['pl'] ?? '',
+      nodeId: json['nodes_id'].toString(),
+    );
   }
 }
 
 class Assessment {
+  final String id;
   final String name;
   final String description;
   final double? points;
   final double? pointsMax;
-  final List<Exercise> exercises;
+  final List<String> subnodesIds;
+  List<Assessment>? subnodes;
 
-  Assessment(
-      {required this.name,
-      required this.description,
-      required this.points,
-      required this.pointsMax,
-      required this.exercises});
+  Assessment({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.points,
+    required this.pointsMax,
+    required this.subnodesIds,
+    this.subnodes,
+  });
 
   factory Assessment.fromJson(Map<String, dynamic> json) {
-    var exerciseList = <Exercise>[];
-    if (json['exercises'] != null) {
-      var exercisesJson = json['exercises'] as List;
-      for (var exerciseJson in exercisesJson) {
-        var exercise = Exercise.fromJson(exerciseJson);
-        exerciseList.add(exercise);
-      }
+    var subnodesIdsList = <String>[];
+    if (json['subnodes_ids'] != null) {
+      var subnodesJson = json['subnodes_ids'] as List;
+      subnodesIdsList = subnodesJson.map((id) => id.toString()).toList();
     }
 
-    String assessmentName = json['name']['pl'];
-    String assessmentDescription = json['description']['pl'];
+    double? parsePoints(dynamic value) {
+      if (value == null) return null;
+      if (value is num) return value.toDouble();
+      if (value is String) return double.tryParse(value);
+      return null;
+    }
 
     return Assessment(
-      name: assessmentName,
-      description: assessmentDescription,
-      points:
-          json['points'] != null ? (json['points'] as num).toDouble() : null,
-      pointsMax: json['points_max'] != null
-          ? (json['points_max'] as num).toDouble()
-          : null,
-      exercises: exerciseList,
-    );
-  }
-
-  double get totalPoints {
-    return exercises.fold(0, (sum, exercise) => sum + (exercise.points ?? 0));
-  }
-}
-
-class Exercise {
-  final String name;
-  final String description;
-  final double? points;
-  final double? pointsMax;
-
-  Exercise(
-      {required this.name,
-      required this.description,
-      required this.points,
-      required this.pointsMax});
-
-  factory Exercise.fromJson(Map<String, dynamic> json) {
-    String exerciseName = json['name']['pl'];
-    String exerciseDescription = json['description']['pl'];
-    return Exercise(
-      name: exerciseName,
-      description: exerciseDescription,
-      points:
-          json['points'] != null ? (json['points'] as num).toDouble() : null,
-      pointsMax: json['points_max'] != null
-          ? (json['points_max'] as num).toDouble()
-          : null,
+      id: json['id'].toString(),
+      name: json['name']['pl'] ?? '',
+      description: json['description']['pl'] ?? '',
+      points: parsePoints(json['points']),
+      pointsMax: parsePoints(json['points_max']),
+      subnodesIds: subnodesIdsList,
     );
   }
 }
@@ -163,25 +130,44 @@ class CourseTestsState extends State<CourseTests> {
   @override
   void initState() {
     super.initState();
-    testsFuture = _fetchTests();
+    testsFuture = _fetchTestsTop();
   }
 
-  Future<Map<String, Term>> _fetchTests() async {
+  Future<Map<String, Term>> _fetchTestsTop() async {
     if (UserSession.sessionId == null) {
       throw Exception('sessionId is null, user not logged in');
     }
     final url = Uri.http(UserSession.host, UserSession.basePath, {
       'id': UserSession.sessionId,
-      'query1': 'get_tests',
+      'query1': 'get_tests_top',
     });
 
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
+      print('Response body: ${response.body}');
       return parseTerms(response.body);
     } else {
       throw Exception(
-          'failed to fetch data: HTTP status ${response.statusCode}');
+          'Failed to fetch data: HTTP status ${response.statusCode}');
+    }
+  }
+
+  Future<List<Assessment>> _fetchCourseAssessments(String nodeId) async {
+    final url = Uri.http(UserSession.host, UserSession.basePath, {
+      'id': UserSession.sessionId,
+      'query1': 'get_tests_child',
+      'query2': nodeId,
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      var assessmentsJson = json.decode(response.body) as List;
+      return assessmentsJson.map((json) => Assessment.fromJson(json)).toList();
+    } else {
+      throw Exception(
+          'Failed to fetch data: HTTP status ${response.statusCode}');
     }
   }
 
@@ -233,57 +219,208 @@ class TermWidget extends StatelessWidget {
           ),
         ),
         ...term.courses.map((course) {
-          return Card(
-            margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: ExpansionTile(
-              title: Text(
-                course.name,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-              ),
-              children: course.assessments.map((assessment) {
-                final points = assessment.points ?? assessment.totalPoints;
-                final pointsMax = assessment.pointsMax;
-                return ExpansionTile(
-                  title: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          assessment.name,
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      _buildPointsWidget(points, pointsMax, context),
-                    ],
-                  ),
-                  subtitle: assessment.pointsMax == null
-                      ? null
-                      : Text(
-                          'punkty max: ${assessment.pointsMax}',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w300),
-                        ),
-                  children: assessment.exercises.map((exercise) {
-                    return ListTile(
-                      title: Text(
-                        exercise.name,
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w300),
-                      ),
-                      subtitle: Text(
-                        'punkty max: ${exercise.pointsMax ?? '-'}',
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w200),
-                      ),
-                      trailing: _buildPointsWidget(
-                          exercise.points, exercise.pointsMax, context),
-                    );
+          return CourseCard(course: course);
+        }).toList(),
+      ],
+    );
+  }
+}
+
+class CourseCard extends StatefulWidget {
+  final Course course;
+
+  CourseCard({required this.course});
+
+  @override
+  _CourseCardState createState() => _CourseCardState();
+}
+
+class _CourseCardState extends State<CourseCard> {
+  late Future<List<Assessment>> _assessmentsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _assessmentsFuture = _fetchAssessments();
+  }
+
+  Future<List<Assessment>> _fetchAssessments() async {
+    if (widget.course.assessments == null) {
+      final assessments = await _fetchCourseAssessments(widget.course.nodeId);
+      setState(() {
+        widget.course.assessments = assessments;
+      });
+      return assessments;
+    } else {
+      return widget.course.assessments!;
+    }
+  }
+
+  Future<List<Assessment>> _fetchCourseAssessments(String nodeId) async {
+    List<Assessment> assessments = [];
+    var fetchedAssessments = await _fetchAssessmentsForNode(nodeId);
+    assessments.addAll(fetchedAssessments);
+    return assessments;
+  }
+
+  Future<List<Assessment>> _fetchAssessmentsForNode(String nodeId) async {
+    final url = Uri.http(UserSession.host, UserSession.basePath, {
+      'id': UserSession.sessionId,
+      'query1': 'get_tests_child',
+      'query2': nodeId,
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      var subnodesJson = json.decode(response.body) as List;
+      return subnodesJson.map((json) => Assessment.fromJson(json)).toList();
+    } else {
+      throw Exception(
+          'Failed to fetch data: HTTP status ${response.statusCode}');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      child: ExpansionTile(
+        title: Text(
+          widget.course.name,
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+        ),
+        children: [
+          FutureBuilder<List<Assessment>>(
+            future: _assessmentsFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else {
+                var assessments = snapshot.data!;
+                return Column(
+                  children: assessments.map((assessment) {
+                    final points = assessment.points ?? 0.0;
+                    final pointsMax = assessment.pointsMax;
+                    return AssessmentTile(assessment: assessment);
                   }).toList(),
                 );
-              }).toList(),
+              }
+            },
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class AssessmentTile extends StatefulWidget {
+  final Assessment assessment;
+
+  AssessmentTile({required this.assessment});
+
+  @override
+  _AssessmentTileState createState() => _AssessmentTileState();
+}
+
+class _AssessmentTileState extends State<AssessmentTile> {
+  late Future<List<Assessment>> _subnodesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _subnodesFuture = _fetchSubnodes();
+  }
+
+  Future<List<Assessment>> _fetchSubnodes() async {
+    if (widget.assessment.subnodes != null) {
+      return widget.assessment.subnodes!;
+    }
+    var subnodes = await _fetchAssessmentsForNode(widget.assessment.id);
+    setState(() {
+      widget.assessment.subnodes = subnodes;
+    });
+    return subnodes;
+  }
+
+  Future<List<Assessment>> _fetchAssessmentsForNode(String nodeId) async {
+    final url = Uri.http(UserSession.host, UserSession.basePath, {
+      'id': UserSession.sessionId,
+      'query1': 'get_tests_child',
+      'query2': nodeId,
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      var subnodesJson = json.decode(response.body) as List;
+      return subnodesJson.map((json) => Assessment.fromJson(json)).toList();
+    } else {
+      throw Exception(
+          'Failed to fetch data: HTTP status ${response.statusCode}');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final points = widget.assessment.points ?? 0.0;
+    final pointsMax = widget.assessment.pointsMax;
+
+    return ExpansionTile(
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              widget.assessment.name,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
             ),
-          );
-        }).toList(),
+          ),
+          _buildPointsWidget(points, pointsMax, context),
+        ],
+      ),
+      subtitle: pointsMax == null
+          ? null
+          : Text(
+              'punkty max: ${pointsMax}',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+            ),
+      children: [
+        FutureBuilder<List<Assessment>>(
+          future: _subnodesFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              var subnodes = snapshot.data!;
+              return Column(
+                children: subnodes.map((subnode) {
+                  final subnodePoints = subnode.points ?? 0.0;
+                  final subnodePointsMax = subnode.pointsMax;
+                  return ListTile(
+                    title: Text(
+                      subnode.name,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+                    ),
+                    subtitle: subnodePointsMax == null
+                        ? null
+                        : Text(
+                            'punkty max: ${subnodePointsMax}',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w200),
+                          ),
+                    trailing: _buildPointsWidget(
+                        subnodePoints, subnodePointsMax, context),
+                  );
+                }).toList(),
+              );
+            }
+          },
+        )
       ],
     );
   }
