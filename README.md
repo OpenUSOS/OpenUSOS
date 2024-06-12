@@ -38,19 +38,15 @@ Our plans for the future:
 <img src="fastlane/metadata/android/en-US/images/screenshot_schedule.png" 
 alt="You can view your class schedule" 
 width="336" height="748"/>
-
 <img src="fastlane/metadata/android/en-US/images/screenshot_surveys.png"
 alt="You can see what surveys are available for you to fill" 
 width="336" height="748"/>
-
 <img src="fastlane/metadata/android/en-US/images/screenshot_survey_filler.png"
 alt="You can fill your surveys" 
 width="336" height="748"/>
-
 <img src="fastlane/metadata/android/en-US/images/screenshot_settings.png"
 alt="You can set how much time before a class you want to receive notifications" 
 width="336" height="748"/>
-
 <img src="fastlane/metadata/android/en-US/images/screenshot_tests.png"
 alt="You can see your test results \(and a dark mode is available, as you might have noticed\)" 
 width="336" height="748"/>
@@ -58,7 +54,6 @@ width="336" height="748"/>
 <img src="fastlane/metadata/android/en-US/images/screenshot_calendar.png"
 alt="You can check the academic calendar to see when you have a day off, easily visible with icons" 
 width="336" height="748"/>
-
 <img src="fastlane/metadata/android/en-US/images/screenshot_event_adding.png"
 alt="You can add your own event to the calendar, so you don't forget about an exam" 
 width="336" height="748"/>
