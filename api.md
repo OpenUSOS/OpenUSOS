@@ -5,7 +5,6 @@ They can have up to 4 arguments. first is always id, then query(nr of query)
 IMPORTANT! First, you need to create a session using http://srv27.mikr.us:20117/login. It will return your id, that
 Should be kept secret. Then, when using other methods use this id.
 
-"""
 logging in/out:
 ---------
 1. id, query1 = url, query2 empty ---- returns a string, url which has to be used to log in.
@@ -25,16 +24,16 @@ each element is a dict with: "id" : unique message id, "subject", "content", "da
 and "to" - a list with two dicts:[ "email" - email of the recipient (or null), 
 "user" - dict with information of the recipient: "first_name", "id", "last_name"]
 
-example:
-    {
-        "content": "To jest test",
-        "date": "2024-03-03 00:08:32",
-        "id": "1780158",
-        "subject": "Test",
-        "to": [
-            {
-                "email": "example@example",
-                "user": {
+   example:
+           {
+            "content": "To jest test",
+            "date": "2024-03-03 00:08:32",
+            "id": "1780158",
+            "subject": "Test",
+            "to": [
+               {
+               "email": "example@example",
+               "user": {
                     "first_name": "Jan",
                     "id": "696969",
                     "last_name": "Robak"
@@ -115,5 +114,3 @@ returns a dict with:
 (kinda useless, but supposedly they can add more types of items in the future).
 each article contains: name, author, publication_date, title, headline_html, content_html.
 
-
-"""
