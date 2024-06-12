@@ -1,4 +1,4 @@
-![](fastlane/metadata/en-US/images/icon.png)
+![](fastlane/metadata/android/en-US/images/icon.png)
 # OpenUSOS
 ## Authors: Oskar Kuliński, Filip Ciebiera, Wieńczysław Włodyga   
 ### Current version: 1.0.0
@@ -36,25 +36,25 @@ Our plans for the future:
 ## Some screenshots for you to admire the amazingness of our app
 
 ![You can view your class schedule](
-fastlane/metadata/en-US/images/screenshot_schedule.png)
+fastlane/metadata/android/en-US/images/screenshot_schedule.png)
 
 ![You can see what surveys are available for you to fill](
-fastlane/metadata/en-US/images/screenshot_surveys.png)
+fastlane/metadata/android/en-US/images/screenshot_surveys.png)
 
 ![YOu can fill your surveys](
-fastlane/metadata/en-US/images/screenshot_survey_filler.png)
+fastlane/metadata/android/en-US/images/screenshot_survey_filler.png)
 
 ![You can set how much time before a class you want to receive notifications](
-fastlane/metadata/en-US/images/icon.png)
+fastlane/metadata/android/en-US/images/icon.png)
 
 ![You can see your test results \(and a dark mode is available, as you might have noticed\)](
-fastlane/metadata/en-US/images/screenshot_tests.png)
+fastlane/metadata/android/en-US/images/screenshot_tests.png)
 
 ![You can check the academic calendar to see when you have a day off, easily visible with icons](
-fastlane/metadata/en-US/images/icon.png)
+fastlane/metadata/android/en-US/images/icon.png)
 
 ![You can add your own event to the calendar, so you don't forget about an exam](
-fastlane/metadata/en-US/images/screenshot.png)
+fastlane/metadata/android/en-US/images/screenshot.png)
 
 
 ## Contributing
