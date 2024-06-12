@@ -35,8 +35,9 @@ Our plans for the future:
 
 ## Some screenshots for you to admire the amazingness of our app
 
-![You can view your class schedule](
-fastlane/metadata/android/en-US/images/screenshot_schedule.png)
+<img src="fastlane/metadata/android/en-US/images/screenshot_schedule.png" 
+alt="You can view your class schedule" width="336" height="748"/>
+
 
 ![You can see what surveys are available for you to fill](
 fastlane/metadata/android/en-US/images/screenshot_surveys.png)
@@ -45,16 +46,16 @@ fastlane/metadata/android/en-US/images/screenshot_surveys.png)
 fastlane/metadata/android/en-US/images/screenshot_survey_filler.png)
 
 ![You can set how much time before a class you want to receive notifications](
-fastlane/metadata/android/en-US/images/icon.png)
+fastlane/metadata/android/en-US/images/screenshot_settings.png)
 
 ![You can see your test results \(and a dark mode is available, as you might have noticed\)](
 fastlane/metadata/android/en-US/images/screenshot_tests.png)
 
 ![You can check the academic calendar to see when you have a day off, easily visible with icons](
-fastlane/metadata/android/en-US/images/icon.png)
+fastlane/metadata/android/en-US/images/screenshot_calendar.png)
 
 ![You can add your own event to the calendar, so you don't forget about an exam](
-fastlane/metadata/android/en-US/images/screenshot.png)
+fastlane/metadata/android/en-US/images/screenshot_event_adding.png)
 
 
 ## Contributing
