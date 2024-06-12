@@ -1,10 +1,11 @@
 import 'dart:convert';
-
-import 'package:open_usos/appbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:open_usos/appbar.dart';
+import 'package:open_usos/pages/grades.dart';
 
 class UserSession {
   static const host = 'srv27.mikr.us:20117'; //server
@@ -34,8 +35,10 @@ class UserSession {
       return false;
     }
     await getUserData();
+    await Grades.setGrades();
     return true;
   }
+
 
   static Future<bool> resumeSession() async{
     //resuming session
@@ -45,7 +48,7 @@ class UserSession {
       'query2': accessToken,
       'query3': accessTokenSecret
     });
-    final response = await get(urlResume);
+    final response = await http.get(urlResume);
     if(response.statusCode != 200 || response.body != 'Y'){
       return false;
     }
@@ -60,7 +63,7 @@ class UserSession {
     final url = Uri.http(UserSession.host, UserSession.basePath,
         {'id': UserSession.sessionId, 'query1': 'user_info'});
 
-    final response = await get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
@@ -79,7 +82,7 @@ class UserSession {
 
   static Future createSession() async {
     final url = Uri.http(host, logPath, {'query1': currentlySelectedUniversity});
-    var response = await get(url);
+    var response = await http.get(url);
     if (response.statusCode == 200) {
       sessionId = response.body;
     } else {
@@ -91,7 +94,7 @@ class UserSession {
   static Future startLogin() async {
     await createSession();
     final urlURL = Uri.http(host, basePath, {'id': sessionId, 'query1': 'url'});
-    var response = await get(urlURL);
+    var response = await http.get(urlURL);
     if (response.statusCode == 200) {
       loginURL = response.body;
     } else {
@@ -108,7 +111,7 @@ class UserSession {
       'query1': 'log_in',
       'query2': receivedUrl.queryParameters['oauth_verifier']
     });
-    final response = await get(urlLogin);
+    final response = await http.get(urlLogin);
     if (response.statusCode == 200) {
       Map<String, dynamic> body = json.decode(response.body);
       accessToken = body['AT'];
@@ -121,13 +124,14 @@ class UserSession {
     }
     await resumeSession();
     await getUserData();
+    Grades.getGrades();
     return;
   }
 
   static Future logout() async {
     final logoutURL =
         Uri.http(host, basePath, {'id': sessionId, 'query1': 'log_out'});
-    var response = await get(logoutURL);
+    var response = await http.get(logoutURL);
     if (response.statusCode == 200) {
       await wipeLocalLoginData();
     }
@@ -147,6 +151,8 @@ class UserSession {
     prefs.remove('accessTokenSecret');
     prefs.remove('sessionId');
   }
+
+
 }
 
 class LoginPage extends StatelessWidget {
