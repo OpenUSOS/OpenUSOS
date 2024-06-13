@@ -32,7 +32,7 @@ class Course {
   factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
       name: json['name']['pl'] ?? '',
-      nodeId: json['nodes_id'].toString(),
+      nodeId: json['node_id'].toString(),
     );
   }
 }
