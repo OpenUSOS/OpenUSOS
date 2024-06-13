@@ -28,8 +28,7 @@ class Course {
   final String nodeId;
   List<Assessment>? assessments;
 
-  Course({required this.name, required this.nodeId, this.assessments});
-
+  Course({required this.name, required this.nodeId, this.assessments});/
   factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
       name: json['name']['pl'] ?? '',
