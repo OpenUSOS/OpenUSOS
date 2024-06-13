@@ -1,14 +1,17 @@
 Nieoficjalna aplikacja USOS o otwartym źródle, od studentów dla studentów
 Możesz w niej:
-- ustawiać i otrzymywać powiadomienia o nadchodzących zajęciach
-- zobaczyć swoje oceny
-- zobaczyć wyniki swoich sprawdzianów
-- sprawdzić swój plan zajęć
-- wyświetlić kalendarz akademicki
-- wypełniać ankiety uniwersyteckie
-- wysyłać maile z systemu USOS
-
+<ul>
+<li>ustawiać i otrzymywać powiadomienia o nadchodzących zajęciach</li>
+<li>zobaczyć swoje oceny</li>
+<li>zobaczyć wyniki swoich sprawdzianów</li>
+<li>sprawdzić swój plan zajęć</li>
+<li>wyświetlić kalendarz akademicki</li>
+<li>wypełniać ankiety uniwersyteckie</li>
+<li>wysyłać maile z systemu USOS</li>
+</ul>
 Obecnie wspieranie uczelnie
-- Uniwersytet Jagielloński
-- Politechnika Wrocławska
-- Chrześcijańska Akademia Teologiczna w Warszawie.
+<ul>
+<li>Uniwersytet Jagielloński</li>
+<li>Politechnika Wrocławska</li>
+<li>Chrześcijańska Akademia Teologiczna w Warszawie.</li>
+</ul>
