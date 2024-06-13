@@ -79,7 +79,8 @@ and "subnodes_ids", which is a list containing ids of the subnodes (Can and will
 or:
 
 13. id, query1 = get_tests_child, query2 = [node_id] ---- returns a list of subnodes of a given node, each containing:
-"id", "name", "description", "points", "points_max".
+"id", "name", "description", "points", "points_max", "grade".
+note: one of "grade" and "points" will always have "-" value
 
 ---------
 surveys:
