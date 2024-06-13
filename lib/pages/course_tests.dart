@@ -28,7 +28,7 @@ class Course {
   final String nodeId;
   List<Assessment>? assessments;
 
-  Course({required this.name, required this.nodeId, this.assessments});/
+  Course({required this.name, required this.nodeId, this.assessments});
   factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
       name: json['name']['pl'] ?? '',
@@ -376,38 +376,38 @@ class _AssessmentTileState extends State<AssessmentTile> {
       children: isCalculating
           ? [Center(child: CircularProgressIndicator())]
           : [
-        FutureBuilder<List<Assessment>>(
-          future: _subnodesFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else {
-              var subnodes = snapshot.data!;
-              return Column(
-                children: subnodes.map((subnode) {
-                  final subnodePoints = subnode.points ?? 0.0;
-                  final subnodePointsMax = subnode.pointsMax;
-                  return ListTile(
-                    title: Text(
-                      subnode.name,
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-                    ),
-                    subtitle: subnodePointsMax == null
-                        ? null
-                        : Text(
-                      'punkty max: ${subnodePointsMax}',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w200),
-                    ),
-                    trailing: _buildPointsWidget(subnodePoints, subnodePointsMax, context),
-                  );
-                }).toList(),
-              );
-            }
-          },
-        )
-      ],
+              FutureBuilder<List<Assessment>>(
+                future: _subnodesFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else {
+                    var subnodes = snapshot.data!;
+                    return Column(
+                      children: subnodes.map((subnode) {
+                        final subnodePoints = subnode.points ?? 0.0;
+                        final subnodePointsMax = subnode.pointsMax;
+                        return ListTile(
+                          title: Text(
+                            subnode.name,
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+                          ),
+                          subtitle: subnodePointsMax == null
+                              ? null
+                              : Text(
+                                  'punkty max: ${subnodePointsMax}',
+                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w200),
+                                ),
+                          trailing: _buildPointsWidget(subnodePoints, subnodePointsMax, context),
+                        );
+                      }).toList(),
+                    );
+                  }
+                },
+              )
+            ],
     );
   }
 

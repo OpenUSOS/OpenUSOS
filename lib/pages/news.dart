@@ -134,16 +134,24 @@ class NewsArticleWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(article.title),
+            Text(article.title, 
+              style: TextStyle(fontWeight: FontWeight.bold,
+              )
+            ),
             SizedBox(height: 8.0),
-            Text("Napisano przez: " + article.author),
+            Text("Napisano przez: " + article.author,
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+              )
+            ),
             SizedBox(height: 8.0),
             Html(data: article.headlineHtml),
             SizedBox(height: 8.0),
             Html(data: article.contentHtml),
           ]
         )
-      )
+      ),
+      elevation: 10.0,
     );
   }
 }
