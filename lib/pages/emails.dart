@@ -15,7 +15,8 @@ class Emails extends StatefulWidget {
 class EmailsState extends State<Emails> {
   @visibleForTesting
   List<Email> emailData = [];
-  late Future<void> _emailsFuture;
+  late Future<void>
+      _emailsFuture; //future to prevent future builder from sending repeated api calls
 
   @override
   void initState() {
@@ -63,8 +64,8 @@ class EmailsState extends State<Emails> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Scaffold(
                   body: Center(
-                child: CircularProgressIndicator(),
-              ));
+                    child: CircularProgressIndicator(),
+                  ));
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
@@ -112,6 +113,190 @@ class EmailsState extends State<Emails> {
             }
           }),
     );
+  }
+}
+
+class EmailSender extends StatefulWidget {
+  const EmailSender({super.key});
+
+  @override
+  State<EmailSender> createState() => EmailSenderState();
+}
+
+@visibleForTesting
+class EmailSenderState extends State<EmailSender> {
+  @visibleForTesting
+  User? user;
+  bool _isSending = false;
+  final TextEditingController _recipientController = TextEditingController();
+  final TextEditingController _subjectController = TextEditingController();
+  final TextEditingController _bodyController = TextEditingController();
+
+  @override
+  void dispose() {
+    _bodyController.dispose();
+    _subjectController.dispose();
+    _recipientController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _sendEmails() async {
+    if (_recipientController.text.isEmpty ||
+        _subjectController.text.isEmpty ||
+        _bodyController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Proszę wypełnić wszystkie pola!')));
+      return;
+    }
+    setState(() {
+      _isSending = true;
+    });
+    final url = Uri.http(UserSession.host, UserSession.basePath, {
+      'id': UserSession.sessionId,
+      'query1': 'send_email',
+      'query2': _recipientController.text,
+      'query3': _subjectController.text,
+      'query4': _bodyController.text
+    });
+
+    try {
+      final response = await get(url);
+
+      if (response.statusCode == 200) {
+        String data = response.body;
+        if (data == 'Y') {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Wysyłanie powiodło się!')));
+        } else if (data == 'N') {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Wysyłanie nie powiodło się! Spróbuj ponownie.')));
+        }
+      } else {
+        throw Exception(
+            'Something went wrong when sending request, HTTP code: ${response.statusCode}');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Wystąpił błąd podczas wysyłania: $e')));
+    } finally {
+      setState(() {
+        _isSending = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: USOSBar(title: 'OpenUSOS mail'),
+        bottomNavigationBar: BottomNavBar(),
+        drawer: NavBar(),
+        body: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Column(children: [
+              TextField(
+                controller: _recipientController,
+                decoration: InputDecoration(labelText: 'Odbiorca'),
+              ),
+              TextField(
+                  controller: _subjectController,
+                  decoration: InputDecoration(labelText: 'Temat')),
+              TextField(
+                controller: _bodyController,
+                decoration: InputDecoration(
+                  labelText: 'Treść',
+                ),
+                keyboardType: TextInputType.multiline,
+              ),
+              SizedBox(height: 20.0),
+              _isSending == true
+                  ? Center(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                          Text('Wysyłanie...'),
+                          CircularProgressIndicator()
+                        ]))
+                  : ElevatedButton(
+                      onPressed: _sendEmails,
+                      child: Text('Wyślij'),
+                    )
+            ])));
+  }
+}
+
+class EmailExpanded extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final email = ModalRoute.of(context)!.settings.arguments as Email;
+
+    return Scaffold(
+        appBar: USOSBar(title: 'OpenUSOS mail'),
+        body: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(children: [
+              Container(
+                  color: Colors.grey.shade400,
+                  alignment: Alignment.topLeft,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                  child: Text(
+                    'Odbiorcy: ${email.recipientAddressString()}',
+                    softWrap: true,
+                    textScaler: TextScaler.linear(1.25),
+                  )),
+              Container(
+                height: 16,
+              ),
+              Container(
+                  color: Colors.grey.shade400,
+                  alignment: Alignment.topLeft,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                  child: Text(
+                    'Temat: ${email.subject}',
+                    softWrap: true,
+                    textScaler: TextScaler.linear(1.25),
+                    maxLines: 3,
+                  )),
+              Container(
+                height: 16,
+              ),
+              Container(
+                  color: Colors.grey.shade400,
+                  alignment: Alignment.topLeft,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                  child: Text(
+                    'Data wysłania: ${email.date}',
+                    textScaler: TextScaler.linear(1.25),
+                  )),
+              Container(
+                height: 16,
+              ),
+              Container(
+                  color: Colors.grey.shade400,
+                  alignment: Alignment.topLeft,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                  child: Text(
+                    'Treść:',
+                    textScaler: TextScaler.linear(1.25),
+                  )),
+              Container(
+                height: 16,
+              ),
+              Expanded(
+                child: Container(
+                  color: Colors.grey.shade400,
+                  alignment: Alignment.topLeft,
+                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: Text(email.contents,
+                    textScaler: TextScaler.linear(1.25),),
+                ),
+              )
+            ])));
   }
 }
 
