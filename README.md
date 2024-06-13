@@ -24,14 +24,16 @@ https://github.com/OpenUSOS/OpenUSOS-server
 
 
 Our plans for the future:
-- speed up the app
-- improve the look of emails
-- add viewing course groups
-- in app bug reporting
-- release on Google Play Store
-- add notifications about upcoming registrations
-- add registration for classes
-- start work on an IOS release
+<ul>
+<li>speed up the app</li>
+<li>improve the look of emails</li>
+<li>add viewing course groups</li>
+<li>in app bug reporting</li>
+<li>release on Google Play Store</li>
+<li>add notifications about upcoming registrations</li>
+<li>add registration for classe</li>
+<li>start work on an IOS release</li>
+</ul>
 
 ## Screenshots 
 Some screenshots for you to admire the amazingness of our app
