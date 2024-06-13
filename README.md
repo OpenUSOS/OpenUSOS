@@ -5,18 +5,22 @@
 
 ### An open source unofficial USOS app, for students in Poland.
 Here you can
-- set and receive notifications about upcoming classes
-- view your grades
-- view your test results
-- check your class schedule
-- see the academic year calendar and add your own events to it
-- fill out university surveys
-- send emails to university staff
+<ul>
+<li>set and receive notifications about upcoming classes</li>
+<li>view your grades</li>
+<li>view your test results</li>
+<li>check your class schedule</li>
+<li>see the academic year calendar and add your own events to it</li>
+<li>fill out university surveys</li>
+<li>send emails to university staff</li>
+</ul>
 
 Currently supported universities
-- Uniwersytet Jagielloński
-- Politechnika Wrocławska
-- Chrześcijańska Akademia Teologiczna w Warszawie.
+<ul>
+<li>Uniwersytet Jagielloński</li>
+<li>Politechnika Wrocławska</li>
+<li>Chrześcijańska Akademia Teologiczna w Warszawie.</li>
+</ul>
 
 
 We use our own server to communicate with the USOS system. You can view its code here:
@@ -62,16 +66,18 @@ width="336" height="748"/>
 
 
 ## Contributing
-- If you want to report a bug, you can do so by opening an issue here 
-https://github.com/OpenUSOS/OpenUSOS/issues    
-- If you want to make some visual changes to the app you can edit 
+<ul>
+<li>If you want to report a bug, you can do so by opening an issue here 
+https://github.com/OpenUSOS/OpenUSOS/issues</li>  
+<li>If you want to make some visual changes to the app you can edit 
 *lib/pages/whatever_page_you_want_to_improve.dart*
-The file names there should be pretty self explanatory, with every page having its own file 
-- You can also modify the *lib/themes.dart* file, where our themes are stored
-- If you want to add a new feature all by yourself you need to add it both in the app, and the server
-- If you can/want to do it in only one place, let us know, we will do our best to help you out, 
-and implement the feature on the other side
-- If you want to help us out financially, an option will be available soon
+The file names there should be pretty self explanatory, with every page having its own file </li>
+<li>You can also modify the *lib/themes.dart* file, where our themes are stored</li>
+<li>If you want to add a new feature all by yourself you need to add it both in the app, and the server</li>
+<li>If you can/want to do it in only one place, let us know, we will do our best to help you out, 
+and implement the feature on the other side</li>
+<li>If you want to help us out financially, an option will be available soon</li>
+</ul>
 
 ## Self hosting
 The app uses our server to communicate with the USOS system. If you want additional security feel
