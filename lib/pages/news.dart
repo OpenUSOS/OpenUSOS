@@ -7,7 +7,6 @@ import 'package:open_usos/user_session.dart';
 import 'package:open_usos/navbar.dart';
 import 'package:open_usos/appbar.dart';
 
-
 class News extends StatefulWidget {
   const News({super.key});
 
@@ -31,7 +30,6 @@ class _NewsState extends State<News> {
       throw Exception("sessionId is null, user not logged in.");
     }
 
-
     final url = Uri.http(UserSession.host, UserSession.basePath, {
       'id': UserSession.sessionId,
       'query1': 'get_news',
@@ -40,13 +38,12 @@ class _NewsState extends State<News> {
       'query4': newsAmount,
     });
 
-
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       List<NewsArticle> articles = [];
-      for (var item in data['items']) { 
+      for (var item in data['items']) {
         var articleData = item['article'];
         articles.add(NewsArticle.fromJson(articleData));
       }
@@ -75,15 +72,14 @@ class _NewsState extends State<News> {
                 return Center(child: Text("Error: ${snapshot.error}"));
               } else {
                 if (news != null) {
-                return ListView.builder(
-                  itemCount: news!.length,
-                  itemBuilder: (context, index) {
-                    return NewsArticleWidget(article: news![index]);
-                  }
-                );
+                  return ListView.builder(
+                      itemCount: news!.length,
+                      itemBuilder: (context, index) {
+                        return NewsArticleWidget(article: news![index]);
+                      });
                 } else {
-                return Center(child: Text("Brak aktualności"));
-                } 
+                  return Center(child: Text("Brak aktualności"));
+                }
               }
             }));
   }
@@ -112,38 +108,45 @@ class NewsArticle {
       author: json['author'] != null ? (json['author'] ?? '') : '',
       publicationDate: json['publication_date'] ?? '',
       title: json['title'] != null ? (json['title']['pl'] ?? '') : '',
-      headlineHtml: json['headline_html'] != null ? (json['headline_html']['pl'] ?? '') : '',
-      contentHtml: json['content_html'] != null ? (json['content_html']['pl'] ?? '') : '',
+      headlineHtml: json['headline_html'] != null
+          ? (json['headline_html']['pl'] ?? '')
+          : '',
+      contentHtml: json['content_html'] != null
+          ? (json['content_html']['pl'] ?? '')
+          : '',
     );
   }
 }
 
 class NewsArticleWidget extends StatelessWidget {
-  
   final NewsArticle article;
 
   const NewsArticleWidget({Key? key, required this.article}) : super(key: key);
 
-
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(8.0),
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(article.title),
-            SizedBox(height: 8.0),
-            Text("Napisano przez: " + article.author),
-            SizedBox(height: 8.0),
-            Html(data: article.headlineHtml),
-            SizedBox(height: 8.0),
-            Html(data: article.contentHtml),
-          ]
-        )
-      )
-    );
+        elevation: 10.0,
+        margin: EdgeInsets.all(8.0),
+        child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                article.title,
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0),
+              ),
+              SizedBox(height: 8.0),
+              Row(children: [
+                Text("Napisano przez: ",
+                    style: TextStyle(fontWeight: FontWeight.w600)),
+                Text(article.author)
+              ]),
+              Divider(color: Colors.grey.shade300),
+              SizedBox(height: 8.0),
+              Html(data: article.headlineHtml),
+              SizedBox(height: 8.0),
+              Html(data: article.contentHtml),
+            ])));
   }
 }

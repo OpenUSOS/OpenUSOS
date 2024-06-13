@@ -28,8 +28,15 @@ class _HomeState extends State<Home> {
 
   @visibleForTesting
   Future<void> fetchHomeComponents() async {
-    fetchSubjects();
-    fetchNews(DateTime.now().year.toString() + '-' + DateTime.now().month.toString() + '-' + DateTime.now().day.toString(), '0', '30');
+    await fetchSubjects();
+    await fetchNews(
+        DateTime.now().year.toString() +
+            '-' +
+            DateTime.now().month.toString() +
+            '-' +
+            (DateTime.now().day - 1).toString(),
+        '0',
+        '30');
   }
 
   @visibleForTesting
@@ -39,7 +46,6 @@ class _HomeState extends State<Home> {
       throw Exception("sessionId is null, user not logged in.");
     }
 
-
     final url = Uri.http(UserSession.host, UserSession.basePath, {
       'id': UserSession.sessionId,
       'query1': 'get_news',
@@ -48,14 +54,12 @@ class _HomeState extends State<Home> {
       'query4': newsAmount,
     });
 
-
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
-      debugPrint(response.body.toString());
       var data = json.decode(response.body);
       List<NewsArticle> articles = [];
-      for (var item in data['items']) { 
+      for (var item in data['items']) {
         var articleData = item['article'];
         articles.add(NewsArticle.fromJson(articleData));
       }
@@ -78,10 +82,10 @@ class _HomeState extends State<Home> {
       //fetch just for today
 
       'query2': DateTime.now().year.toString() +
-      '-' +
-      DateTime.now().month.toString() +
-      '-' +
-      DateTime.now().day.toString(),
+          '-' +
+          DateTime.now().month.toString() +
+          '-' +
+          DateTime.now().day.toString(),
       'query3': '1',
     });
 
@@ -110,7 +114,6 @@ class _HomeState extends State<Home> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,74 +121,126 @@ class _HomeState extends State<Home> {
       bottomNavigationBar: BottomNavBar(),
       appBar: USOSBar(title: 'Strona główna'),
       body: FutureBuilder(
-        future: _futureHome,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          else if (snapshot.hasError) {
-            throw Exception("Error: ${snapshot.error}");
-          } else { 
-          debugPrint(subjects.toString());
-          return Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+          future: _futureHome,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              throw Exception("Error: ${snapshot.error}");
+            } else {
+              List<Widget> combinedList = [];
+              combinedList.add(
                 Text(
-                  'Cześć ${UserSession.user!.firstName},',
-                  style: TextStyle(fontSize: 40.0),
+                  'Cześć ${UserSession.user!.firstName}!',
+                  style: TextStyle(
+                      fontSize: 26.0,
+                      fontWeight: FontWeight.w500,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 6.0,
+                          offset: Offset(2.0, 2.0),
+                          color: Colors.grey.shade600,
+                        )
+                      ]),
                 ),
-                if (subjects != null) ... [
+              );
+
+              if (subjects != null) {
+                combinedList.add(
+                  Divider(
+                      indent: 10.0,
+                      endIndent: 10.0,
+                      color: Colors.grey.shade400),
+                );
+                combinedList.add(
                   Text(
                     'Twoje zajęcia na dziś',
-                    style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: 26.0,
+                        fontWeight: FontWeight.w500,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 6.0,
+                            offset: Offset(2.0, 2.0),
+                            color: Colors.grey.shade600,
+                          )
+                        ]),
                   ),
-                  Expanded(
-                    child: subjects!.isEmpty ? 
-                      Text('Brak zajęć - wolne',
-                        style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w300),
-                      ) :
-                      ListView.builder(
-                      itemCount: subjects!.length,
-                      itemBuilder: (context, index) {
-                        final subject = subjects![index];
-                        return Card(
-                          color: ScheduleState().getColor(subject.eventName),
-                          child: ListTile(
-                            title: Text(subject.eventName),
-                            subtitle: Text(
-                                '${subject.from.hour}:${subject.from.minute} - ${subject.to.hour}:${subject.to.minute}\n'
-                                'Budynek: ${subject.buildingName}, Sala: ${subject.roomNumber}'),
-                          ),
-                        );
-                      },
+                );
+                if (subjects!.isEmpty) {
+                  combinedList.add(
+                    Text(
+                      'Brak zajęć - wolne',
+                      style: TextStyle(
+                          fontSize: 16.0, fontWeight: FontWeight.w300),
                     ),
-                  ),
-                ], 
-                if (news != null) ... [
+                  );
+                  combinedList.add(
+                    Divider(color: Colors.grey.shade300),
+                  );
+                } else {
+                  combinedList.addAll(subjects!.map((subject) {
+                    return Card(
+                      color: ScheduleState().getColor(subject.eventName),
+                      child: ListTile(
+                        title: Text(subject.eventName,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
+                        subtitle: Text(
+                            '${subject.from.hour}:${subject.from.minute.toString().padRight(2, '0')} - '
+                            '${subject.to.hour}:${subject.to.minute.toString().padRight(2, '0')}\n'
+                            'Budynek: ${subject.buildingName}, Sala: ${subject.roomNumber}',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w300)),
+                      ),
+                      elevation: 8.0,
+                    );
+                  }).toList());
+                  combinedList.add(
+                    Divider(color: Colors.grey.shade500),
+                  );
+                }
+              }
+
+              if (news != null) {
+                combinedList.add(
                   Text(
-                  'Nadchodzące wydarzenia',
-                  style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                    'Ostatnie aktualności',
+                    style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.w500,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 6.0,
+                            color: Colors.grey.shade700,
+                            offset: Offset(2.0, 2.0),
+                          ),
+                        ]),
                   ),
-                  Expanded(
-                    child: news!.isEmpty ?
-                    Text('Brak nadchodzących wydarzeń', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w300))
-                    :
-                    ListView.builder(
-                    itemCount: news!.length,
-                    itemBuilder: (context, index) {
-                      return NewsArticleWidget(article: news![index]);
-                    }
-                    )
-                  )
-                ]
-              ],
-            ),
-          );
-          }
-        }
-      ),
+                );
+                if (news!.isEmpty) {
+                  combinedList.add(
+                    Text(
+                      'Brak nadchodzących wydarzeń',
+                      style: TextStyle(
+                          fontSize: 16.0, fontWeight: FontWeight.w300),
+                    ),
+                  );
+                } else {
+                  combinedList.addAll(news!.map((article) {
+                    return NewsArticleWidget(article: article);
+                  }).toList());
+                }
+              }
+
+              return ListView(
+                padding: const EdgeInsets.all(8.0),
+                children: combinedList,
+              );
+            }
+          }),
     );
   }
-
 }

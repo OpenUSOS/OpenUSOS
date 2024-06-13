@@ -74,40 +74,40 @@ class EmailsState extends State<Emails> {
                   Row(children: [
                     Expanded(
                         child: ElevatedButton(
-                            child: Text('Nowa wiadomośc'),
+                            child: Text('Nowa wiadomość'),
                             onPressed: () {
                               Navigator.pushNamed(context, '/emailSender');
                             }))
                   ]),
-                  ListView.builder(
-                      shrinkWrap: true,
-                      physics: ClampingScrollPhysics(),
-                      itemCount: emailData.length,
-                      itemBuilder: (context, index) {
-                        final item = emailData[index];
-                        return Card(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
-                            elevation: 4.0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: ListTile(
-                              title: Text(
-                                item.subject,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                  Expanded(
+                    child: ListView.builder(
+                        itemCount: emailData.length,
+                        itemBuilder: (context, index) {
+                          final item = emailData[index];
+                          return Card(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
+                              elevation: 4.0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
                               ),
-                              subtitle: Text(
-                                  'Adresaci: ${item.recipientAddressString()}'),
-                              trailing: Text(item.date),
-                              onTap: () {
-                                Navigator.pushNamed(context, '/emailExpanded',
-                                    arguments: item);
-                              },
-                            ));
-                      })
+                              child: ListTile(
+                                title: Text(
+                                  item.subject,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                    'Adresaci: ${item.recipientAddressString()}'),
+                                trailing: Text(item.date),
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/emailExpanded',
+                                      arguments: item);
+                                },
+                              ));
+                        }),
+                  ),
                 ],
               );
             }
@@ -235,7 +235,7 @@ class EmailExpanded extends StatelessWidget {
         appBar: USOSBar(title: 'OpenUSOS mail'),
         body: Padding(
             padding: EdgeInsets.all(8.0),
-            child: Column(children: [
+            child: ListView(children: [
               Container(
                   alignment: Alignment.topLeft,
                   padding:
