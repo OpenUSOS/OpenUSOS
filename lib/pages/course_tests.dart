@@ -16,11 +16,7 @@ class Term {
     var coursesList = <Course>[];
     if (json['courses'] != null) {
       var coursesJson = json['courses'] as List;
-      for (var courseJson in coursesJson) {
-        var course = Course.fromJson(courseJson);
-        coursesList.add(course);
-      }
-      // Sort the courses alphabetically by name
+      coursesList = coursesJson.map((courseJson) => Course.fromJson(courseJson)).toList();
       coursesList.sort((a, b) => a.name.compareTo(b.name));
     }
     return Term(termId: json['term_id'] ?? '', courses: coursesList);
@@ -48,7 +44,7 @@ class Assessment {
   final String description;
   final double? points;
   final double? pointsMax;
-  final List<String> subnodesIds;
+  final String? grade;
   List<Assessment>? subnodes;
 
   Assessment({
@@ -57,44 +53,39 @@ class Assessment {
     required this.description,
     required this.points,
     required this.pointsMax,
-    required this.subnodesIds,
+    this.grade,
     this.subnodes,
   });
 
   factory Assessment.fromJson(Map<String, dynamic> json) {
-    var subnodesIdsList = <String>[];
-    if (json['subnodes_ids'] != null) {
-      var subnodesJson = json['subnodes_ids'] as List;
-      subnodesIdsList = subnodesJson.map((id) => id.toString()).toList();
-    }
+    double? points = _parsePoints(json['points']);
+    String? grade = json['grade'];
 
-    double? parsePoints(dynamic value) {
-      if (value == null) return null;
-      if (value is num) return value.toDouble();
-      if (value is String) return double.tryParse(value);
-      return null;
+    if (points == null && grade != null && grade != '-' && grade.isNotEmpty) {
+      points = double.tryParse(grade);
     }
 
     return Assessment(
       id: json['id'].toString(),
       name: json['name']['pl'] ?? '',
       description: json['description']['pl'] ?? '',
-      points: parsePoints(json['points']),
-      pointsMax: parsePoints(json['points_max']),
-      subnodesIds: subnodesIdsList,
+      points: points,
+      pointsMax: _parsePoints(json['points_max']),
+      grade: grade,
     );
+  }
+
+  static double? _parsePoints(dynamic value) {
+    if (value == null || value == '-') return null;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
   }
 }
 
 Map<String, Term> parseTerms(String responseBody) {
-  final List<dynamic> parsedList = json.decode(responseBody) as List<dynamic>;
-  Map<String, Term> termsMap = {};
-
-  for (var termJson in parsedList) {
-    Term term = Term.fromJson(termJson as Map<String, dynamic>);
-    termsMap[term.termId] = term;
-  }
-  return termsMap;
+  final parsedList = json.decode(responseBody) as List;
+  return {for (var termJson in parsedList) Term.fromJson(termJson).termId: Term.fromJson(termJson)};
 }
 
 List<String> sortTerms(Map<String, Term> termsMap) {
@@ -104,12 +95,10 @@ List<String> sortTerms(Map<String, Term> termsMap) {
     var bParts = b.split('/');
     var aYear = int.parse(aParts[0]);
     var bYear = int.parse(bParts[0]);
-    var aTerm = aParts[1];
-    var bTerm = bParts[1];
     if (aYear != bYear) {
       return bYear.compareTo(aYear);
     } else {
-      return aTerm.compareTo(bTerm);
+      return aParts[1].compareTo(bParts[1]);
     }
   });
   return sortedTerms;
@@ -145,29 +134,9 @@ class CourseTestsState extends State<CourseTests> {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      print('Response body: ${response.body}');
       return parseTerms(response.body);
     } else {
-      throw Exception(
-          'Failed to fetch data: HTTP status ${response.statusCode}');
-    }
-  }
-
-  Future<List<Assessment>> _fetchCourseAssessments(String nodeId) async {
-    final url = Uri.http(UserSession.host, UserSession.basePath, {
-      'id': UserSession.sessionId,
-      'query1': 'get_tests_child',
-      'query2': nodeId,
-    });
-
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      var assessmentsJson = json.decode(response.body) as List;
-      return assessmentsJson.map((json) => Assessment.fromJson(json)).toList();
-    } else {
-      throw Exception(
-          'Failed to fetch data: HTTP status ${response.statusCode}');
+      throw Exception('Failed to fetch data: HTTP status ${response.statusCode}');
     }
   }
 
@@ -178,24 +147,25 @@ class CourseTestsState extends State<CourseTests> {
       bottomNavigationBar: BottomNavBar(),
       drawer: NavBar(),
       body: FutureBuilder<Map<String, Term>>(
-          future: testsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else {
-              final termsMap = snapshot.data!;
-              final sortedTerms = sortTerms(termsMap);
-              return ListView.builder(
-                itemCount: sortedTerms.length,
-                itemBuilder: (context, index) {
-                  String termId = sortedTerms[index];
-                  return TermWidget(term: termsMap[termId]!);
-                },
-              );
-            }
-          }),
+        future: testsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            final termsMap = snapshot.data!;
+            final sortedTerms = sortTerms(termsMap);
+            return ListView.builder(
+              itemCount: sortedTerms.length,
+              itemBuilder: (context, index) {
+                String termId = sortedTerms[index];
+                return TermWidget(term: termsMap[termId]!);
+              },
+            );
+          }
+        },
+      ),
     );
   }
 }
@@ -218,9 +188,7 @@ class TermWidget extends StatelessWidget {
             style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
           ),
         ),
-        ...term.courses.map((course) {
-          return CourseCard(course: course);
-        }).toList(),
+        ...term.courses.map((course) => CourseCard(course: course)).toList(),
       ],
     );
   }
@@ -257,13 +225,6 @@ class _CourseCardState extends State<CourseCard> {
   }
 
   Future<List<Assessment>> _fetchCourseAssessments(String nodeId) async {
-    List<Assessment> assessments = [];
-    var fetchedAssessments = await _fetchAssessmentsForNode(nodeId);
-    assessments.addAll(fetchedAssessments);
-    return assessments;
-  }
-
-  Future<List<Assessment>> _fetchAssessmentsForNode(String nodeId) async {
     final url = Uri.http(UserSession.host, UserSession.basePath, {
       'id': UserSession.sessionId,
       'query1': 'get_tests_child',
@@ -273,11 +234,10 @@ class _CourseCardState extends State<CourseCard> {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      var subnodesJson = json.decode(response.body) as List;
-      return subnodesJson.map((json) => Assessment.fromJson(json)).toList();
+      var assessmentsJson = json.decode(response.body) as List;
+      return assessmentsJson.map((json) => Assessment.fromJson(json)).toList();
     } else {
-      throw Exception(
-          'Failed to fetch data: HTTP status ${response.statusCode}');
+      throw Exception('Failed to fetch data: HTTP status ${response.statusCode}');
     }
   }
 
@@ -301,11 +261,7 @@ class _CourseCardState extends State<CourseCard> {
               } else {
                 var assessments = snapshot.data!;
                 return Column(
-                  children: assessments.map((assessment) {
-                    final points = assessment.points ?? 0.0;
-                    final pointsMax = assessment.pointsMax;
-                    return AssessmentTile(assessment: assessment);
-                  }).toList(),
+                  children: assessments.map((assessment) => AssessmentTile(assessment: assessment)).toList(),
                 );
               }
             },
@@ -327,11 +283,15 @@ class AssessmentTile extends StatefulWidget {
 
 class _AssessmentTileState extends State<AssessmentTile> {
   late Future<List<Assessment>> _subnodesFuture;
+  double? calculatedPoints;
+  double? calculatedPointsMax;
+  bool isCalculating = true;
 
   @override
   void initState() {
     super.initState();
     _subnodesFuture = _fetchSubnodes();
+    _calculatePointsIfNeeded();
   }
 
   Future<List<Assessment>> _fetchSubnodes() async {
@@ -355,18 +315,44 @@ class _AssessmentTileState extends State<AssessmentTile> {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      var subnodesJson = json.decode(response.body) as List;
-      return subnodesJson.map((json) => Assessment.fromJson(json)).toList();
+      var assessmentsJson = json.decode(response.body) as List;
+      return assessmentsJson.map((json) => Assessment.fromJson(json)).toList();
     } else {
-      throw Exception(
-          'Failed to fetch data: HTTP status ${response.statusCode}');
+      throw Exception('Failed to fetch data: HTTP status ${response.statusCode}');
+    }
+  }
+
+  void _calculatePointsIfNeeded() async {
+    if (widget.assessment.points == null || widget.assessment.pointsMax == null) {
+      var subnodes = await _subnodesFuture;
+      double totalPoints = 0.0;
+      double totalPointsMax = 0.0;
+
+      for (var subnode in subnodes) {
+        if (subnode.points != null) {
+          totalPoints += subnode.points!;
+        }
+        if (subnode.pointsMax != null) {
+          totalPointsMax += subnode.pointsMax!;
+        }
+      }
+
+      setState(() {
+        calculatedPoints = totalPoints > 0 ? totalPoints : null;
+        calculatedPointsMax = totalPointsMax > 0 ? totalPointsMax : null;
+        isCalculating = false;
+      });
+    } else {
+      setState(() {
+        isCalculating = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final points = widget.assessment.points ?? 0.0;
-    final pointsMax = widget.assessment.pointsMax;
+    final points = widget.assessment.points ?? calculatedPoints;
+    final pointsMax = widget.assessment.pointsMax ?? calculatedPointsMax;
 
     return ExpansionTile(
       title: Row(
@@ -377,16 +363,20 @@ class _AssessmentTileState extends State<AssessmentTile> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
             ),
           ),
-          _buildPointsWidget(points, pointsMax, context),
+          isCalculating
+              ? CircularProgressIndicator()
+              : _buildPointsWidget(points, pointsMax, context),
         ],
       ),
       subtitle: pointsMax == null
           ? null
           : Text(
-              'punkty max: ${pointsMax}',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-            ),
-      children: [
+        'punkty max: ${pointsMax}',
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+      ),
+      children: isCalculating
+          ? [Center(child: CircularProgressIndicator())]
+          : [
         FutureBuilder<List<Assessment>>(
           future: _subnodesFuture,
           builder: (context, snapshot) {
@@ -403,18 +393,15 @@ class _AssessmentTileState extends State<AssessmentTile> {
                   return ListTile(
                     title: Text(
                       subnode.name,
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
                     ),
                     subtitle: subnodePointsMax == null
                         ? null
                         : Text(
-                            'punkty max: ${subnodePointsMax}',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w200),
-                          ),
-                    trailing: _buildPointsWidget(
-                        subnodePoints, subnodePointsMax, context),
+                      'punkty max: ${subnodePointsMax}',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w200),
+                    ),
+                    trailing: _buildPointsWidget(subnodePoints, subnodePointsMax, context),
                   );
                 }).toList(),
               );
@@ -429,13 +416,13 @@ class _AssessmentTileState extends State<AssessmentTile> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.light
-            ? Colors.blue[900]
-            : Colors.indigo[300],
+        color: Theme.of(context).brightness == Brightness.light ? Colors.blue[900] : Colors.indigo[300],
         borderRadius: BorderRadius.circular(12.0),
       ),
-      child: Text(points == null ? '0.0' : '${points}',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+      child: Text(
+        points == null ? '0.0' : '${points}',
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
     );
   }
 }
