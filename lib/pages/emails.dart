@@ -202,6 +202,8 @@ class EmailSenderState extends State<EmailSender> {
                   controller: _subjectController,
                   decoration: InputDecoration(labelText: 'Temat')),
               TextField(
+                minLines: 5,
+                maxLines: null,
                 controller: _bodyController,
                 decoration: InputDecoration(
                   labelText: 'Treść',
