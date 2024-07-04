@@ -13,6 +13,7 @@ class _StartPageState extends State<StartPage> {
     'Uniwersytet Jagielloński',
     'Politechnika Wrocławska',
     // śmierdzą 'Uniwersytet Warszawski',
+    'Uniwersytet Śląski',
     'Chrześcijańska Akademia Teologiczna w Warszawie',
   ];
 

@@ -64,8 +64,8 @@ class EmailsState extends State<Emails> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Scaffold(
                   body: Center(
-                    child: CircularProgressIndicator(),
-                  ));
+                child: CircularProgressIndicator(),
+              ));
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
@@ -232,15 +232,19 @@ class EmailExpanded extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final email = ModalRoute.of(context)!.settings.arguments as Email;
-
     return Scaffold(
         appBar: USOSBar(title: 'OpenUSOS mail'),
         body: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(8.0),
             child: Column(children: [
               Container(
-                  color: Colors.grey.shade400,
                   alignment: Alignment.topLeft,
+                  decoration: BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                        color: Colors.black,
+                        width: 4,
+                      ))),
                   padding:
                       EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
                   child: Text(
@@ -249,10 +253,12 @@ class EmailExpanded extends StatelessWidget {
                     textScaler: TextScaler.linear(1.25),
                   )),
               Container(
-                height: 16,
-              ),
-              Container(
-                  color: Colors.grey.shade400,
+                  decoration: BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                        color: Colors.black,
+                        width: 4,
+                      ))),
                   alignment: Alignment.topLeft,
                   padding:
                       EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
@@ -263,10 +269,12 @@ class EmailExpanded extends StatelessWidget {
                     maxLines: 3,
                   )),
               Container(
-                height: 16,
-              ),
-              Container(
-                  color: Colors.grey.shade400,
+                  decoration: BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                        color: Colors.black,
+                        width: 4,
+                      ))),
                   alignment: Alignment.topLeft,
                   padding:
                       EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
@@ -275,10 +283,6 @@ class EmailExpanded extends StatelessWidget {
                     textScaler: TextScaler.linear(1.25),
                   )),
               Container(
-                height: 16,
-              ),
-              Container(
-                  color: Colors.grey.shade400,
                   alignment: Alignment.topLeft,
                   padding:
                       EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
@@ -287,15 +291,38 @@ class EmailExpanded extends StatelessWidget {
                     textScaler: TextScaler.linear(1.25),
                   )),
               Container(
-                height: 16,
+                height: 2,
               ),
               Expanded(
                 child: Container(
-                  color: Colors.grey.shade400,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(30)
+                      ),
+                      border: Border(
+                          bottom: BorderSide(
+                            color: Colors.black,
+                            width: 4,
+                          ),
+                          top: BorderSide(
+                            color: Colors.black,
+                            width: 4,
+                          ),
+                          left: BorderSide(
+                            color: Colors.black,
+                            width: 4,
+                          ),
+                            right: BorderSide(
+                            color: Colors.black,
+                            width: 4,
+                          ))),
                   alignment: Alignment.topLeft,
-                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: Text(email.contents,
-                    textScaler: TextScaler.linear(1.25),),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: Text(
+                    email.contents,
+                    textScaler: TextScaler.linear(1.25),
+                  ),
                 ),
               )
             ])));
