@@ -3,6 +3,12 @@
 ## Authors: Oskar Kuliński, Filip Ciebiera, Wieńczysław Włodyga   
 ### Current version: 1.0.0
 
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/com.open_usos/)
+
+Or download the latest APK from the [Releases Section](https://github.com/OpenUSOS/OpenUSOS/releases/latest).
+
 ### An open source unofficial USOS app, for students in Poland.
 Here you can
 <ul>
