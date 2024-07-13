@@ -5,9 +5,9 @@
 
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
      alt="Get it on F-Droid"
-     height="80">](https://f-droid.org/packages/com.muslimtechnet.lanelexicon/)
+     height="80">](https://f-droid.org/packages/com.open_usos/)
 
-Or downlaod the latest APK from the [Releases Section](https://github.com/OpenUSOS/OpenUSOS/releases/latest).
+Or download the latest APK from the [Releases Section](https://github.com/OpenUSOS/OpenUSOS/releases/latest).
 
 ### An open source unofficial USOS app, for students in Poland.
 Here you can
