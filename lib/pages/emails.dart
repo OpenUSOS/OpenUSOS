@@ -74,7 +74,7 @@ class EmailsState extends State<Emails> {
                   Row(children: [
                     Expanded(
                         child: ElevatedButton(
-                            child: Text('Nowa wiadomośc'),
+                            child: Text('Nowa wiadomość'),
                             onPressed: () {
                               Navigator.pushNamed(context, '/emailSender');
                             }))
