@@ -190,7 +190,6 @@ class EmailSenderState extends State<EmailSender> {
     return Scaffold(
         appBar: USOSBar(title: 'OpenUSOS mail'),
         bottomNavigationBar: BottomNavBar(),
-        drawer: NavBar(),
         body: Padding(
             padding: EdgeInsets.all(8.0),
             child: Column(children: [
@@ -246,11 +245,21 @@ class EmailExpanded extends StatelessWidget {
                         width: 4,
                       ))),
                   padding:
-                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                  child: Text(
-                    'Odbiorcy: ${email.recipientAddressString()}',
-                    softWrap: true,
-                    textScaler: TextScaler.linear(1.25),
+                      EdgeInsets.symmetric(horizontal: 4.0, vertical: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Odbiorcy:',
+                        softWrap: true,
+                        textScaler: TextScaler.linear(0.9),
+                      ),
+                      Text(
+                        '${email.recipientAddressString()}',
+                        softWrap: true,
+                        textScaler: TextScaler.linear(1.25),
+                      ),
+                    ],
                   )),
               Container(
                   decoration: BoxDecoration(
@@ -261,12 +270,22 @@ class EmailExpanded extends StatelessWidget {
                       ))),
                   alignment: Alignment.topLeft,
                   padding:
-                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                  child: Text(
-                    'Temat: ${email.subject}',
-                    softWrap: true,
-                    textScaler: TextScaler.linear(1.25),
-                    maxLines: 3,
+                      EdgeInsets.symmetric(horizontal: 4.0, vertical: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Temat:',
+                        softWrap: true,
+                        textScaler: TextScaler.linear(0.9),
+                      ),
+                      Text(
+                        '${email.subject}',
+                        softWrap: true,
+                        textScaler: TextScaler.linear(1.25),
+                        maxLines: 3,
+                      ),
+                    ],
                   )),
               Container(
                   decoration: BoxDecoration(
@@ -277,15 +296,24 @@ class EmailExpanded extends StatelessWidget {
                       ))),
                   alignment: Alignment.topLeft,
                   padding:
-                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                  child: Text(
-                    'Data wysłania: ${email.date}',
-                    textScaler: TextScaler.linear(1.25),
+                      EdgeInsets.symmetric(horizontal: 4.0, vertical: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Data wysłania:',
+                        textScaler: TextScaler.linear(0.9),
+                      ),
+                      Text(
+                        '${email.date}',
+                        textScaler: TextScaler.linear(1.25),
+                      ),
+                    ],
                   )),
               Container(
                   alignment: Alignment.topLeft,
                   padding:
-                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                      EdgeInsets.symmetric(horizontal: 4.0, vertical: 16.0),
                   child: Text(
                     'Treść:',
                     textScaler: TextScaler.linear(1.25),
