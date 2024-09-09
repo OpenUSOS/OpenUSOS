@@ -14,27 +14,27 @@ class Schedule extends StatefulWidget {
 
 @visibleForTesting
 class ScheduleState extends State<Schedule> {
-  @visibleForTesting
-  List<Subject>? subjects;
   SubjectDataSource? _subjectDataSource;
-  late Future<void> _subjectsFuture;
+  late Future<List<Subject>?> _subjectsFuture;
 
   @override
   void initState() {
     super.initState();
-    _subjectsFuture = fetchSubjects();
+    _subjectsFuture =
+        fetchSubjectsOnDate(DateTime.now().toString().substring(0, 10));
   }
 
   @visibleForTesting
-  Future<void> fetchSubjects() async {
+  Future<List<Subject>?> fetchSubjectsOnDate(String startDate) async {
+    debugPrint(startDate);
     if (UserSession.sessionId == null) {
       throw Exception("sessionId is null, user not logged in.");
     }
     final url = Uri.http(UserSession.host, UserSession.basePath, {
       'id': UserSession.sessionId,
       'query1': 'get_schedule',
-      'query2': '2023-10-01',
-      'query3': '365',
+      'query2': startDate,
+      'query3': '1',
     });
 
     final response = await get(url);
@@ -53,14 +53,31 @@ class ScheduleState extends State<Schedule> {
                 lang: 'pl',
               ))
           .toList();
-      setState(() {
-        subjects = fetchedSubjects;
-        _subjectDataSource = SubjectDataSource(subjects!);
-      });
+
+      return fetchedSubjects;
     } else {
       throw Exception(
           "failed to fetch data: HTTP status ${response.statusCode}");
     }
+  }
+
+  void updateCalendar(ViewChangedDetails details) {
+    String startDate = details.visibleDates[0].toString().substring(0, 10);
+    fetchSubjectsAndUpdateFromDate(startDate);
+  }
+
+  Future<void> fetchSubjectsAndUpdateFromDate(String date) async {
+    List<Subject>? fetched_subjects = await fetchSubjectsOnDate(date);
+    if (fetched_subjects == null) {
+      return;
+    }
+    setState(() {
+      for (Subject subject in fetched_subjects) {
+        if (!_subjectDataSource!.appointments!.contains(subject)) {
+          _subjectDataSource!.appointments!.add(subject);
+        }
+      }
+    });
   }
 
   Color getColor(String name) {
@@ -139,7 +156,9 @@ class ScheduleState extends State<Schedule> {
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
+              _subjectDataSource = SubjectDataSource(snapshot.data!);
               return SfCalendar(
+                onViewChanged: updateCalendar,
                 view: CalendarView.day,
                 showDatePickerButton: true,
                 headerStyle: CalendarHeaderStyle(
@@ -156,7 +175,7 @@ class ScheduleState extends State<Schedule> {
                       fontWeight: FontWeight.w500),
                 ),
                 timeSlotViewSettings: TimeSlotViewSettings(
-                  startHour: 7,
+                  startHour: 6,
                   endHour: 23,
                   nonWorkingDays: <int>[6, 7],
                   minimumAppointmentDuration: Duration(minutes: 45),
@@ -164,6 +183,7 @@ class ScheduleState extends State<Schedule> {
                 dataSource: _subjectDataSource,
                 allowViewNavigation: true,
                 appointmentBuilder: buildSubject,
+                firstDayOfWeek: 1,
               );
             }
           }),
@@ -194,6 +214,21 @@ class Subject {
   @override
   String toString() {
     return '${this.eventName}, ${this.from.toIso8601String()}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is Subject &&
+            runtimeType == other.runtimeType &&
+            eventName == other.eventName &&
+            from == other.from &&
+            to == other.to &&
+            background == other.background &&
+            isAllDay == other.isAllDay &&
+            buildingName == other.buildingName &&
+            lang == other.lang &&
+            roomNumber == other.roomNumber;
   }
 }
 

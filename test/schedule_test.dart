@@ -13,7 +13,7 @@ class TestSchedule {
       // Access the state of Schedule
       ScheduleState state = tester.state(find.byType(Schedule));
 
-      expect(state.subjects, isNull);
+      expect(state, isNotNull);
     });
   }
 
