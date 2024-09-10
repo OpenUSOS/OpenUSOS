@@ -16,6 +16,7 @@ import 'package:open_usos/pages/schedule.dart';
 import 'package:open_usos/pages/account.dart';
 import 'package:open_usos/pages/emails.dart';
 import 'package:open_usos/pages/news.dart';
+import 'package:open_usos/pages/registrations.dart';
 
 
 void main() {
@@ -83,6 +84,7 @@ class OpenUSOS extends StatelessWidget {
             '/surveys': (context) => Surveys(),
             '/surveyFiller':(context) => SurveyFiller(),
             '/news': (context) => News(),
+            '/registrations': (context) => Registrations(),
           });
     });
   }
