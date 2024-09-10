@@ -315,49 +315,9 @@ class EmailExpanded extends StatelessWidget {
                             ),
                           ],
                         )),
-                    /*Container(
-                    alignment: Alignment.topLeft,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
-                    child: Text(
-                      'Treść:',
-                      textScaler: TextScaler.linear(1.25),
-                    )),*/
                     Container(
-                      height: 4,
+                      height: 8,
                     ),
-                    /*Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(30)
-                        ),
-                        border: Border(
-                            bottom: BorderSide(
-                              color: Colors.grey,
-                              width: 3,
-                            ),
-                            top: BorderSide(
-                              color: Colors.grey,
-                              width: 3,
-                            ),
-                            left: BorderSide(
-                              color: Colors.grey,
-                              width: 3,
-                            ),
-                              right: BorderSide(
-                              color: Colors.grey,
-                              width: 3,
-                            ))),
-                    alignment: Alignment.topLeft,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                    child: Text(
-                      email.contents,
-                      textScaler: TextScaler.linear(1.25),
-                    ),
-                  ),
-                ),*/
                     Text(
                       email.contents,
                       textScaler: TextScaler.linear(1.25),
