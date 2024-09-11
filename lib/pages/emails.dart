@@ -190,41 +190,42 @@ class EmailSenderState extends State<EmailSender> {
     return Scaffold(
         appBar: USOSBar(title: 'OpenUSOS mail'),
         bottomNavigationBar: BottomNavBar(),
-        drawer: NavBar(),
         body: Padding(
             padding: EdgeInsets.all(8.0),
-            child: Column(children: [
-              TextField(
-                controller: _recipientController,
-                decoration: InputDecoration(labelText: 'Odbiorca'),
-              ),
-              TextField(
-                  controller: _subjectController,
-                  decoration: InputDecoration(labelText: 'Temat')),
-              TextField(
-                minLines: 5,
-                maxLines: null,
-                controller: _bodyController,
-                decoration: InputDecoration(
-                  labelText: 'Treść',
+            child: SingleChildScrollView(
+              child: Column(children: [
+                TextField(
+                  controller: _recipientController,
+                  decoration: InputDecoration(labelText: 'Odbiorca'),
                 ),
-                keyboardType: TextInputType.multiline,
-              ),
-              SizedBox(height: 20.0),
-              _isSending == true
-                  ? Center(
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                          Text('Wysyłanie...'),
-                          CircularProgressIndicator()
-                        ]))
-                  : ElevatedButton(
-                      onPressed: _sendEmails,
-                      child: Text('Wyślij'),
-                    )
-            ])));
+                TextField(
+                    controller: _subjectController,
+                    decoration: InputDecoration(labelText: 'Temat')),
+                TextField(
+                  minLines: 5,
+                  maxLines: null,
+                  controller: _bodyController,
+                  decoration: InputDecoration(
+                    labelText: 'Treść',
+                  ),
+                  keyboardType: TextInputType.multiline,
+                ),
+                SizedBox(height: 20.0),
+                _isSending == true
+                    ? Center(
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                            Text('Wysyłanie...'),
+                            CircularProgressIndicator()
+                          ]))
+                    : ElevatedButton(
+                        onPressed: _sendEmails,
+                        child: Text('Wyślij'),
+                      )
+              ]),
+            )));
   }
 }
 
@@ -236,96 +237,93 @@ class EmailExpanded extends StatelessWidget {
         appBar: USOSBar(title: 'OpenUSOS mail'),
         body: Padding(
             padding: EdgeInsets.all(8.0),
-            child: Column(children: [
-              Container(
-                  alignment: Alignment.topLeft,
-                  decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(
-                        color: Colors.black,
-                        width: 4,
-                      ))),
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                  child: Text(
-                    'Odbiorcy: ${email.recipientAddressString()}',
-                    softWrap: true,
-                    textScaler: TextScaler.linear(1.25),
-                  )),
-              Container(
-                  decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(
-                        color: Colors.black,
-                        width: 4,
-                      ))),
-                  alignment: Alignment.topLeft,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                  child: Text(
-                    'Temat: ${email.subject}',
-                    softWrap: true,
-                    textScaler: TextScaler.linear(1.25),
-                    maxLines: 3,
-                  )),
-              Container(
-                  decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(
-                        color: Colors.black,
-                        width: 4,
-                      ))),
-                  alignment: Alignment.topLeft,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                  child: Text(
-                    'Data wysłania: ${email.date}',
-                    textScaler: TextScaler.linear(1.25),
-                  )),
-              Container(
-                  alignment: Alignment.topLeft,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                  child: Text(
-                    'Treść:',
-                    textScaler: TextScaler.linear(1.25),
-                  )),
-              Container(
-                height: 2,
-              ),
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(30)
-                      ),
-                      border: Border(
-                          bottom: BorderSide(
-                            color: Colors.black,
-                            width: 4,
-                          ),
-                          top: BorderSide(
-                            color: Colors.black,
-                            width: 4,
-                          ),
-                          left: BorderSide(
-                            color: Colors.black,
-                            width: 4,
-                          ),
-                            right: BorderSide(
-                            color: Colors.black,
-                            width: 4,
-                          ))),
-                  alignment: Alignment.topLeft,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: Text(
-                    email.contents,
-                    textScaler: TextScaler.linear(1.25),
-                  ),
-                ),
-              )
-            ])));
+            child: SingleChildScrollView(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                        alignment: Alignment.topLeft,
+                        decoration: BoxDecoration(
+                            border: Border(
+                                bottom: BorderSide(
+                          color: Colors.grey,
+                          width: 2,
+                        ))),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 4.0, vertical: 8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Odbiorcy:',
+                              softWrap: true,
+                              textScaler: TextScaler.linear(0.9),
+                            ),
+                            Text(
+                              '${email.recipientAddressString()}',
+                              softWrap: true,
+                              textScaler: TextScaler.linear(1.25),
+                            ),
+                          ],
+                        )),
+                    Container(
+                        decoration: BoxDecoration(
+                            border: Border(
+                                bottom: BorderSide(
+                          color: Colors.grey,
+                          width: 2,
+                        ))),
+                        alignment: Alignment.topLeft,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 4.0, vertical: 8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Temat:',
+                              softWrap: true,
+                              textScaler: TextScaler.linear(0.9),
+                            ),
+                            Text(
+                              '${email.subject}',
+                              softWrap: true,
+                              textScaler: TextScaler.linear(1.25),
+                              maxLines: 3,
+                            ),
+                          ],
+                        )),
+                    Container(
+                        decoration: BoxDecoration(
+                            border: Border(
+                                bottom: BorderSide(
+                          color: Colors.grey,
+                          width: 2,
+                        ))),
+                        alignment: Alignment.topLeft,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 4.0, vertical: 8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Data wysłania:',
+                              textScaler: TextScaler.linear(0.9),
+                            ),
+                            Text(
+                              '${email.date}',
+                              textScaler: TextScaler.linear(1.25),
+                            ),
+                          ],
+                        )),
+                    Container(
+                      height: 8,
+                    ),
+                    Text(
+                      email.contents,
+                      textScaler: TextScaler.linear(1.25),
+                    ),
+                  ]),
+            )));
   }
 }
 

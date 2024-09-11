@@ -148,7 +148,7 @@ class _NavBarState extends State<NavBar> {
           buildNavTiles(context, 'Grupy zajęciowe', Icons.group, '/TODO'),
           buildDivider(),
           buildNavTiles(context, 'Twoje rejestracje', Icons.app_registration,
-              '/registration'),
+              '/registrations'),
           buildCategoryHeader('Inne'),
           buildNavTiles(context, 'Ustawienia', Icons.settings, '/settings'),
           buildDivider(),
