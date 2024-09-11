@@ -316,11 +316,14 @@ class EmailExpanded extends StatelessWidget {
                           ],
                         )),
                     Container(
-                      height: 8,
-                    ),
-                    Text(
-                      email.contents,
-                      textScaler: TextScaler.linear(1.25),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 4.0,
+                        vertical: 8.0,
+                      ),
+                      child: Text(
+                        email.contents,
+                        textScaler: TextScaler.linear(1.25),
+                      ),
                     ),
                   ]),
             )));
