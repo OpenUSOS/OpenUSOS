@@ -16,6 +16,7 @@ class Schedule extends StatefulWidget {
 class ScheduleState extends State<Schedule> {
   SubjectDataSource? _subjectDataSource;
   late Future<List<Subject>?> _subjectsFuture;
+  Set<String> loaded_dates = {};
 
   @override
   void initState() {
@@ -62,22 +63,36 @@ class ScheduleState extends State<Schedule> {
   }
 
   void updateCalendar(ViewChangedDetails details) {
-    String startDate = details.visibleDates[0].toString().substring(0, 10);
-    fetchSubjectsAndUpdateFromDate(startDate);
+    setState(() {
+    //having state be set here helps hide the widget refreshing when a new date is loaded,
+    //possibly a temporary solution (it will be permanent as usual)
+    });
+    String day_before = details.visibleDates[0].subtract(Duration(days: 1)).toString().substring(0, 10);
+    String day_after = details.visibleDates[0].add(Duration(days: 1)).toString().substring(0, 10);
+    String visible_day = details.visibleDates[0].toString().substring(0, 10);
+
+    fetchSubjectsAndUpdateFromDate(day_before);
+    fetchSubjectsAndUpdateFromDate(visible_day, isVisible: true);
+    fetchSubjectsAndUpdateFromDate(day_after);
   }
 
-  Future<void> fetchSubjectsAndUpdateFromDate(String date) async {
+  Future<void> fetchSubjectsAndUpdateFromDate(String date, {bool isVisible = false}) async {
+    if(loaded_dates.contains(date)){
+      return;
+    }
+    loaded_dates.add(date);
     List<Subject>? fetched_subjects = await fetchSubjectsOnDate(date);
     if (fetched_subjects == null) {
       return;
     }
-    setState(() {
-      for (Subject subject in fetched_subjects) {
-        if (!_subjectDataSource!.appointments!.contains(subject)) {
-          _subjectDataSource!.appointments!.add(subject);
-        }
-      }
-    });
+    if(isVisible) {
+      setState(() {
+            _subjectDataSource!.appointments!.addAll(fetched_subjects);
+      });
+    }
+    else{
+          _subjectDataSource!.appointments!.addAll(fetched_subjects);
+    }
   }
 
   Color getColor(String name) {
