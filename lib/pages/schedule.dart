@@ -27,7 +27,6 @@ class ScheduleState extends State<Schedule> {
 
   @visibleForTesting
   Future<List<Subject>?> fetchSubjectsOnDate(String startDate) async {
-    debugPrint(startDate);
     if (UserSession.sessionId == null) {
       throw Exception("sessionId is null, user not logged in.");
     }
@@ -63,10 +62,6 @@ class ScheduleState extends State<Schedule> {
   }
 
   void updateCalendar(ViewChangedDetails details) {
-    setState(() {
-    //having state be set here helps hide the widget refreshing when a new date is loaded,
-    //possibly a temporary solution (it will be permanent as usual)
-    });
     String day_before = details.visibleDates[0].subtract(Duration(days: 1)).toString().substring(0, 10);
     String day_after = details.visibleDates[0].add(Duration(days: 1)).toString().substring(0, 10);
     String visible_day = details.visibleDates[0].toString().substring(0, 10);
@@ -85,6 +80,8 @@ class ScheduleState extends State<Schedule> {
     if (fetched_subjects == null) {
       return;
     }
+    setState(() {
+
     if(isVisible) {
       setState(() {
             _subjectDataSource!.appointments!.addAll(fetched_subjects);
@@ -93,6 +90,8 @@ class ScheduleState extends State<Schedule> {
     else{
           _subjectDataSource!.appointments!.addAll(fetched_subjects);
     }
+
+    });
   }
 
   Color getColor(String name) {
