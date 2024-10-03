@@ -173,6 +173,8 @@ class GradesState extends State<Grades> {
                                   type = 'Lektorat';
                                 case 'WF':
                                   type = 'Wychowanie fizyczne';
+                                case 'EGZ':
+                                  type = 'Egzamin';
                                 default:
                                   type = '-';
                               }

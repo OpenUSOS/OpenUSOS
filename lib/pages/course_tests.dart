@@ -13,7 +13,6 @@ class Term {
   Term({required this.termId, required this.courses});
 
   factory Term.fromJson(Map<String, dynamic> json) {
-    debugPrint(json.toString());
     var coursesList = <Course>[];
     if (json['courses'] != null) {
       var coursesJson = json['courses'] as List;
@@ -64,7 +63,6 @@ class Assessment {
   });
 
   factory Assessment.fromJson(Map<String, dynamic> json) {
-    debugPrint(json.toString());
     var subnodesIdsList = <String>[];
     if (json['subnodes_ids'] != null) {
       var subnodesJson = json['subnodes_ids'] as List;
@@ -153,7 +151,6 @@ class CourseTestsState extends State<CourseTests> {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      print('Response body: ${response.body}');
       return parseTerms(response.body);
     } else {
       throw Exception(
