@@ -1,7 +1,7 @@
 ![](fastlane/metadata/android/en-US/images/icon.png)
 # OpenUSOS
 ## Authors: Oskar Kuliński, Filip Ciebiera, Wieńczysław Włodyga   
-### Current version: 1.0.0
+### Current version: 1.1.0
 
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
      alt="Get it on F-Droid"
@@ -36,7 +36,7 @@ https://github.com/OpenUSOS/OpenUSOS-server
 Our plans for the future:
 <ul>
 <li>speed up the app</li>
-<li>improve the look of emails</li>
+<li>improve the look of emails - done</li>
 <li>add viewing course groups</li>
 <li>in app bug reporting</li>
 <li>release on Google Play Store</li>
