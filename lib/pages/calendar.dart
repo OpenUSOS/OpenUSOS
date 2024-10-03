@@ -8,8 +8,6 @@ import 'package:open_usos/appbar.dart';
 import 'package:open_usos/navbar.dart';
 import 'package:open_usos/user_session.dart';
 
-
-
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
 
@@ -42,22 +40,24 @@ class CalendarState extends State<Calendar> {
   void initState() {
     super.initState();
     _loadUserEvents();
-    _futureSpecialDays = _fetchSpecialDays();
+    _futureSpecialDays = _fetchSpecialDays(
+        DateTime.now().subtract(Duration(days: 30)).toString().substring(0, 10),
+        DateTime.now().add(Duration(days: 30)).toString().substring(0, 10));
   }
 
   List<Appointment> _getUserEventsForDay(DateTime day) {
     return _userEvents[DateTime(day.year, day.month, day.day)] ?? [];
   }
 
-  Future<void> _fetchSpecialDays() async {
+  Future<void> _fetchSpecialDays(String startDate, String endDate) async {
     if (UserSession.sessionId == null) {
       throw Exception('sessionId is null, user not logged in');
     }
     final url = Uri.http(UserSession.host, UserSession.basePath, {
       'id': UserSession.sessionId,
       'query1': 'get_events',
-      'query2': '2022-10-01',
-      'query3': '2026-10-01',
+      'query2': startDate,
+      'query3': endDate,
     });
 
     var response = await http.get(url);
@@ -104,9 +104,14 @@ class CalendarState extends State<Calendar> {
       throw Exception(
           'failed to fetch data: HTTP status ${response.statusCode}');
     }
-
   }
 
+  void updateCalendar(ViewChangedDetails details) {
+    String startDate = details.visibleDates.first.subtract(Duration(days: 31)).toString().substring(0, 10);
+    String endDate = details.visibleDates.last.add(Duration(days: 31)).toString().substring(0, 10);
+
+    _fetchSpecialDays(startDate, endDate);
+  }
 
   Future<void> _showTimePicker(TextEditingController controller) async {
     final TimeOfDay? picked = await showTimePicker(
@@ -318,6 +323,7 @@ class CalendarState extends State<Calendar> {
                         fontWeight: FontWeight.w500),
                   ),
                   dataSource: _DataSource(_userEvents),
+                  onViewChanged: updateCalendar,
                   onSelectionChanged: (CalendarSelectionDetails details) {
                     setState(() {
                       selectedDay = details.date;
@@ -411,7 +417,7 @@ class CalendarState extends State<Calendar> {
                             ),
                             subtitle: Text(
                                 '${appointment.startTime.hour}:${appointment.startTime.minute.toString().padRight(2, '0')} - '
-                                    '${appointment.endTime.hour}:${appointment.endTime.minute.toString().padRight(2, '0')}',
+                                '${appointment.endTime.hour}:${appointment.endTime.minute.toString().padRight(2, '0')}',
                                 style: TextStyle(color: Colors.white)),
                             trailing: IconButton(
                               icon: Icon(Icons.delete_forever,
