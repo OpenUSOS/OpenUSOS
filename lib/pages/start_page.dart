@@ -12,8 +12,8 @@ class _StartPageState extends State<StartPage> {
   final List<String> UniversityList = [
     'Uniwersytet Jagielloński',
     'Politechnika Wrocławska',
-    // śmierdzą 'Uniwersytet Warszawski',
-    'Uniwersytet Śląski',
+    //'Uniwersytet Warszawski', API link doesn't work
+    //'Uniwersytet Śląski', API link doesn't work
     'Chrześcijańska Akademia Teologiczna w Warszawie',
   ];
 
